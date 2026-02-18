@@ -28,7 +28,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     engine/Transform.cpp
     engine/components/TextComponent.cpp
     engine/components/SpriteComponent.cpp
-    engine/components/SpriteComponent.h
+    engine/components/FpsComponent.cpp
 )
 
 # enable c++23 features

@@ -22,7 +22,7 @@ TextComponent::~TextComponent() {}
 
 void TextComponent::Update(float /*deltaTime*/)
 {
-    if(not m_Text.empty() and m_NeedsUpdate)
+    if(not m_Text.empty() and not m_NeedsUpdate)
         return;
 
     auto* const surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Text.length(), m_Color);
