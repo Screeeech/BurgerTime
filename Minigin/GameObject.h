@@ -8,14 +8,14 @@ namespace dae
 {
 class Texture2D;
 
-class GameObject
+class GameObject final
 {
     Transform m_transform{};
     std::shared_ptr<Texture2D> m_texture{};
 
 public:
-    virtual void Update(float deltaTime);
-    virtual void Render() const;
+    void Update(float deltaTime);
+    void Render() const;
 
     void SetTexture(const std::string& filename);
     void SetPosition(float x, float y);
