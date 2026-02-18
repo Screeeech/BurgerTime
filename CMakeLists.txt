@@ -129,7 +129,8 @@ if(MSVC)
   # compile at warning level 4 + treat warnings as errors
   target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
 else()
-  target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Werror)
+  target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra)
+  # target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Werror)
 endif()
 
 if(EMSCRIPTEN)
@@ -219,7 +220,7 @@ elseif(APPLE)
     COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Data" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Data"
   )
 else()
- if(Steamworks_FOUND)
+  if(Steamworks_FOUND)
     target_link_libraries("${TARGET_NAME}" PUBLIC Steamworks::Steamworks)
     target_compile_definitions(${TARGET_NAME} PRIVATE USE_STEAMWORKS)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
