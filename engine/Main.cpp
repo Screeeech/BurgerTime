@@ -23,11 +23,16 @@ static void load()
 
     auto font = std::make_shared<dae::Font>("Lingua.otf", 36);
     auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
+    auto logoTexture = dae::ResourceManager::GetInstance().LoadTexture("logo.png");
 
-    auto textComponent{ std::make_shared<TextComponent>( "Test test", std::move(font), dae::Transform{ 100, 100 } ) };
-    auto backgroundComponent{ std::make_shared<SpriteComponent>( backgroundTexture, dae::Transform{ 0, 0 } ) };
+    auto textComponent{ std::make_shared<TextComponent>( "Test test", std::move(font), dae::Transform{ 10, 10 } ) };
+    auto backgroundComponent{ std::make_shared<SpriteComponent>( std::move(backgroundTexture), dae::Transform{ 0, 0 } ) };
+    auto logoComponent{ std::make_shared<SpriteComponent>(std::move(logoTexture), dae::Transform{ 358, 180 } ) };
 
     auto go = std::make_unique<dae::GameObject>(std::vector<std::shared_ptr<Component>>{ std::move(backgroundComponent) });
+    scene.Add(std::move(go));
+
+    go = std::make_unique<dae::GameObject>(std::vector<std::shared_ptr<Component>>{ std::move(logoComponent) });
     scene.Add(std::move(go));
 
     go = std::make_unique<dae::GameObject>(std::vector<std::shared_ptr<Component>>{ textComponent });
