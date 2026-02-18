@@ -26,12 +26,11 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     engine/SceneManager.cpp
     engine/Texture2D.cpp
     engine/Transform.cpp
-    engine/Component.cpp
     engine/components/TextComponent.cpp
 )
 
-# enable c++20 features
-target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
+# enable c++23 features
+target_compile_features(${TARGET_NAME} PUBLIC cxx_std_23)
 
 include(FetchContent)
 # add glm

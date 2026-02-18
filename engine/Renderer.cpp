@@ -26,8 +26,8 @@ void dae::Renderer::Init(SDL_Window* window)
 
 void dae::Renderer::Render() const
 {
-	const auto& color = GetBackgroundColor();
-	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+	const auto [r, g, b, a] = GetBackgroundColor();
+	SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
 	SDL_RenderClear(m_renderer);
 
 	SceneManager::GetInstance().Render();

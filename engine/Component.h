@@ -10,8 +10,8 @@ class Component
 public:
     virtual ~Component() = default;
     Component() = default;
-    virtual void receive(int message) = 0;
-    virtual void update() = 0;
+    virtual void Update(float deltaTime) = 0;
+    virtual void Render() const = 0;
 };
 
 

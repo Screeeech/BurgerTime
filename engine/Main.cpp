@@ -1,4 +1,9 @@
 
+#include <iostream>
+#include <print>
+
+#include "components/TextComponent.h"
+#include "Texture2D.h"
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>
 #endif
@@ -15,13 +20,11 @@ static void load()
 {
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
 
-    auto go = std::make_unique<dae::GameObject>();
-    go->SetTexture("background.png");
-    scene.Add(std::move(go));
+    auto font = std::make_shared<dae::Font>("Lingua.otf", 36);
 
-    go = std::make_unique<dae::GameObject>();
-    go->SetTexture("logo.png");
-    go->SetPosition(358, 180);
+    auto textComponent{ std::make_shared<TextComponent>( "Test test", font, dae::Transform{ 100, 100 } ) };
+
+    auto go = std::make_unique<dae::GameObject>(std::vector<std::shared_ptr<Component>>{ textComponent });
     scene.Add(std::move(go));
 
     // auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
@@ -36,9 +39,22 @@ int main(int, char*[])
 #if __EMSCRIPTEN__
     fs::path data_location = "";
 #else
-    fs::path data_location = "./resources/";
-    if(!fs::exists(data_location))
-        data_location = "../resources/";
+    const fs::path data_location = "./resources/";
+    try
+    {
+        constexpr int maxSteps{ 5 };
+        int counter{ 0 };
+        while(not fs::exists(data_location) and counter < maxSteps)
+        {
+            fs::current_path("..");
+            ++counter;
+        }
+        fs::current_path(data_location);
+    }
+    catch(const fs::filesystem_error& e)
+    {
+        std::println("{}",e.what());
+    }
 #endif
     dae::Minigin engine(data_location);
     engine.Run(load);
