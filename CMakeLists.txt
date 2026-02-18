@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(Minigin)
+project(engine)
 
 if (EMSCRIPTEN)
   message("Using Emscripten!")
@@ -15,19 +15,19 @@ endif ()
 
 # list source files here
 add_executable(${TARGET_NAME} ${TARGET_PARAM}
-    Minigin/Font.cpp
-    Minigin/GameObject.cpp
-    Minigin/InputManager.cpp
-    Minigin/Main.cpp
-    Minigin/Minigin.cpp
-    Minigin/Renderer.cpp
-    Minigin/ResourceManager.cpp
-    Minigin/Scene.cpp
-    Minigin/SceneManager.cpp
-    Minigin/Texture2D.cpp
-    Minigin/Transform.cpp
-    Minigin/Component.cpp
-    Minigin/Components/TextComponent.cpp
+    engine/Font.cpp
+    engine/GameObject.cpp
+    engine/InputManager.cpp
+    engine/Main.cpp
+    engine/Minigin.cpp
+    engine/Renderer.cpp
+    engine/ResourceManager.cpp
+    engine/Scene.cpp
+    engine/SceneManager.cpp
+    engine/Texture2D.cpp
+    engine/Transform.cpp
+    engine/Component.cpp
+    engine/components/TextComponent.cpp
 )
 
 # enable c++20 features
@@ -115,7 +115,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/steam")
 find_package(Steamworks QUIET)
 
 target_include_directories("${TARGET_NAME}" PUBLIC
-    ${CMAKE_SOURCE_DIR}/Minigin/
+    ${CMAKE_SOURCE_DIR}/engine/
     ${VLD_INCLUDE_DIR}
 )
 
@@ -188,7 +188,7 @@ elseif (WIN32)
   endif ()
 
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Data" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Data"
+      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/resources" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Data"
   )
 elseif (APPLE)
   set_target_properties(${TARGET_NAME} PROPERTIES
@@ -216,9 +216,9 @@ elseif (APPLE)
     )
   endif ()
 
-  # Copy Data folder to output directory after build
+  # Copy resources folder to output directory after build
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Data" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Data"
+      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/resources" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Data"
   )
 else ()
   if (Steamworks_FOUND)
@@ -233,8 +233,8 @@ else ()
     )
   endif ()
 
-  # Copy Data folder to output directory after build
+  # Copy resources folder to output directory after build
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Data" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Data"
+      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/resources" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Data"
   )
 endif ()
