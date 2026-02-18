@@ -2,6 +2,7 @@
 #include <iostream>
 #include <print>
 
+#include "components/SpriteComponent.h"
 #include "components/TextComponent.h"
 #include "Texture2D.h"
 #if _DEBUG && __has_include(<vld.h>)
@@ -21,10 +22,15 @@ static void load()
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
 
     auto font = std::make_shared<dae::Font>("Lingua.otf", 36);
+    auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
 
-    auto textComponent{ std::make_shared<TextComponent>( "Test test", font, dae::Transform{ 100, 100 } ) };
+    auto textComponent{ std::make_shared<TextComponent>( "Test test", std::move(font), dae::Transform{ 100, 100 } ) };
+    auto backgroundComponent{ std::make_shared<SpriteComponent>( backgroundTexture, dae::Transform{ 0, 0 } ) };
 
-    auto go = std::make_unique<dae::GameObject>(std::vector<std::shared_ptr<Component>>{ textComponent });
+    auto go = std::make_unique<dae::GameObject>(std::vector<std::shared_ptr<Component>>{ std::move(backgroundComponent) });
+    scene.Add(std::move(go));
+
+    go = std::make_unique<dae::GameObject>(std::vector<std::shared_ptr<Component>>{ textComponent });
     scene.Add(std::move(go));
 
     // auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);

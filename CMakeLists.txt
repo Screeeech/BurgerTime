@@ -27,6 +27,8 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     engine/Texture2D.cpp
     engine/Transform.cpp
     engine/components/TextComponent.cpp
+    engine/components/SpriteComponent.cpp
+    engine/components/SpriteComponent.h
 )
 
 # enable c++23 features
