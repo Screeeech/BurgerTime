@@ -6,7 +6,7 @@
 
 #include <print>
 
-dae::FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<dae::Font> font, const dae::Transform& transform, SDL_Color)
+dae::FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, const Transform& transform, SDL_Color)
     : TextComponent(pOwner, "FPS: bleeehh", std::move(font), transform)
 {
 }

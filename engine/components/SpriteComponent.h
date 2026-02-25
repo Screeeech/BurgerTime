@@ -18,15 +18,16 @@ class SpriteComponent : public Component
 {
 public:
     SpriteComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture, const Transform& transform);
-
     void Update(float deltaTime) override;
     void Render() const override;
 
-    void SetTexture(std::shared_ptr<dae::Texture2D> texture);
+    void SetTexture(std::shared_ptr<Texture2D> texture);
+
+protected:
 
 private:
     Transform m_Transform;
-    std::shared_ptr<dae::Texture2D> m_Texture;
+    std::shared_ptr<Texture2D> m_Texture;
 };
 
 }  // namespace dae

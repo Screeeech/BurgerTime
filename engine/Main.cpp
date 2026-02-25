@@ -28,10 +28,10 @@ static void load()
 
     // Background
     auto go = std::make_unique<dae::GameObject>();
+
     auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
     go->AddComponent<dae::SpriteComponent>(  std::move(backgroundTexture), dae::Transform{ 0, 0 } );
     scene.Add(std::move(go));
-
 }
 
 int main(int, char*[])

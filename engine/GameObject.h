@@ -27,6 +27,6 @@ public:
         m_components.push_back(std::make_unique<T>(this, std::forward<Args>(args)...));
     }
 private:
-    std::vector<std::shared_ptr<Component>> m_components;
+    std::vector<std::unique_ptr<Component>> m_components;
 };
 }  // namespace dae
