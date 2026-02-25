@@ -3,7 +3,7 @@
 #include <print>
 
 #include "components/FpsComponent.h"
-#include "components/SpriteComponent.h"
+#include "components/RenderComponent.h"
 #include "components/TextComponent.h"
 #include "Texture2D.h"
 #if _DEBUG && __has_include(<vld.h>)
@@ -30,7 +30,7 @@ static void load()
     auto go = std::make_unique<dae::GameObject>();
 
     auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
-    go->AddComponent<dae::SpriteComponent>(  std::move(backgroundTexture), dae::Transform{ 0, 0 } );
+    go->AddComponent<dae::RenderComponent>(  std::move(backgroundTexture), dae::Transform{ 0, 0 } );
     scene.Add(std::move(go));
 }
 

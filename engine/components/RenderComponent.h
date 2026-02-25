@@ -14,10 +14,10 @@ namespace dae
 class Texture2D;
 class GameObject;
 
-class SpriteComponent : public Component
+class RenderComponent : public Component
 {
 public:
-    SpriteComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture, const Transform& transform);
+    RenderComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture, const Transform& transform);
     void Update(float deltaTime) override;
     void Render() const override;
 

@@ -27,7 +27,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     engine/Texture2D.cpp
     engine/Transform.cpp
     engine/components/TextComponent.cpp
-    engine/components/SpriteComponent.cpp
+    engine/components/RenderComponent.cpp
     engine/components/FpsComponent.cpp
 )
 
