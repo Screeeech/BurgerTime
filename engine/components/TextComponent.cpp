@@ -10,17 +10,18 @@
 #include "SDL3_ttf/SDL_ttf.h"
 #include "Texture2D.h"
 
-TextComponent::TextComponent(std::string text, std::shared_ptr<dae::Font> font, const dae::Transform& transform, SDL_Color color)
-    : m_Transform(transform)
+dae::TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<dae::Font> font, const dae::Transform& transform, SDL_Color color)
+    : Component(pOwner)
+    , m_Transform(transform)
     , m_Font(std::move(font))
     , m_Color(color)
     , m_Text(std::move(text))
 {
 }
 
-TextComponent::~TextComponent() {}
+dae::TextComponent::~TextComponent() {}
 
-void TextComponent::Update(float /*deltaTime*/)
+void dae::TextComponent::Update(float /*deltaTime*/)
 {
     if(not m_Text.empty() and not m_NeedsUpdate)
         return;
@@ -40,22 +41,22 @@ void TextComponent::Update(float /*deltaTime*/)
     m_NeedsUpdate = false;
 }
 
-void TextComponent::Render() const
+void dae::TextComponent::Render() const
 {
     if(m_TextTexture == nullptr)
         return;
 
     const auto& pos{ m_Transform.GetPosition() };
-    dae::Renderer::GetInstance().RenderTexture(*m_TextTexture, pos.x, pos.y);
+    Renderer::GetInstance().RenderTexture(*m_TextTexture, pos.x, pos.y);
 }
 
-void TextComponent::SetText(const std::string& text)
+void dae::TextComponent::SetText(const std::string& text)
 {
     m_Text = text;
     m_NeedsUpdate = true;
 }
 
-const std::string& TextComponent::GetText() const
+const std::string& dae::TextComponent::GetText() const
 {
     return m_Text;
 }

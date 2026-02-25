@@ -7,24 +7,26 @@
 #include <utility>
 
 #include "Renderer.h"
+#include "GameObject.h"
 
-SpriteComponent::SpriteComponent(std::shared_ptr<dae::Texture2D> texture, const dae::Transform& transform)
-    : m_Transform(transform)
+dae::SpriteComponent::SpriteComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture, const Transform& transform)
+    : Component(pOwner)
+    , m_Transform(transform)
     , m_Texture(std::move(texture))
 {
 }
 
-void SpriteComponent::Update(float /*deltaTime*/)
+void dae::SpriteComponent::Update(float /*deltaTime*/)
 {
 }
 
-void SpriteComponent::Render() const
+void dae::SpriteComponent::Render() const
 {
     const auto& pos{ m_Transform.GetPosition() };
-    dae::Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y);
+    Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y);
 }
 
-void SpriteComponent::SetTexture(std::shared_ptr<dae::Texture2D> texture)
+void dae::SpriteComponent::SetTexture(std::shared_ptr<dae::Texture2D> texture)
 {
     m_Texture = std::move(texture);
 }

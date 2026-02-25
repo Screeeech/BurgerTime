@@ -16,17 +16,12 @@
 namespace dae
 {
 class Texture2D;
-}
 
 class TextComponent : public Component
 {
 public:
-    TextComponent(
-    std::string text,
-    std::shared_ptr<dae::Font> font,
-    const dae::Transform& transform,
-    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 }
-);
+    TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<dae::Font> font, const dae::Transform& transform,
+                  SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 });
     ~TextComponent() override;
 
     void Update(float deltaTime) override;
@@ -44,5 +39,6 @@ private:
     bool m_NeedsUpdate{ false };
 };
 
+}  // namespace dae
 
 #endif  // MINIGIN_TEXTCOMPONENT_H

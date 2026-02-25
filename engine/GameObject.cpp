@@ -5,16 +5,11 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
-dae::GameObject::GameObject(std::vector<std::shared_ptr<Component>> components)
-    : m_Components(std::move(components))
-{
-}
-
 dae::GameObject::~GameObject() = default;
 
 void dae::GameObject::Update(float deltaTime)
 {
-    for (auto& component : m_Components)
+    for (auto& component : m_components)
     {
         component->Update(deltaTime);
     }
@@ -22,7 +17,7 @@ void dae::GameObject::Update(float deltaTime)
 
 void dae::GameObject::Render() const
 {
-    for (const auto& component : m_Components)
+    for (const auto& component : m_components)
     {
         component->Render();
     }

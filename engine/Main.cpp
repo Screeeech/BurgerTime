@@ -23,30 +23,15 @@ static void load()
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
 
     auto font = std::make_shared<dae::Font>("Lingua.otf", 36);
-    auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
     auto logoTexture = dae::ResourceManager::GetInstance().LoadTexture("logo.png");
-
-    auto fpsComponent{ std::make_shared<FpsComponent>( std::move(font), dae::Transform{ 10, 10 } ) };
-    auto backgroundComponent{ std::make_shared<SpriteComponent>( std::move(backgroundTexture), dae::Transform{ 0, 0 } ) };
-    auto logoComponent{ std::make_shared<SpriteComponent>(std::move(logoTexture), dae::Transform{ 358, 180 } ) };
+    // auto backgroundComponent{};
 
     // Background
-    auto go = std::make_unique<dae::GameObject>(std::vector<std::shared_ptr<Component>>{ std::move(backgroundComponent) });
+    auto go = std::make_unique<dae::GameObject>();
+    auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
+    go->AddComponent<dae::SpriteComponent>(  std::move(backgroundTexture), dae::Transform{ 0, 0 } );
     scene.Add(std::move(go));
 
-    // Logo
-    go = std::make_unique<dae::GameObject>(std::vector<std::shared_ptr<Component>>{ std::move(logoComponent) });
-    scene.Add(std::move(go));
-
-    // FPS counter
-    go = std::make_unique<dae::GameObject>(std::vector<std::shared_ptr<Component>>{ fpsComponent });
-    scene.Add(std::move(go));
-
-    // auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-    // auto to = std::make_unique<dae::TextObject>("Programming 4 Assignment", font);
-    // to->SetColor({ 255, 255, 0, 255 });
-    // to->SetPosition(292, 20);
-    // scene.Add(std::move(to));
 }
 
 int main(int, char*[])

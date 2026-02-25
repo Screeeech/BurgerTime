@@ -12,12 +12,12 @@
 namespace dae
 {
 class Texture2D;
-}
+class GameObject;
 
 class SpriteComponent : public Component
 {
 public:
-    SpriteComponent(std::shared_ptr<dae::Texture2D> texture, const dae::Transform& transform);
+    SpriteComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture, const Transform& transform);
 
     void Update(float deltaTime) override;
     void Render() const override;
@@ -25,9 +25,10 @@ public:
     void SetTexture(std::shared_ptr<dae::Texture2D> texture);
 
 private:
-    dae::Transform m_Transform;
+    Transform m_Transform;
     std::shared_ptr<dae::Texture2D> m_Texture;
 };
 
+}  // namespace dae
 
 #endif  // ENGINE_SPRITECOMPONENT_H
