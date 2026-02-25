@@ -15,11 +15,11 @@ public:
     void Render() const;
 
     explicit GameObject() = default;
-    ~GameObject();
-    GameObject(const GameObject& other) = delete;
+    ~GameObject() = default;
     GameObject(GameObject&& other) = delete;
-    GameObject& operator=(const GameObject& other) = delete;
+    GameObject(const GameObject& other) = delete;
     GameObject& operator=(GameObject&& other) = delete;
+    GameObject& operator=(const GameObject& other) = delete;
 
     template<ComponentConcept T, typename... Args>
     void AddComponent(Args&&... args) noexcept

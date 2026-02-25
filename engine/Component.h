@@ -15,13 +15,19 @@ class Component
 {
 public:
     virtual ~Component() = default;
+    Component(Component&&) = delete;
+    Component(Component const&) = delete;
+    Component& operator=(Component&&) = delete;
+    Component& operator=(Component const&) = delete;
+
     virtual void Update(float deltaTime) = 0;
     virtual void Render() const = 0;
 
 protected:
-    GameObject* m_pOwner;
     explicit Component(GameObject* pOwner)
         : m_pOwner(pOwner) {}
+private:
+    GameObject* m_pOwner;
 };
 
 template<typename ComponentType>
