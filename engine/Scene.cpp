@@ -13,9 +13,7 @@ void Scene::Add(std::unique_ptr<GameObject> object)
 
 void Scene::Remove(const GameObject& object)
 {
-    m_objects.erase(
-        std::remove_if(m_objects.begin(), m_objects.end(), [&object](const auto& ptr) { return ptr.get() == &object; }),
-        m_objects.end());
+    std::erase_if(m_objects, [&object](const std::unique_ptr<GameObject>& ptr) { return ptr.get() == &object; });
 }
 
 void Scene::RemoveAll()
@@ -31,10 +29,25 @@ void Scene::Update(float deltaTime)
     }
 }
 
-void Scene::Render() const
+void Scene::Render()
 {
-    for(const auto& object : m_objects)
+    for(const auto& renderComponents : m_pRenderComponents)
     {
-        object->Render();
+        renderComponents->Render();
     }
+}
+
+void Scene::Load()
+{
+    SceneManager::GetInstance().LoadScene(this);
+}
+
+void Scene::RegisterRenderComponent(RenderComponent* renderComponent)
+{
+    m_pRenderComponents.push_back(renderComponent);
+}
+
+void Scene::UnregisterRenderComponent(RenderComponent* component)
+{
+    std::erase(m_pRenderComponents, component);
 }

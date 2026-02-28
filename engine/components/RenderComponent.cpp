@@ -13,6 +13,12 @@ dae::RenderComponent::RenderComponent(GameObject* pOwner, std::shared_ptr<Textur
     , m_Transform(transform)
     , m_Texture(std::move(texture))
 {
+    SceneManager::GetInstance().RegisterRenderComponent(this);
+}
+
+dae::RenderComponent::~RenderComponent()
+{
+    SceneManager::GetInstance().UnregisterRenderComponent(this);
 }
 
 void dae::RenderComponent::Update(float /*deltaTime*/)
@@ -25,7 +31,7 @@ void dae::RenderComponent::Render() const
     Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y);
 }
 
-void dae::RenderComponent::SetTexture(std::shared_ptr<dae::Texture2D> texture)
+void dae::RenderComponent::SetTexture(std::shared_ptr<Texture2D> texture)
 {
     m_Texture = std::move(texture);
 }

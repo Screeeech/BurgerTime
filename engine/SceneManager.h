@@ -18,9 +18,14 @@ public:
     void Update(float deltaTime);
     void Render();
 
+    void LoadScene(Scene* scene);
+    void RegisterRenderComponent(RenderComponent* component) const;
+    void UnregisterRenderComponent(RenderComponent* component) const;
+
 private:
     friend class Singleton<SceneManager>;
     SceneManager() = default;
-    std::vector<std::unique_ptr<Scene>> m_scenes{};
+    std::vector<std::unique_ptr<Scene>> m_scenes;
+    Scene* m_currentScene{};
 };
 }  // namespace dae

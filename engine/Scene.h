@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "components/RenderComponent.h"
 #include "GameObject.h"
 
 namespace dae
@@ -15,7 +16,10 @@ public:
     void RemoveAll();
 
     void Update(float deltaTime);
-    void Render() const;
+    void Render();
+    void Load();
+    void RegisterRenderComponent(RenderComponent* renderComponent);
+    void UnregisterRenderComponent(RenderComponent* component);
 
     ~Scene() = default;
     Scene(const Scene& other) = delete;
@@ -27,7 +31,8 @@ private:
     friend class SceneManager;
     explicit Scene() = default;
 
-    std::vector<std::unique_ptr<GameObject>> m_objects{};
+    std::vector<std::unique_ptr<GameObject>> m_objects;
+    std::vector<RenderComponent*> m_pRenderComponents;
 };
 
 }  // namespace dae

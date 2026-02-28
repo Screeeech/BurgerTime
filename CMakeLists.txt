@@ -131,8 +131,8 @@ if (MSVC)
   # compile at warning level 4 + treat warnings as errors
   target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
 else ()
-  target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra)
-  # target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Werror)
+#  target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra)
+   target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Werror)
 endif ()
 
 if (EMSCRIPTEN)

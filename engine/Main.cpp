@@ -1,26 +1,24 @@
 
-#include <iostream>
+#include <filesystem>
 #include <print>
 
-#include "components/FpsComponent.h"
 #include "components/RenderComponent.h"
 #include "components/TextComponent.h"
-#include "Texture2D.h"
-#if _DEBUG && __has_include(<vld.h>)
-#include <vld.h>
-#endif
-
-#include <filesystem>
-
 #include "Minigin.h"
 #include "ResourceManager.h"
 #include "Scene.h"
 #include "SceneManager.h"
+
+#if _DEBUG && __has_include(<vld.h>)
+#include <vld.h>
+#endif
+
 namespace fs = std::filesystem;
 
 static void load()
 {
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
+    scene.Load();
 
     auto font = std::make_shared<dae::Font>("Lingua.otf", 36);
     auto logoTexture = dae::ResourceManager::GetInstance().LoadTexture("logo.png");
@@ -28,9 +26,8 @@ static void load()
 
     // Background
     auto go = std::make_unique<dae::GameObject>();
-
     auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
-    go->AddComponent<dae::RenderComponent>(  std::move(backgroundTexture), dae::Transform{ 0, 0 } );
+    go->AddComponent<dae::RenderComponent>(std::move(backgroundTexture), dae::Transform{ 0, 0 });
     scene.Add(std::move(go));
 }
 
@@ -53,7 +50,7 @@ int main(int, char*[])
     }
     catch(const fs::filesystem_error& e)
     {
-        std::println("{}",e.what());
+        std::println("{}", e.what());
     }
 #endif
     dae::Minigin engine(data_location);

@@ -18,6 +18,7 @@ class RenderComponent : public Component
 {
 public:
     RenderComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture, const Transform& transform);
+    ~RenderComponent();
     void Update(float deltaTime) override;
     void Render() const override;
 

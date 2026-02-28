@@ -1,8 +1,5 @@
 #include "GameObject.h"
 
-#include <string>
-
-#include "Renderer.h"
 #include "ResourceManager.h"
 
 void dae::GameObject::Update(float deltaTime)
@@ -10,13 +7,5 @@ void dae::GameObject::Update(float deltaTime)
     for (auto& component : m_components)
     {
         component->Update(deltaTime);
-    }
-}
-
-void dae::GameObject::Render() const
-{
-    for (const auto& component : m_components)
-    {
-        component->Render();
     }
 }

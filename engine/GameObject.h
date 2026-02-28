@@ -3,16 +3,17 @@
 #include <vector>
 
 #include "Component.h"
+#include "SceneManager.h"
 
 namespace dae
 {
+class RenderComponent;
 class Texture2D;
 
 class GameObject final
 {
 public:
     void Update(float deltaTime);
-    void Render() const;
 
     explicit GameObject() = default;
     ~GameObject() = default;

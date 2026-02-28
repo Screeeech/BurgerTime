@@ -4,17 +4,28 @@
 
 void dae::SceneManager::Update(float deltaTime)
 {
-    for(auto& scene : m_scenes)
-    {
-        scene->Update(deltaTime);
-    }
+    if(not m_currentScene)
+        return;
+
+    m_currentScene->Update(deltaTime);
 }
 
 void dae::SceneManager::Render()
 {
-    for(const auto& scene : m_scenes)
+    if(not m_currentScene)
+        return;
+
+    m_currentScene->Render();
+}
+
+void dae::SceneManager::LoadScene(Scene* scene)
+{
+    // Check if scene exists
+    // If it does store a reference in m_currentScene
+    for(auto& pScene : m_scenes)
     {
-        scene->Render();
+        if(auto* sceneRef = pScene.get(); sceneRef == scene)
+            m_currentScene = sceneRef;
     }
 }
 
@@ -22,4 +33,20 @@ dae::Scene& dae::SceneManager::CreateScene()
 {
     m_scenes.emplace_back(new Scene());
     return *m_scenes.back();
+}
+
+void dae::SceneManager::RegisterRenderComponent(RenderComponent* component) const
+{
+    if(not m_currentScene)
+        return;
+
+    m_currentScene->RegisterRenderComponent(component);
+}
+
+void dae::SceneManager::UnregisterRenderComponent(RenderComponent* component) const
+{
+    if(not m_currentScene)
+        return;
+
+    m_currentScene->UnregisterRenderComponent(component);
 }
