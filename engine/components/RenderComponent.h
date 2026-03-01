@@ -21,7 +21,7 @@ public:
     explicit RenderComponent(GameObject* pOwner, const Transform& transform = Transform{ 0, 0 });
     ~RenderComponent() override;
     void Update(float deltaTime) override;
-    void Render() const override;
+    void Render() const;
 
     void SetTexture(std::shared_ptr<Texture2D> texture);
 

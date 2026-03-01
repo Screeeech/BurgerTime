@@ -15,28 +15,32 @@
 
 namespace dae
 {
+class RenderComponent;
 class Texture2D;
 
 class TextComponent : public Component
 {
 public:
-    TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<dae::Font> font, const dae::Transform& transform,
+    TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, const Transform& transform,
                   SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 });
-    ~TextComponent() override;
+    ~TextComponent() override = default;
 
     void Update(float deltaTime) override;
-    void Render() const override;
     void SetText(const std::string& text);
     [[nodiscard]] const std::string& GetText() const;
 
 private:
-    dae::Transform m_Transform;
-    std::shared_ptr<dae::Font> m_Font;
-    std::shared_ptr<dae::Texture2D> m_TextTexture;
+    Transform m_Transform;
+    std::shared_ptr<Font> m_Font;
+    std::shared_ptr<Texture2D> m_TextTexture;
     SDL_Color m_Color;
     std::string m_Text;
 
     bool m_NeedsUpdate{ false };
+
+    RenderComponent* m_pRenderComponent{};
+
+    std::shared_ptr<Texture2D> UpdateTexture() const;
 };
 
 }  // namespace dae

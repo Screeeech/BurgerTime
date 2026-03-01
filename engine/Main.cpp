@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <print>
 
+#include "components/FpsComponent.h"
 #include "components/RenderComponent.h"
 #include "components/TextComponent.h"
 #include "Minigin.h"
@@ -20,14 +21,23 @@ static void load()
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
     scene.Load();
 
-    auto font = std::make_shared<dae::Font>("Lingua.otf", 36);
-    auto logoTexture = dae::ResourceManager::GetInstance().LoadTexture("logo.png");
-    // auto backgroundComponent{};
 
     // Background
     auto go = std::make_unique<dae::GameObject>();
     auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
     go->AddComponent<dae::RenderComponent>(std::move(backgroundTexture), dae::Transform{ 0, 0 });
+    scene.Add(std::move(go));
+
+    // Logo
+    go = std::make_unique<dae::GameObject>();
+    auto logoTexture = dae::ResourceManager::GetInstance().LoadTexture("logo.png");
+    go->AddComponent<dae::RenderComponent>(std::move(logoTexture), dae::Transform{ 358, 180 });
+    scene.Add(std::move(go));
+
+    // Text display
+    go = std::make_unique<dae::GameObject>();
+    auto font = std::make_shared<dae::Font>("Lingua.otf", 36);
+    go->AddComponent<dae::FpsComponent>(std::move(font), dae::Transform{ 10, 10 });
     scene.Add(std::move(go));
 }
 

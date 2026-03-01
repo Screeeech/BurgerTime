@@ -6,25 +6,26 @@
 
 #include <print>
 
-dae::FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, const Transform& transform, SDL_Color)
-    : TextComponent(pOwner, "FPS: bleeehh", std::move(font), transform)
+#include "GameObject.h"
+#include "TextComponent.h"
+
+dae::FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, const Transform& transform, SDL_Color color)
+    : Component(pOwner)
+    , m_pTextComponent(pOwner->AddComponent<TextComponent>("FPS: ", std::move(font), transform, color))
 {
 }
 
 void dae::FpsComponent::Update(float deltaTime)
 {
-    TextComponent::Update(deltaTime);
+    m_elapsedTime += deltaTime;
+    ++m_frameCount;
 
-    std::println("Delta time: {}", deltaTime);
-    elapsedTime += deltaTime;
-    ++frameCount;
-
-    if (elapsedTime >= 1.f)
+    if(m_elapsedTime >= 1.f)
     {
-        const float fps{ frameCount / elapsedTime };
+        const float fps{ static_cast<float>(m_frameCount) / m_elapsedTime };
 
-        this->SetText(std::format("FPS: {:.2f}", fps));
-        frameCount = 0;
-        elapsedTime = 0.0f;
+        m_pTextComponent->SetText(std::format("FPS: {:.2f}", fps));
+        m_frameCount = 0;
+        m_elapsedTime = 0.0f;
     }
 }
