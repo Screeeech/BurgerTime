@@ -18,13 +18,12 @@ class RenderComponent : public Component
 {
 public:
     RenderComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture, const Transform& transform);
-    ~RenderComponent();
+    explicit RenderComponent(GameObject* pOwner, const Transform& transform = Transform{ 0, 0 });
+    ~RenderComponent() override;
     void Update(float deltaTime) override;
     void Render() const override;
 
     void SetTexture(std::shared_ptr<Texture2D> texture);
-
-protected:
 
 private:
     Transform m_Transform;

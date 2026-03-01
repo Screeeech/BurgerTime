@@ -23,9 +23,10 @@ public:
     GameObject& operator=(const GameObject& other) = delete;
 
     template<ComponentConcept T, typename... Args>
-    void AddComponent(Args&&... args) noexcept
+    T* AddComponent(Args&&... args) noexcept
     {
         m_components.push_back(std::make_unique<T>(this, std::forward<Args>(args)...));
+        return dynamic_cast<T*>(m_components.back().get());
     }
 private:
     std::vector<std::unique_ptr<Component>> m_components;

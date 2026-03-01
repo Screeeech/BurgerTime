@@ -10,7 +10,7 @@ void dae::SceneManager::Update(float deltaTime)
     m_currentScene->Update(deltaTime);
 }
 
-void dae::SceneManager::Render()
+void dae::SceneManager::Render() const
 {
     if(not m_currentScene)
         return;

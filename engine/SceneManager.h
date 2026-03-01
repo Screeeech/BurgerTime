@@ -16,7 +16,7 @@ public:
     Scene& CreateScene();
 
     void Update(float deltaTime);
-    void Render();
+    void Render() const;
 
     void LoadScene(Scene* scene);
     void RegisterRenderComponent(RenderComponent* component) const;
