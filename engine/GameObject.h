@@ -31,6 +31,23 @@ public:
         return dynamic_cast<T*>(m_components.back().get());
     }
 
+    template<ComponentConcept T>
+    void RemoveComponent() noexcept
+    {
+        for (auto& component : m_components)
+            if (auto* pComponent = dynamic_cast<T*>(component.get()))
+                m_components.erase(pComponent);
+    }
+
+    template<ComponentConcept T>
+    T* GetComponent()
+    {
+        for (auto& component : m_components)
+            if (auto* pComponent = dynamic_cast<T*>(component.get()))
+                return pComponent;
+        return nullptr;
+    }
+
     [[nodiscard]] Transform GetTransform() const;
     [[nodiscard]] glm::vec3 GetPosition() const;
 
