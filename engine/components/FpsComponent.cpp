@@ -9,9 +9,9 @@
 #include "GameObject.h"
 #include "TextComponent.h"
 
-dae::FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, const Transform& transform, SDL_Color color)
+dae::FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color color)
     : Component(pOwner)
-    , m_pTextComponent(pOwner->AddComponent<TextComponent>("FPS: ", std::move(font), transform, color))
+    , m_pTextComponent(pOwner->AddComponent<TextComponent>("FPS: ", std::move(font), color))
 {
 }
 

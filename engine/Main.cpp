@@ -21,23 +21,22 @@ static void load()
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
     scene.Load();
 
-
     // Background
     auto go = std::make_unique<dae::GameObject>();
     auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
-    go->AddComponent<dae::RenderComponent>(std::move(backgroundTexture), dae::Transform{ 0, 0 });
+    go->AddComponent<dae::RenderComponent>(backgroundTexture);
     scene.Add(std::move(go));
 
     // Logo
-    go = std::make_unique<dae::GameObject>();
+    go = std::make_unique<dae::GameObject>(dae::Transform{ 358, 180 });
     auto logoTexture = dae::ResourceManager::GetInstance().LoadTexture("logo.png");
-    go->AddComponent<dae::RenderComponent>(std::move(logoTexture), dae::Transform{ 358, 180 });
+    go->AddComponent<dae::RenderComponent>(logoTexture);
     scene.Add(std::move(go));
 
     // Text display
-    go = std::make_unique<dae::GameObject>();
+    go = std::make_unique<dae::GameObject>(dae::Transform{ 10, 10 });
     auto font = std::make_shared<dae::Font>("Lingua.otf", 36);
-    go->AddComponent<dae::FpsComponent>(std::move(font), dae::Transform{ 10, 10 });
+    go->AddComponent<dae::FpsComponent>(font);
     scene.Add(std::move(go));
 }
 

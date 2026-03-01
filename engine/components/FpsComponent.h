@@ -19,7 +19,7 @@ class Font;
 class FpsComponent : public Component
 {
 public:
-    FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, const Transform& transform, SDL_Color = { 255, 255, 255, 255 });
+    explicit FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color = { .r=255, .g=255, .b=255, .a=255 });
     void Update(float deltaTime) override;
 private:
     int m_frameCount{};

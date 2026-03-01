@@ -11,14 +11,12 @@
 #include "SDL3_ttf/SDL_ttf.h"
 #include "Texture2D.h"
 
-dae::TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, const Transform& transform,
-                                  SDL_Color color)
+dae::TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, SDL_Color color)
     : Component(pOwner)
-    , m_Transform(transform)
     , m_Font(std::move(font))
     , m_Color(color)
     , m_Text(std::move(text))
-    , m_pRenderComponent(pOwner->AddComponent<RenderComponent>(transform))
+    , m_pRenderComponent(pOwner->AddComponent<RenderComponent>())
 {
     m_TextTexture = UpdateTexture();
     m_pRenderComponent->SetTexture(m_TextTexture);

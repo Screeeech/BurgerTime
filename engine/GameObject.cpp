@@ -2,9 +2,24 @@
 
 #include "ResourceManager.h"
 
-void dae::GameObject::Update(float deltaTime)
+dae::GameObject::GameObject(const Transform& transform)
+    : m_transform(transform)
 {
-    for (auto& component : m_components)
+}
+
+dae::Transform dae::GameObject::GetTransform() const
+{
+    return m_transform;
+}
+
+glm::vec3 dae::GameObject::GetPosition() const
+{
+    return m_transform.GetPosition();
+}
+
+void dae::GameObject::Update(float deltaTime) const
+{
+    for (const auto& component : m_components)
     {
         component->Update(deltaTime);
     }

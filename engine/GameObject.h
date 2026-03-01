@@ -13,9 +13,9 @@ class Texture2D;
 class GameObject final
 {
 public:
-    void Update(float deltaTime);
+    void Update(float deltaTime) const;
 
-    explicit GameObject() = default;
+    explicit GameObject(const Transform& transform = Transform{ 0, 0 });
     ~GameObject() = default;
     GameObject(GameObject&& other) = delete;
     GameObject(const GameObject& other) = delete;
@@ -25,10 +25,17 @@ public:
     template<ComponentConcept T, typename... Args>
     T* AddComponent(Args&&... args) noexcept
     {
+        // NOTE: I still need to decide whether I want to have max one type of component
+        // Or maybe I should be able to have multiple types of components and refer to them with a name or ID
         m_components.push_back(std::make_unique<T>(this, std::forward<Args>(args)...));
         return dynamic_cast<T*>(m_components.back().get());
     }
+
+    [[nodiscard]] Transform GetTransform() const;
+    [[nodiscard]] glm::vec3 GetPosition() const;
+
 private:
     std::vector<std::unique_ptr<Component>> m_components;
+    Transform m_transform;
 };
 }  // namespace dae

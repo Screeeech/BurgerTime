@@ -8,17 +8,15 @@
 #include "RenderComponent.h"
 #include "Renderer.h"
 
-dae::RenderComponent::RenderComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture, const Transform& transform)
+dae::RenderComponent::RenderComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture)
     : Component(pOwner)
-    , m_Transform(transform)
     , m_Texture(std::move(texture))
 {
     SceneManager::GetInstance().RegisterRenderComponent(this);
 }
 
-dae::RenderComponent::RenderComponent(GameObject* pOwner, const Transform& transform)
+dae::RenderComponent::RenderComponent(GameObject* pOwner)
     : Component(pOwner)
-    , m_Transform(transform)
 {
     SceneManager::GetInstance().RegisterRenderComponent(this);
 }
@@ -37,7 +35,7 @@ void dae::RenderComponent::Render() const
     if(not m_Texture)
         return;
 
-    const auto& pos{ m_Transform.GetPosition() };
+    const auto& pos{ m_pOwner->GetPosition() };
     Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y);
 }
 
