@@ -48,10 +48,22 @@ public:
         return nullptr;
     }
 
-    [[nodiscard]] Transform GetTransform() const;
-    [[nodiscard]] glm::vec3 GetPosition() const;
+    Transform GetTransform();
+    glm::vec3 GetPosition();
+
+    bool IsChild(GameObject* pChild);
+    void SetParent(GameObject* pParent, bool keepWorldPosition = true);
+    void RemoveChild(GameObject* pParent);
+    void AddChild(GameObject* game_object);
+
+    // Recursive function
+    void SetDirty();
 
 private:
+    GameObject* m_pParent{};
+    // NOTE: Should the parent own the children?
+    std::vector<std::unique_ptr<GameObject>> m_children;
+
     std::vector<std::unique_ptr<Component>> m_components;
     Transform m_transform;
 };
