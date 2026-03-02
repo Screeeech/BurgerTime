@@ -8,28 +8,30 @@ class GameObject;
 class Transform final
 	{
 	public:
-	    Transform(float x, float y, float z = 0, GameObject* parent = nullptr);
+	    explicit Transform(float x, float y, float z = 0, GameObject* parent = nullptr);
+        explicit Transform(const Transform& transform, GameObject* owner);
 
-		[[nodiscard]] const glm::vec3& GetPosition() const { return m_localPosition; }
 		void SetLocalPosition(float x, float y, float z = 0);
 		void SetLocalPosition(const glm::vec3& position);
 	    void ChangeLocalPosition(float x, float y, float z = 0);
 	    void ChangeLocalPosition(const glm::vec3& delta);
+
 	    [[nodiscard]] glm::vec3 GetWorldPosition();
+        [[nodiscard]] glm::mat4 GetWorldMatrix();
 
 
-	    void UpdateWorldMatrix(const Transform& parentTransform = Transform(0, 0));
+	    void UpdateWorldMatrix();
 	    void ApplyInverseTransform(const Transform& parentTransform);
 
-        bool isDirty{};
+        bool isDirty{ true };
 	private:
-	    GameObject* m_pParent{};
+	    GameObject* m_pOwner{};
 
-	    glm::mat4 m_worldMatrix;
-	    glm::vec3 m_rotation;
+	    glm::mat4 m_worldMatrix{ 1.f };
+	    glm::vec3 m_rotation{ 0.f };
 
-	    glm::vec3 m_scale;
-		glm::vec3 m_localPosition;
-		glm::vec3 m_worldPosition;
+	    glm::vec3 m_scale{ 1.f };
+		glm::vec3 m_localPosition{ 0.f };
+		glm::vec3 m_worldPosition{ 0.f };
 	};
 }

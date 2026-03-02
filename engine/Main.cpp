@@ -1,4 +1,6 @@
 
+#include <SDL3/SDL_render.h>
+
 #include <filesystem>
 #include <print>
 
@@ -9,6 +11,7 @@
 #include "ResourceManager.h"
 #include "Scene.h"
 #include "SceneManager.h"
+#include "Texture2D.h"
 
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>
@@ -18,26 +21,63 @@ namespace fs = std::filesystem;
 
 static void load()
 {
+    // Temporary
+    constexpr int width{ 1024 };
+    constexpr int height{ 576 };
+
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
     scene.Load();
 
-    // Background
-    auto go = std::make_unique<dae::GameObject>();
     auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
+    auto logoTexture = dae::ResourceManager::GetInstance().LoadTexture("logo.png");
+    auto font = std::make_shared<dae::Font>("Lingua.otf", 36);
+
+    // Background
+    auto* go = new dae::GameObject(0, 0, 0, "Background");
     go->AddComponent<dae::RenderComponent>(backgroundTexture);
-    scene.Add(std::move(go));
+    scene.Add(go);
 
     // Logo
-    go = std::make_unique<dae::GameObject>(dae::Transform{ 358, 180 });
-    auto logoTexture = dae::ResourceManager::GetInstance().LoadTexture("logo.png");
+    go = new dae::GameObject( 358, 80, 0, "Logo" );
     go->AddComponent<dae::RenderComponent>(logoTexture);
-    scene.Add(std::move(go));
+    scene.Add(go);
 
     // Text display
-    go = std::make_unique<dae::GameObject>(dae::Transform{ 10, 10 });
-    auto font = std::make_shared<dae::Font>("Lingua.otf", 36);
+    go = new dae::GameObject( 10, 10, 0, "FPS Counter" );
     go->AddComponent<dae::FpsComponent>(font);
-    scene.Add(std::move(go));
+    scene.Add(go);
+
+    // Orbiters
+    auto sunTexture = dae::ResourceManager::GetInstance().LoadTexture("sun.png");
+    auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("earth.png");
+    auto moonTexture = dae::ResourceManager::GetInstance().LoadTexture("moon.png");
+
+    // Creating children here would instantiate a new unique_ptr under the parent
+    // So we don't have to make a unique_ptr here
+
+    auto getCenterPos = [width, height](std::shared_ptr<dae::Texture2D>& texture) -> glm::vec2
+    {
+        return glm::vec2{
+            (static_cast<float>(width) / 2) - (static_cast<float>(texture->GetSDLTexture()->w)/2),
+            (static_cast<float>(height) / 2) - (static_cast<float>(texture->GetSDLTexture()->h)/2)
+        };
+    };
+
+    // Sun
+    const auto sunPos{ getCenterPos(sunTexture) + glm::vec2{ 0, 20} };
+    auto* sun = new dae::GameObject(sunPos.x, sunPos.y, 0, "Sun");
+    sun->AddComponent<dae::RenderComponent>(sunTexture);
+
+    // Earth
+    auto* earth = new dae::GameObject(180, 30, 0, "Earth");
+    earth->AddComponent<dae::RenderComponent>(earthTexture);
+
+    auto* moon = new dae::GameObject(100, 10, 0, "Moon");
+    moon->AddComponent<dae::RenderComponent>(moonTexture);
+
+    scene.Add(sun);
+    earth->SetParent(sun, false);
+    moon->SetParent(earth, false);
 }
 
 int main(int, char*[])

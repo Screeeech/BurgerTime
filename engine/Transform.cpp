@@ -5,9 +5,15 @@
 #include "GameObject.h"
 
 dae::Transform::Transform(float x, float y, float z, GameObject* parent)
-    : m_pParent(parent)
+    : m_pOwner(parent)
     , m_localPosition(x, y, z)
     , m_worldPosition(x, y, z)
+{
+}
+
+dae::Transform::Transform(const Transform& transform, GameObject* owner)
+    : m_pOwner(owner)
+    , m_localPosition(transform.m_localPosition)
 {
 }
 
@@ -17,14 +23,14 @@ void dae::Transform::SetLocalPosition(const float x, const float y, const float 
     m_localPosition.y = y;
     m_localPosition.z = z;
 
-    m_pParent->SetDirty();
+    m_pOwner->SetDirty();
 }
 
 void dae::Transform::SetLocalPosition(const glm::vec3& position)
 {
     m_localPosition = position;
 
-    m_pParent->SetDirty();
+    m_pOwner->SetDirty();
 }
 
 void dae::Transform::ChangeLocalPosition(float x, float y, float z)
@@ -33,14 +39,14 @@ void dae::Transform::ChangeLocalPosition(float x, float y, float z)
     m_localPosition.y += y;
     m_localPosition.z += z;
 
-    m_pParent->SetDirty();
+    m_pOwner->SetDirty();
 }
 
 void dae::Transform::ChangeLocalPosition(const glm::vec3& delta)
 {
     m_localPosition += delta;
 
-    m_pParent->SetDirty();
+    m_pOwner->SetDirty();
 }
 
 glm::vec3 dae::Transform::GetWorldPosition()
@@ -48,10 +54,19 @@ glm::vec3 dae::Transform::GetWorldPosition()
     if(isDirty)
         UpdateWorldMatrix();
 
+    m_worldPosition = glm::vec3(m_worldMatrix[3]);
     return m_worldPosition;
 }
 
-void dae::Transform::UpdateWorldMatrix(const Transform& parentTransform)
+glm::mat4 dae::Transform::GetWorldMatrix()
+{
+    if(isDirty)
+        UpdateWorldMatrix();
+
+    return m_worldMatrix;
+}
+
+void dae::Transform::UpdateWorldMatrix()
 {
     glm::mat4 rotationMatrix(1.0f);
     rotationMatrix = glm::rotate(rotationMatrix, m_rotation.z, glm::vec3(0, 0, 1));  // roll
@@ -61,7 +76,7 @@ void dae::Transform::UpdateWorldMatrix(const Transform& parentTransform)
     const glm::mat4 localMatrix =
         glm::translate(glm::mat4(1.0f), m_localPosition) * rotationMatrix * glm::scale(glm::mat4(1.0f), m_scale);
 
-    m_worldMatrix = parentTransform.m_worldMatrix * localMatrix;
+    m_worldMatrix = m_pOwner->GetParentWorldMatrix() * localMatrix;
 
     isDirty = false;
 }

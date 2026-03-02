@@ -15,7 +15,7 @@ class GameObject final
 public:
     void Update(float deltaTime) const;
 
-    explicit GameObject(const Transform& transform = Transform{ 0, 0 });
+    explicit GameObject(float x, float y, float z = 0.0f, std::string  name = "new GameObject");
     ~GameObject() = default;
     GameObject(GameObject&& other) = delete;
     GameObject(const GameObject& other) = delete;
@@ -48,18 +48,22 @@ public:
         return nullptr;
     }
 
-    Transform GetTransform();
-    glm::vec3 GetPosition();
+    Transform& GetTransform();
+    glm::mat4 GetParentWorldMatrix();
+    glm::vec3 GetWorldPosition();
 
     bool IsChild(GameObject* pChild);
     void SetParent(GameObject* pParent, bool keepWorldPosition = true);
-    void RemoveChild(GameObject* pParent);
     void AddChild(GameObject* game_object);
+    GameObject* RemoveChild(GameObject* pParent);
 
     // Recursive function
     void SetDirty();
 
 private:
+    // For testing purposes
+    std::string m_name;
+
     GameObject* m_pParent{};
     // NOTE: Should the parent own the children?
     std::vector<std::unique_ptr<GameObject>> m_children;
