@@ -116,4 +116,9 @@ void dae::GameObject::Update(float deltaTime) const
     {
         component->Update(deltaTime);
     }
+
+    for(const auto& children : m_children)
+    {
+        children->Update(deltaTime);
+    }
 }

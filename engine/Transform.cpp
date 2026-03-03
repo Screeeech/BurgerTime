@@ -49,6 +49,12 @@ void dae::Transform::ChangeLocalPosition(const glm::vec3& delta)
     m_pOwner->SetDirty();
 }
 
+glm::vec3 dae::Transform::GetLocalPosition() const
+{
+    // Doesn't have to set dirty flag, because it doesn't affect children
+    return m_localPosition;
+}
+
 glm::vec3 dae::Transform::GetWorldPosition()
 {
     if(isDirty)

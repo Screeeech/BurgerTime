@@ -16,6 +16,7 @@ class Transform final
 	    void ChangeLocalPosition(float x, float y, float z = 0);
 	    void ChangeLocalPosition(const glm::vec3& delta);
 
+        [[nodiscard]] glm::vec3 GetLocalPosition() const;
 	    [[nodiscard]] glm::vec3 GetWorldPosition();
         [[nodiscard]] glm::mat4 GetWorldMatrix();
 

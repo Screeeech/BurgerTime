@@ -4,8 +4,10 @@
 #include <filesystem>
 #include <print>
 
+#include "../out/build/clang-debug/_deps/glm-src/glm/ext/scalar_constants.hpp"
 #include "components/FpsComponent.h"
 #include "components/RenderComponent.h"
+#include "components/RotatorComponent.h"
 #include "components/TextComponent.h"
 #include "Minigin.h"
 #include "ResourceManager.h"
@@ -71,9 +73,11 @@ static void load()
     // Earth
     auto* earth = new dae::GameObject(180, 30, 0, "Earth");
     earth->AddComponent<dae::RenderComponent>(earthTexture);
+    earth->AddComponent<dae::RotatorComponent>( glm::pi<float>() / 4 );
 
     auto* moon = new dae::GameObject(100, 10, 0, "Moon");
     moon->AddComponent<dae::RenderComponent>(moonTexture);
+    moon->AddComponent<dae::RotatorComponent>(glm::pi<float>() / 2 );
 
     scene.Add(sun);
     earth->SetParent(sun, false);
