@@ -109,39 +109,36 @@ if (NOT SDL3_ttf_FOUND)
   endif ()
 endif ()
 
-# Add imgui
-FetchContent_Declare(
-    imgui
-    GIT_REPOSITORY https://github.com/ocornut/imgui.git
-    GIT_TAG v1.91.8
-    GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(imgui)
-
+# Add ImGui
 add_library(imgui STATIC
-    ${imgui_SOURCE_DIR}/imgui.cpp
-    ${imgui_SOURCE_DIR}/imgui_draw.cpp
-    ${imgui_SOURCE_DIR}/imgui_tables.cpp
-    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-    ${imgui_SOURCE_DIR}/imgui_demo.cpp
-    ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-    ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
+    libs/imgui/imgui.cpp
+    libs/imgui/imgui_draw.cpp
+    libs/imgui/imgui_tables.cpp
+    libs/imgui/imgui_widgets.cpp
+    libs/imgui/imgui_demo.cpp
+    libs/imgui/backends/imgui_impl_sdl3.cpp
+    libs/imgui/backends/imgui_impl_sdlrenderer3.cpp
 )
-
-FetchContent_Declare(
-    implot
-    GIT_REPOSITORY https://github.com/epezent/implot.git
-    GIT_TAG v0.16          # Use a specific version tag for stability
-    GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(implot)
 
 target_include_directories(imgui PUBLIC
-    ${imgui_SOURCE_DIR}
-    ${imgui_SOURCE_DIR}/backends
+    libs/imgui
+    libs/imgui/backends
 )
 
 target_link_libraries(imgui PUBLIC SDL3::SDL3)
+
+# Add ImPlot
+add_library(implot STATIC
+    libs/implot/implot.cpp
+    libs/implot/implot_demo.cpp
+    libs/implot/implot_items.cpp
+)
+
+target_include_directories(implot PUBLIC
+    libs/implot
+)
+
+target_link_libraries(implot PUBLIC imgui)
 
 if (WIN32)
   # Add VLD (Visual Leak Detector) for memory leak detection on Windows
@@ -168,7 +165,7 @@ target_link_libraries("${TARGET_NAME}" PUBLIC
     glm::glm
     ${VLD_LIBRARIES}
     imgui
-#    implot
+    implot
 )
 
 if (MSVC)
