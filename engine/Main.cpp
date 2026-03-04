@@ -4,7 +4,8 @@
 #include <filesystem>
 #include <print>
 
-#include "../out/build/clang-debug/_deps/glm-src/glm/ext/scalar_constants.hpp"
+#include <glm/gtc/constants.hpp>
+#include "imgui.h"
 #include "components/FpsComponent.h"
 #include "components/RenderComponent.h"
 #include "components/RotatorComponent.h"
@@ -49,6 +50,10 @@ static void load()
     go->AddComponent<dae::FpsComponent>(font);
     scene.Add(go);
 
+    // UI component
+    // If I were to pass a lambda to it to define the window layout.
+    //
+
     // Orbiters
     auto sunTexture = dae::ResourceManager::GetInstance().LoadTexture("sun.png");
     auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("earth.png");
@@ -82,6 +87,19 @@ static void load()
     scene.Add(sun);
     earth->SetParent(sun, false);
     moon->SetParent(earth, false);
+
+    // UI
+    auto uiDrawFunction = [&]() mutable
+    {
+        ImGui::Begin("Test test");
+
+        ImGui::Text("Hello from ImGui");
+
+        ImGui::End();
+    };
+    auto* ui = new dae::GameObject(100, 10, 0, "UI");
+    ui->AddComponent<dae::UIComponent>(uiDrawFunction);
+    scene.Add(ui);
 }
 
 int main(int, char*[])

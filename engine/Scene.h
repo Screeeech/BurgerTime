@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "components/RenderComponent.h"
@@ -17,9 +16,12 @@ public:
 
     void Update(float deltaTime);
     void Render();
+    void DrawUI();
     void Load();
     void RegisterRenderComponent(RenderComponent* renderComponent);
     void UnregisterRenderComponent(RenderComponent* component);
+    void RegisterUIComponent(UIComponent* component);
+    void UnregisterUIComponent(UIComponent* component);
 
     ~Scene() = default;
     Scene(const Scene& other) = delete;
@@ -32,7 +34,8 @@ private:
     explicit Scene() = default;
 
     std::vector<std::unique_ptr<GameObject>> m_objects;
-    std::vector<RenderComponent*> m_pRenderComponents;
+    std::vector<RenderComponent*> m_renderComponents;
+    std::vector<UIComponent*> m_uiComponents;
 };
 
 }  // namespace dae

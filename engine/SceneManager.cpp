@@ -1,5 +1,7 @@
 #include "SceneManager.h"
 
+#include <print>
+
 #include "Scene.h"
 
 void dae::SceneManager::Update(float deltaTime)
@@ -16,6 +18,14 @@ void dae::SceneManager::Render() const
         return;
 
     m_currentScene->Render();
+}
+
+void dae::SceneManager::DrawUI() const
+{
+    if(not m_currentScene)
+        return;
+
+    m_currentScene->DrawUI();
 }
 
 void dae::SceneManager::LoadScene(Scene* scene)
@@ -49,4 +59,21 @@ void dae::SceneManager::UnregisterRenderComponent(RenderComponent* component) co
         return;
 
     m_currentScene->UnregisterRenderComponent(component);
+}
+
+void dae::SceneManager::RegisterUIComponent(UIComponent* component) const
+{
+    std::println("Register UI Component");
+    if(not m_currentScene)
+        return;
+
+    m_currentScene->RegisterUIComponent(component);
+}
+
+void dae::SceneManager::UnregisterUIComponent(UIComponent* component) const
+{
+    if(not m_currentScene)
+        return;
+
+    m_currentScene->UnregisterUIComponent(component);
 }

@@ -23,7 +23,7 @@ void Scene::RemoveAll()
 
 void Scene::Update(float deltaTime)
 {
-    for(auto& object : m_objects)
+    for(const auto& object : m_objects)
     {
         object->Update(deltaTime);
     }
@@ -31,9 +31,17 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render()
 {
-    for(const auto& renderComponents : m_pRenderComponents)
+    for(const auto* renderComponents : m_renderComponents)
     {
         renderComponents->Render();
+    }
+}
+
+void Scene::DrawUI()
+{
+    for(const auto* uiComponent : m_uiComponents)
+    {
+        uiComponent->DrawUI();
     }
 }
 
@@ -44,10 +52,20 @@ void Scene::Load()
 
 void Scene::RegisterRenderComponent(RenderComponent* renderComponent)
 {
-    m_pRenderComponents.push_back(renderComponent);
+    m_renderComponents.push_back(renderComponent);
 }
 
 void Scene::UnregisterRenderComponent(RenderComponent* component)
 {
-    std::erase(m_pRenderComponents, component);
+    std::erase(m_renderComponents, component);
+}
+
+void Scene::RegisterUIComponent(UIComponent* component)
+{
+    m_uiComponents.push_back(component);
+}
+
+void Scene::UnregisterUIComponent(UIComponent* component)
+{
+    std::erase(m_uiComponents, component);
 }

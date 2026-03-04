@@ -12,24 +12,24 @@
 
 void dae::Renderer::Init(SDL_Window* window)
 {
-	m_window = window;
+    m_window = window;
 
-	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
+    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
 
 #if defined(__EMSCRIPTEN__)
-	m_renderer = SDL_CreateRenderer(window, nullptr);
+    m_renderer = SDL_CreateRenderer(window, nullptr);
 #else
-	m_renderer = SDL_CreateRenderer(window, nullptr);
+    m_renderer = SDL_CreateRenderer(window, nullptr);
 #endif
 
-	if (m_renderer == nullptr)
-	{
-		std::cout << "Failed to create the renderer: " << SDL_GetError() << "\n";
-		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
-	}
+    if(m_renderer == nullptr)
+    {
+        std::cout << "Failed to create the renderer: " << SDL_GetError() << "\n";
+        throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
+    }
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 #if __EMSCRIPTEN__
@@ -46,18 +46,18 @@ void dae::Renderer::Render() const
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::ShowDemoWindow();
+    SceneManager::GetInstance().DrawUI();
 
     ImGui::Render();
 
     const auto [r, g, b, a] = GetBackgroundColor();
-	SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
-	SDL_RenderClear(m_renderer);
+    SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
+    SDL_RenderClear(m_renderer);
 
-	SceneManager::GetInstance().Render();
+    SceneManager::GetInstance().Render();
 
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_renderer);
-	SDL_RenderPresent(m_renderer);
+    SDL_RenderPresent(m_renderer);
 }
 
 void dae::Renderer::Destroy()
@@ -66,30 +66,34 @@ void dae::Renderer::Destroy()
     ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
 
-    if (m_renderer != nullptr)
-	{
-		SDL_DestroyRenderer(m_renderer);
-		m_renderer = nullptr;
-	}
+    if(m_renderer != nullptr)
+    {
+        SDL_DestroyRenderer(m_renderer);
+        m_renderer = nullptr;
+    }
 }
 
 void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
 {
-	SDL_FRect dst{};
-	dst.x = x;
-	dst.y = y;
-	SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
-	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+    SDL_FRect dst{};
+    dst.x = x;
+    dst.y = y;
+    SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
+    SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
-void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
+void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width,
+                                  const float height) const
 {
-	SDL_FRect dst{};
-	dst.x = x;
-	dst.y = y;
-	dst.w = width;
-	dst.h = height;
-	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+    SDL_FRect dst{};
+    dst.x = x;
+    dst.y = y;
+    dst.w = width;
+    dst.h = height;
+    SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
-SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }
+SDL_Renderer* dae::Renderer::GetSDLRenderer() const
+{
+    return m_renderer;
+}

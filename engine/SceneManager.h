@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "components/UIComponent.h"
 #include "Scene.h"
 #include "Singleton.h"
 
@@ -17,10 +18,13 @@ public:
 
     void Update(float deltaTime);
     void Render() const;
+    void DrawUI() const;
 
     void LoadScene(Scene* scene);
     void RegisterRenderComponent(RenderComponent* component) const;
     void UnregisterRenderComponent(RenderComponent* component) const;
+    void RegisterUIComponent(UIComponent* component) const;
+    void UnregisterUIComponent(UIComponent* component) const;
 
 private:
     friend class Singleton<SceneManager>;

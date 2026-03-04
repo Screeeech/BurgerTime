@@ -30,6 +30,8 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     engine/components/RenderComponent.cpp
     engine/components/FpsComponent.cpp
     engine/components/RotatorComponent.cpp
+    engine/components/UIComponent.cpp
+    engine/components/UIComponent.h
 )
 
 # enable c++23 features
@@ -126,6 +128,14 @@ add_library(imgui STATIC
     ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
 )
 
+FetchContent_Declare(
+    implot
+    GIT_REPOSITORY https://github.com/epezent/implot.git
+    GIT_TAG v0.16          # Use a specific version tag for stability
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(implot)
+
 target_include_directories(imgui PUBLIC
     ${imgui_SOURCE_DIR}
     ${imgui_SOURCE_DIR}/backends
@@ -158,6 +168,7 @@ target_link_libraries("${TARGET_NAME}" PUBLIC
     glm::glm
     ${VLD_LIBRARIES}
     imgui
+#    implot
 )
 
 if (MSVC)
