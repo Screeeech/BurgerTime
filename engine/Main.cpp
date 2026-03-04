@@ -1,3 +1,4 @@
+#undef main
 
 #include <SDL3/SDL_render.h>
 
@@ -10,7 +11,6 @@
 #include "components/RenderComponent.h"
 #include "components/RotatorComponent.h"
 #include "components/TextComponent.h"
-#include "imgui.h"
 #include "Minigin.h"
 #include "ResourceManager.h"
 #include "Scene.h"
