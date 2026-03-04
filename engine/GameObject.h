@@ -10,6 +10,7 @@ namespace dae
 class RenderComponent;
 class Texture2D;
 
+
 class GameObject final
 {
 public:
@@ -72,4 +73,8 @@ private:
     std::vector<std::unique_ptr<Component>> m_components;
     Transform m_transform;
 };
+
+template<typename ObjectType>
+concept GameObjectConcept = std::derived_from<ObjectType, GameObject>;
+
 }  // namespace dae

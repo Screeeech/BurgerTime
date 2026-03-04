@@ -11,6 +11,7 @@
 namespace dae
 {
 
+
 class UIComponent : public Component
 {
 public:
@@ -26,4 +27,5 @@ private:
 
 
 }
+
 #endif  // ENGINE_UICOMPONENT_H

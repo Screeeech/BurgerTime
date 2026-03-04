@@ -31,7 +31,7 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     engine/components/FpsComponent.cpp
     engine/components/RotatorComponent.cpp
     engine/components/UIComponent.cpp
-    engine/components/UIComponent.h
+    engine/components/CacheComponent.cpp
 )
 
 # enable c++23 features
