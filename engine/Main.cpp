@@ -51,17 +51,10 @@ static void load()
     go->AddComponent<dae::FpsComponent>(font);
     scene.Add(go);
 
-    // UI component
-    // If I were to pass a lambda to it to define the window layout.
-    //
-
     // Orbiters
     auto sunTexture = dae::ResourceManager::GetInstance().LoadTexture("sun.png");
     auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("earth.png");
     auto moonTexture = dae::ResourceManager::GetInstance().LoadTexture("moon.png");
-
-    // Creating children here would instantiate a new unique_ptr under the parent
-    // So we don't have to make a unique_ptr here
 
     auto getCenterPos = [&](std::shared_ptr<dae::Texture2D>& texture) -> glm::vec2
     {

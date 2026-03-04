@@ -11,7 +11,6 @@
 
 #include "Component.h"
 #include "Font.h"
-#include "Transform.h"
 
 namespace dae
 {

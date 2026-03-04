@@ -5,6 +5,7 @@
 #include "TextComponent.h"
 
 #include <utility>
+#include <stdexcept>
 
 #include "GameObject.h"
 #include "Renderer.h"
