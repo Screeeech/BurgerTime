@@ -34,7 +34,7 @@ static void load()
 
     auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
     auto logoTexture = dae::ResourceManager::GetInstance().LoadTexture("logo.png");
-    auto font = std::make_shared<dae::Font>("Lingua.otf", 36);
+    auto font = std::make_shared<dae::Font>("Lingua.otf", 36.f);
 
     // Background
     auto* go = new dae::GameObject(0, 0, 0, "Background");
