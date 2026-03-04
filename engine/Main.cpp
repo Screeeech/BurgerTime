@@ -87,7 +87,7 @@ static void load()
 int main()
 {
 #if __EMSCRIPTEN__
-    fs::path data_location = "";
+    fs::path data_location = "./resources/";
 #else
     const fs::path data_location = "./resources/";
     try
