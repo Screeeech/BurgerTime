@@ -1,7 +1,12 @@
-﻿#include <stdexcept>
-#include <cstring>
+﻿#include "Renderer.h"
+
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_sdlrenderer3.h>
+
 #include <iostream>
-#include "Renderer.h"
+#include <stdexcept>
+
 #include "SceneManager.h"
 #include "Texture2D.h"
 
@@ -22,22 +27,46 @@ void dae::Renderer::Init(SDL_Window* window)
 		std::cout << "Failed to create the renderer: " << SDL_GetError() << "\n";
 		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
 	}
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+#if __EMSCRIPTEN__
+    io.IniFilename = NULL;
+#endif
+
+    ImGui_ImplSDL3_InitForSDLRenderer(window, m_renderer);
+    ImGui_ImplSDLRenderer3_Init(m_renderer);
 }
 
 void dae::Renderer::Render() const
 {
-	const auto [r, g, b, a] = GetBackgroundColor();
+    ImGui_ImplSDLRenderer3_NewFrame();
+    ImGui_ImplSDL3_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::ShowDemoWindow();
+
+    ImGui::Render();
+
+    const auto [r, g, b, a] = GetBackgroundColor();
 	SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
 	SDL_RenderClear(m_renderer);
 
 	SceneManager::GetInstance().Render();
 
+    ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_renderer);
 	SDL_RenderPresent(m_renderer);
 }
 
 void dae::Renderer::Destroy()
 {
-	if (m_renderer != nullptr)
+    ImGui_ImplSDLRenderer3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
+    ImGui::DestroyContext();
+
+    if (m_renderer != nullptr)
 	{
 		SDL_DestroyRenderer(m_renderer);
 		m_renderer = nullptr;
