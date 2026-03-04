@@ -14,14 +14,14 @@ namespace dae
 class UIComponent : public Component
 {
 public:
-    UIComponent(GameObject* pOwner, std::function<void()> drawFunc);
+    UIComponent(GameObject* pOwner, std::function<void(GameObject* pCaller)> drawFunc);
     ~UIComponent() override;
 
     void Update(float deltaTime) override;
     void DrawUI() const;
 
 private:
-    std::function<void()> m_drawFunc;
+    std::function<void(GameObject* pCaller)> m_drawFunc;
 };
 
 

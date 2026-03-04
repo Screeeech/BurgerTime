@@ -8,7 +8,7 @@
 
 #include "SceneManager.h"
 
-dae::UIComponent::UIComponent(GameObject* pOwner, std::function<void()> drawFunc)
+dae::UIComponent::UIComponent(GameObject* pOwner, std::function<void(GameObject* pCaller)> drawFunc)
     : Component(pOwner)
     , m_drawFunc(std::move(drawFunc))
 {
@@ -26,5 +26,5 @@ void dae::UIComponent::Update(float /*deltaTime*/)
 
 void dae::UIComponent::DrawUI() const
 {
-    m_drawFunc();
+    m_drawFunc(m_pOwner);
 }

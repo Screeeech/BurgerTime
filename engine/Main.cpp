@@ -2,14 +2,14 @@
 #include <SDL3/SDL_render.h>
 
 #include <filesystem>
+#include <glm/gtc/constants.hpp>
 #include <print>
 
-#include <glm/gtc/constants.hpp>
-#include "imgui.h"
 #include "components/FpsComponent.h"
 #include "components/RenderComponent.h"
 #include "components/RotatorComponent.h"
 #include "components/TextComponent.h"
+#include "imgui.h"
 #include "Minigin.h"
 #include "ResourceManager.h"
 #include "Scene.h"
@@ -41,12 +41,12 @@ static void load()
     scene.Add(go);
 
     // Logo
-    go = new dae::GameObject( 358, 80, 0, "Logo" );
+    go = new dae::GameObject(358, 80, 0, "Logo");
     go->AddComponent<dae::RenderComponent>(logoTexture);
     scene.Add(go);
 
     // Text display
-    go = new dae::GameObject( 10, 10, 0, "FPS Counter" );
+    go = new dae::GameObject(10, 10, 0, "FPS Counter");
     go->AddComponent<dae::FpsComponent>(font);
     scene.Add(go);
 
@@ -64,41 +64,39 @@ static void load()
 
     auto getCenterPos = [width, height](std::shared_ptr<dae::Texture2D>& texture) -> glm::vec2
     {
-        return glm::vec2{
-            (static_cast<float>(width) / 2) - (static_cast<float>(texture->GetSDLTexture()->w)/2),
-            (static_cast<float>(height) / 2) - (static_cast<float>(texture->GetSDLTexture()->h)/2)
-        };
+        return glm::vec2{ (static_cast<float>(width) / 2) - (static_cast<float>(texture->GetSDLTexture()->w) / 2),
+                          (static_cast<float>(height) / 2) - (static_cast<float>(texture->GetSDLTexture()->h) / 2) };
     };
 
     // Sun
-    const auto sunPos{ getCenterPos(sunTexture) + glm::vec2{ 0, 20} };
+    const auto sunPos{ getCenterPos(sunTexture) + glm::vec2{ 0, 20 } };
     auto* sun = new dae::GameObject(sunPos.x, sunPos.y, 0, "Sun");
     sun->AddComponent<dae::RenderComponent>(sunTexture);
 
     // Earth
     auto* earth = new dae::GameObject(180, 30, 0, "Earth");
     earth->AddComponent<dae::RenderComponent>(earthTexture);
-    earth->AddComponent<dae::RotatorComponent>( glm::pi<float>() / 4 );
+    earth->AddComponent<dae::RotatorComponent>(glm::pi<float>() / 4);
 
     auto* moon = new dae::GameObject(100, 10, 0, "Moon");
     moon->AddComponent<dae::RenderComponent>(moonTexture);
-    moon->AddComponent<dae::RotatorComponent>(glm::pi<float>() / 2 );
+    moon->AddComponent<dae::RotatorComponent>(glm::pi<float>() / 2);
 
     scene.Add(sun);
     earth->SetParent(sun, false);
     moon->SetParent(earth, false);
 
     // UI
-    auto uiDrawFunction = [&]() mutable
-    {
-        ImGui::Begin("Test test");
+    auto* ui = new dae::GameObject(0, 0, 0, "UI");
+    ui->AddComponent<dae::UIComponent>(
+        [](dae::GameObject* pCaller) mutable
+        {
+            ImGui::Begin("Test test");
 
-        ImGui::Text("Hello from ImGui");
+            ImGui::Text(std::format("Drawing from GameObject: {}", pCaller->GetName()).c_str());
 
-        ImGui::End();
-    };
-    auto* ui = new dae::GameObject(100, 10, 0, "UI");
-    ui->AddComponent<dae::UIComponent>(uiDrawFunction);
+            ImGui::End();
+        });
     scene.Add(ui);
 }
 

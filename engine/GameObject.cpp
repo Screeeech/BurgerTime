@@ -30,6 +30,11 @@ glm::vec3 dae::GameObject::GetWorldPosition()
     return GetTransform().GetWorldPosition();
 }
 
+std::string dae::GameObject::GetName()
+{
+    return m_name;
+}
+
 bool dae::GameObject::IsChild(GameObject* pChild)
 {
     if(not pChild or pChild == this)

@@ -51,6 +51,7 @@ public:
     Transform& GetTransform();
     glm::mat4 GetParentWorldMatrix();
     glm::vec3 GetWorldPosition();
+    std::string GetName();
 
     bool IsChild(GameObject* pChild);
     void SetParent(GameObject* pParent, bool keepWorldPosition = true);
