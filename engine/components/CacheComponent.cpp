@@ -33,9 +33,7 @@ dae::CacheComponent::CacheComponent(GameObject* pOwner, int bufferSize)
               if(plotExists)
               {
                   ImPlot::BeginPlot("Durations");
-
                   ImPlot::PlotLine<uint32_t>("", m_durations1.data(), static_cast<int>(m_durations1.size()), 10, 0);
-
                   ImPlot::EndPlot();
               }
 
@@ -45,17 +43,32 @@ dae::CacheComponent::CacheComponent(GameObject* pOwner, int bufferSize)
           [this](GameObject*) mutable
           {
               static int sampleCount = 0;
+              static bool plotExists{};
+
               if(ImGui::Begin("Exercise 2"))
               {
                   ImGui::InputInt("samples", &sampleCount);
                   if(ImGui::Button("Thrash the Cache"))
+                  {
+                      plotExists = true;
                       RunExercise2(sampleCount);
+                  }
               }
+
+              if(plotExists)
+              {
+                  ImPlot::BeginPlot("Durations");
+                  ImPlot::PlotLine<uint32_t>("", m_durations2.data(), static_cast<int>(m_durations2.size()), 10, 0);
+                  ImPlot::EndPlot();
+              }
+
               ImGui::End();
           }))
 {
-    m_buffer.resize(bufferSize);
-    std::ranges::fill(m_buffer, 1);
+    m_buffer1.resize(bufferSize);
+    std::ranges::fill(m_buffer1, 1);
+
+    m_buffer2.resize(bufferSize);
 }
 
 void dae::CacheComponent::Update(float) {}
@@ -64,7 +77,7 @@ void dae::CacheComponent::RunExercise1(int sampleCount)
 {
     std::println("Running exercise 1 with {} samples", sampleCount);
     m_durations1.resize(10);
-    std::fill_n(m_durations1.begin(), 10, 0);
+    std::ranges::fill_n(m_durations1.begin(), 10, 0);
 
     for(int sampleIndex{}; sampleIndex < sampleCount; ++sampleIndex)
     {
@@ -72,9 +85,9 @@ void dae::CacheComponent::RunExercise1(int sampleCount)
         for(int stepsize = 1; stepsize < 1024; stepsize *= 2)
         {
             auto start = std::chrono::high_resolution_clock::now();
-            for(size_t i{}; i < m_buffer.size(); i += stepsize)
+            for(size_t i{}; i < m_buffer1.size(); i += stepsize)
             {
-                m_buffer[i] *= stepsize + 1;
+                m_buffer1[i] *= stepsize + 1;
             }
             auto end = std::chrono::high_resolution_clock::now();
             auto duration = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
@@ -90,4 +103,26 @@ void dae::CacheComponent::RunExercise1(int sampleCount)
 void dae::CacheComponent::RunExercise2(int sampleCount)
 {
     std::println("Running exercise 2 with {} samples", sampleCount);
+
+    m_durations2.resize(10);
+    std::ranges::fill_n(m_durations2.begin(), 10, 0);
+
+    for(int sampleIndex{}; sampleIndex < sampleCount; ++sampleIndex)
+    {
+        int durationIndex{};
+        for(int stepsize = 1; stepsize < 1024; stepsize *= 2)
+        {
+            auto start = std::chrono::high_resolution_clock::now();
+            for(size_t i{}; i < m_buffer2.size(); i += stepsize)
+            {
+                m_buffer2[i].ID *= stepsize + 1;
+            }
+            auto end = std::chrono::high_resolution_clock::now();
+            auto duration = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
+            m_durations2.at(durationIndex) += duration;
+            ++durationIndex;
+        }
+    }
+
+    std::ranges::transform(m_durations2, m_durations2.begin(), [sampleCount](const auto& duration){ return duration / sampleCount; });
 }
