@@ -91,9 +91,13 @@ static void load()
     ui->AddComponent<dae::UIComponent>(
         [](dae::GameObject* pCaller) mutable
         {
+            static int counter{ 0 };
+
             ImGui::Begin("Test test");
 
             ImGui::Text(std::format("Drawing from GameObject: {}", pCaller->GetName()).c_str());
+            if(ImGui::Button(std::format("Click me: {}", counter).c_str()))
+                ++counter;
 
             ImGui::End();
         });
