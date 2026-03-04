@@ -10,7 +10,7 @@ if (EMSCRIPTEN)
   set(TARGET_PARAM)
 else ()
   set(TARGET_NAME minigin)
-  set(TARGET_PARAM WIN32)
+  set(TARGET_PARAM)
 endif ()
 
 # list source files here
