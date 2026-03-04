@@ -86,7 +86,7 @@ static void load()
     scene.Add(cache);
 }
 
-int main(int, char*[])
+int main()
 {
 #if __EMSCRIPTEN__
     fs::path data_location = "";
