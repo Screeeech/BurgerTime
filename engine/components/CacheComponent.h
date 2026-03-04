@@ -69,7 +69,7 @@ private:
         }
 
         // Divide to get average
-        std::ranges::transform(m_durations1, m_durations1.begin(), [sampleCount](const auto& duration){ return duration / sampleCount; });
+        std::ranges::transform(durations, durations.begin(), [sampleCount](const auto& duration){ return duration / sampleCount; });
     }
     void RunExercise1(int sampleCount);
     void RunExercise2(int sampleCount);
