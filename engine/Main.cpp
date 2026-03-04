@@ -1,5 +1,3 @@
-#undef main
-
 #include <SDL3/SDL_render.h>
 
 #include <filesystem>
