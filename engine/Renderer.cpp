@@ -7,6 +7,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "implot.h"
 #include "SceneManager.h"
 #include "Texture2D.h"
 
@@ -29,6 +30,7 @@ void dae::Renderer::Init(SDL_Window* window)
     }
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -64,6 +66,7 @@ void dae::Renderer::Destroy()
 {
     ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
 
     if(m_renderer != nullptr)

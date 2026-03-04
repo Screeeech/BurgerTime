@@ -63,7 +63,7 @@ static void load()
     // Creating children here would instantiate a new unique_ptr under the parent
     // So we don't have to make a unique_ptr here
 
-    auto getCenterPos = [width, height](std::shared_ptr<dae::Texture2D>& texture) -> glm::vec2
+    auto getCenterPos = [&](std::shared_ptr<dae::Texture2D>& texture) -> glm::vec2
     {
         return glm::vec2{ (static_cast<float>(width) / 2) - (static_cast<float>(texture->GetSDLTexture()->w) / 2),
                           (static_cast<float>(height) / 2) - (static_cast<float>(texture->GetSDLTexture()->h) / 2) };
@@ -89,7 +89,7 @@ static void load()
 
     // Cache
     auto* cache = new dae::GameObject(0, 0, 0, "Cache");
-    cache->AddComponent<dae::CacheComponent>();
+    cache->AddComponent<dae::CacheComponent>(100000);
     scene.Add(cache);
 }
 

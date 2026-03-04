@@ -19,7 +19,6 @@ public:
 
 private:
     float m_rotationSpeed;
-    float m_timeElapsed{};
     float m_angle{};
 };
 

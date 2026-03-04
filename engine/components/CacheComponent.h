@@ -4,6 +4,7 @@
 
 #ifndef ENGINE_CACHECOMPONENT_H
 #define ENGINE_CACHECOMPONENT_H
+#include <cstdint>
 #include <vector>
 
 #include "Component.h"
@@ -25,10 +26,9 @@ private:
     UIComponent* m_pUIComponent1{};
     UIComponent* m_pUIComponent2{};
 
-    int m_bufferSize;
     std::vector<int> m_buffer;
-    std::vector<std::pair<int, long>> m_durations1;
-    std::vector<std::pair<int, long>> m_durations2;
+    std::vector<uint32_t> m_durations1;
+    std::vector<uint32_t> m_durations2;
 };
 
 }
