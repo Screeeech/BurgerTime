@@ -22,12 +22,12 @@ dae::CacheComponent::CacheComponent(GameObject* pOwner, int bufferSize)
                   ImGui::InputInt("samples", &sampleCount);
                   if(ImGui::Button("Thrash the Cache"))
                       RunExercise1(sampleCount);
-              }
 
-              ImPlot::SetNextAxesToFit();
-              ImPlot::BeginPlot("Durations with integers");
-              ImPlot::PlotLine<uint32_t>("", m_durations1.data(), static_cast<int>(m_durations1.size()), 100, 0);
-              ImPlot::EndPlot();
+                  ImPlot::SetNextAxesToFit();
+                  ImPlot::BeginPlot("Durations with integers");
+                  ImPlot::PlotLine<uint32_t>("", m_durations1.data(), static_cast<int>(m_durations1.size()), 100, 0);
+                  ImPlot::EndPlot();
+              }
 
               ImGui::End();
           }))
