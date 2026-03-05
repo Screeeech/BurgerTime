@@ -64,7 +64,7 @@ void dae::GameObject::SetParent(GameObject* pParent, bool keepWorldPosition)
     }
 
     //
-    std::unique_ptr<GameObject> self;
+    std::unique_ptr<GameObject> self{ this };
 
     // Remove the object itself from the current parent's list of children
     if(m_pParent)
@@ -74,7 +74,7 @@ void dae::GameObject::SetParent(GameObject* pParent, bool keepWorldPosition)
     m_pParent = pParent;
 
     // Add this as a new child to parent's list of children
-    if(m_pParent and self)
+    if(m_pParent)
         m_pParent->AddChild(std::move(self));
 }
 

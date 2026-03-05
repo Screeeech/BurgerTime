@@ -56,8 +56,8 @@ public:
 
     bool IsChild(GameObject* pChild);
     void SetParent(GameObject* pParent, bool keepWorldPosition = true);
-    void AddChild(GameObject* game_object);
-    GameObject* RemoveChild(GameObject* pParent);
+    void AddChild(std::unique_ptr<GameObject> pChild);
+    std::unique_ptr<GameObject> RemoveChild(GameObject* pParent);
 
     // Recursive function
     void SetDirty();
