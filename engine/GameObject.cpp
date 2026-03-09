@@ -63,7 +63,6 @@ void dae::GameObject::SetParent(GameObject* pParent, bool keepWorldPosition)
             SetDirty();
     }
 
-    //
     std::unique_ptr<GameObject> self{ this };
 
     // Remove the object itself from the current parent's list of children
