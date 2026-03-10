@@ -14,7 +14,7 @@ class Command
 public:
     Command() = default;
     virtual ~Command() = default;
-    virtual void execute(GameObject* pCaller) = 0;
+    virtual void Execute() = 0;
 };
 
 }  // namespace dae

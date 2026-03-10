@@ -4,11 +4,13 @@
 #include <glm/gtc/constants.hpp>
 #include <print>
 
+#include "commands/CallbackCommand.h"
 #include "components/CacheComponent.h"
 #include "components/FpsComponent.h"
 #include "components/RenderComponent.h"
 #include "components/RotatorComponent.h"
 #include "components/TextComponent.h"
+#include "InputManager.h"
 #include "Minigin.h"
 #include "ResourceManager.h"
 #include "Scene.h"
@@ -24,8 +26,8 @@ namespace fs = std::filesystem;
 static void load()
 {
     // Temporary
-    constexpr int width{ 1024 };
-    constexpr int height{ 576 };
+    // constexpr int width{ 1025 };
+    // constexpr int height{ 576 };
 
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
     scene.Load();
@@ -49,39 +51,13 @@ static void load()
     go->AddComponent<dae::FpsComponent>(font);
     scene.Add(go);
 
-    // Orbiters
-    auto sunTexture = dae::ResourceManager::GetInstance().LoadTexture("sun.png");
-    auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("earth.png");
-    auto moonTexture = dae::ResourceManager::GetInstance().LoadTexture("moon.png");
 
-    auto getCenterPos = [&](std::shared_ptr<dae::Texture2D>& texture) -> glm::vec2
-    {
-        return glm::vec2{ (static_cast<float>(width) / 2) - (static_cast<float>(texture->GetSDLTexture()->w) / 2),
-                          (static_cast<float>(height) / 2) - (static_cast<float>(texture->GetSDLTexture()->h) / 2) };
-    };
-
-    // Sun
-    const auto sunPos{ getCenterPos(sunTexture) + glm::vec2{ 0, 20 } };
-    auto* sun = new dae::GameObject(sunPos.x, sunPos.y, 0, "Sun");
-    sun->AddComponent<dae::RenderComponent>(sunTexture);
-
-    // Earth
-    auto* earth = new dae::GameObject(180, 30, 0, "Earth");
-    earth->AddComponent<dae::RenderComponent>(earthTexture);
-    earth->AddComponent<dae::RotatorComponent>(glm::pi<float>() / 4);
-
-    auto* moon = new dae::GameObject(100, 10, 0, "Moon");
-    moon->AddComponent<dae::RenderComponent>(moonTexture);
-    moon->AddComponent<dae::RotatorComponent>(glm::pi<float>() / 2);
-
-    scene.Add(sun);
-    earth->SetParent(sun, false);
-    moon->SetParent(earth, false);
-
-    // Cache
-    auto* cache = new dae::GameObject(0, 0, 0, "Cache");
-    cache->AddComponent<dae::CacheComponent>(100000);
-    scene.Add(cache);
+    // Input testing
+    auto& input = dae::InputManager::GetInstance();
+    input.BindAction<dae::CallbackCommand>("moveUp", 0, []() { std::println("Moving up!"); });
+    input.BindAction<dae::CallbackCommand>("moveLeft", 0, []() { std::println("Moving left!"); });
+    input.BindAction<dae::CallbackCommand>("moveDown", 0, []() { std::println("Moving down!"); });
+    input.BindAction<dae::CallbackCommand>("moveRight", 0, []() { std::println("Moving right!"); });
 }
 
 int main()
