@@ -91,7 +91,7 @@ private:
     {
         for(auto& [action, input] : im->m_registeredInputs)
         {
-            if(input.type != inputType or input.InputDataMatches(button))
+            if(input.type != inputType or not input.InputDataMatches(button))
                 continue;
 
             auto [fst, snd] = im->m_commands.equal_range(action);
