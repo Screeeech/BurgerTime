@@ -11,6 +11,7 @@ void dae::InputManager::InitializeInputs()
     RegisterInput(Input{ SDL_SCANCODE_A, Input::Type::held }, { .name = "moveLeft", .playerIndex = 0 });
     RegisterInput(Input{ SDL_SCANCODE_S, Input::Type::held }, { .name = "moveDown", .playerIndex = 0 });
     RegisterInput(Input{ SDL_SCANCODE_D, Input::Type::held }, { .name = "moveRight", .playerIndex = 0 });
+    RegisterInput(Input{ SDL_SCANCODE_SPACE, Input::Type::released }, { .name = "jump", .playerIndex = 0 });
 
     RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_UP, Input::Type::held}, { .name = "moveUp", .playerIndex = 0 });
     RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_LEFT, Input::Type::held}, { .name = "moveLeft", .playerIndex = 0 });
@@ -87,7 +88,10 @@ bool dae::InputManager::CheckInputPressed(Input::Type inputType, SDL_Scancode ke
 {
     for(auto& [action, input] : m_registeredInputs)
     {
-        if(input.type != inputType or not input.InputDataMatches(key))
+        if(input.type != inputType)
+            continue;
+
+        if(not input.InputDataMatches(key))
             continue;
 
         auto [fst, snd] = m_commands.equal_range(action);
@@ -105,7 +109,8 @@ bool dae::Input::InputDataMatches(SDL_Scancode key) const
     if(not std::holds_alternative<SDL_Scancode>(data))
         return false;
 
-    return std::get<SDL_Scancode>(data) == key;
+    const auto scancode = std::get<SDL_Scancode>(data);
+    return scancode == key;
 }
 
 bool dae::Input::InputDataMatches(SDL_GamepadButton button) const
