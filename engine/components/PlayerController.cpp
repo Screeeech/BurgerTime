@@ -4,6 +4,7 @@
 
 #include "PlayerController.h"
 
+#include <algorithm>
 #include <print>
 
 #include "commands/MoveCommand.h"
