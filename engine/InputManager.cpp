@@ -87,7 +87,7 @@ bool dae::InputManager::CheckInputPressed(Input::Type inputType, SDL_Scancode ke
 {
     for(auto& [action, input] : m_registeredInputs)
     {
-        if(input.type != inputType or input.InputDataMatches(key))
+        if(input.type != inputType or not input.InputDataMatches(key))
             continue;
 
         auto [fst, snd] = m_commands.equal_range(action);
