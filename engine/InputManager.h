@@ -3,6 +3,7 @@
 #include <SDL3/SDL_scancode.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -13,9 +14,12 @@
 
 namespace dae
 {
+
+
 struct Input
 {
-    SDL_Scancode key{};
+    using InputData = std::variant<SDL_Scancode, SDL_GamepadButton>;
+    InputData data;
     enum class Type : uint8_t
     {
         released,
@@ -24,29 +28,21 @@ struct Input
     } type{};
 
     explicit Input(SDL_Scancode _key, Type _type = Type::released)
-        : key{ _key }
+        : data{ _key }
+        , type{ _type }
+    {
+    }
+    explicit Input(SDL_GamepadButton _key, Type _type = Type::released)
+        : data{ _key }
         , type{ _type }
     {
     }
 
-    // Is this maybe a little overkill?
-    // Who knows, but it's fun :D
-    bool operator==(const Input& other) const
-    {
-        return key == other.key and type == other.type;
-    }
+    [[nodiscard]] bool InputDataMatches(SDL_Scancode) const;
+    [[nodiscard]] bool InputDataMatches(SDL_GamepadButton) const;
 
-    struct Hash
-    {
-        size_t operator()(const Input& input) const noexcept
-        {
-            const size_t h1{ std::hash<SDL_Scancode>{}(input.key) };
-            const size_t h2{ std::hash<uint8_t>{}(static_cast<uint8_t>(input.type)) };
-
-            // Combine the 2 hashes, maybe I should find a better way of doing this
-            return h1 ^ (h2 << 1);
-        }
-    };
+    [[nodiscard]] std::optional<SDL_Scancode> GetKey() const;
+    [[nodiscard]] std::optional<SDL_GamepadButton> GetButton() const;
 };
 
 struct Action
@@ -72,10 +68,14 @@ class InputManager final : public Singleton<InputManager>
 {
 public:
     InputManager();
+    ~InputManager() override;
 
+    void InitializeInputs();
     bool ProcessInput();
-    bool ProcessKeyBoardInput(const SDL_Event& pEvent);
+    bool ProcessKeyBoardInput(const SDL_Event& event);
+    bool ProcessGamepadInput(const SDL_Event& sdl_event, InputManager* im);
     void ProcessKeyBoardState();
+    void ProcessGamepadState(InputManager* im);
 
     void RegisterInput(const Input& input, const Action& action);
 
@@ -87,9 +87,13 @@ public:
     }
 
 private:
-    std::variant<SDL_Scancode, SDL_GamepadButton> m_Input;
-    std::unordered_multimap<Input, Action, Input::Hash> m_registeredInputs;
+    bool CheckInputPressed(Input::Type inputType, SDL_Scancode key);
+
+    std::unordered_multimap<Action, Input, Action::Hash> m_registeredInputs;
     std::unordered_multimap<Action, std::unique_ptr<Command>, Action::Hash> m_commands;
+
+    class Impl;
+    std::unique_ptr<Impl> m_pImpl;
 };
 
 }  // namespace dae
