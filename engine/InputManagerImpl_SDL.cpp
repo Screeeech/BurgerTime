@@ -79,7 +79,7 @@ public:
                 continue;
 
             auto [fst, snd] = im->m_commands.equal_range(action);
-            for(auto& [action, command] : std::ranges::subrange(fst, snd))
+            for(auto& [k, command] : std::ranges::subrange(fst, snd))
             {
                 command->Execute();
             }
