@@ -55,7 +55,6 @@ static void load()
     input.BindAction<dae::CallbackCommand>("moveLeft", 0, []() { std::println("Moving left!"); });
     input.BindAction<dae::CallbackCommand>("moveDown", 0, []() { std::println("Moving down!"); });
     input.BindAction<dae::CallbackCommand>("moveRight", 0, []() { std::println("Moving right!"); });
-    input.BindAction<dae::CallbackCommand>("jump", 0, []() { std::println("Jumping!"); });
 
     {
         auto* test = new dae::GameObject(10, 10, 0, "Test");

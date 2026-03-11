@@ -3,6 +3,13 @@
 #include <imgui_impl_sdl3.h>
 #include <SDL3/SDL.h>
 
+#include <print>
+
+#include "commands/CallbackCommand.h"
+
+namespace dae
+{
+}
 
 void dae::InputManager::InitializeInputs()
 {
@@ -17,6 +24,8 @@ void dae::InputManager::InitializeInputs()
     RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_LEFT, Input::Type::held}, { .name = "moveLeft", .playerIndex = 0 });
     RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_DOWN, Input::Type::held}, { .name = "moveDown", .playerIndex = 0 });
     RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_RIGHT, Input::Type::held}, { .name = "moveRight", .playerIndex = 0 });
+
+    BindAction<dae::CallbackCommand>("jump", 0, []() { std::println("Jumping!"); });
 }
 
 bool dae::InputManager::ProcessInput()
