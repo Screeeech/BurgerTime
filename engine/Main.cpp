@@ -49,13 +49,6 @@ static void load()
     scene.Add(go);
 
 
-    // Input testing
-    auto& input = dae::InputManager::GetInstance();
-    input.BindAction<dae::CallbackCommand>("moveUp", 0, []() { std::println("Moving up!"); });
-    input.BindAction<dae::CallbackCommand>("moveLeft", 0, []() { std::println("Moving left!"); });
-    input.BindAction<dae::CallbackCommand>("moveDown", 0, []() { std::println("Moving down!"); });
-    input.BindAction<dae::CallbackCommand>("moveRight", 0, []() { std::println("Moving right!"); });
-
     {
         auto* test = new dae::GameObject(10, 10, 0, "Test");
         auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("earth.png");

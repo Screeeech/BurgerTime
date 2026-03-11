@@ -27,6 +27,7 @@ void dae::InputManager::InitializeInputs()
     RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_RIGHT, Input::Type::held }, { .name = "moveRight", .playerIndex = 0 });
 
     BindAction<dae::CallbackCommand>("jump", 0, []() { std::println("Jumping!"); });
+    BindAction<dae::CallbackCommand>("bleeehh", 0, []() { std::println("Jumping!"); });
 }
 
 bool dae::InputManager::ProcessInput()
@@ -102,12 +103,14 @@ bool dae::InputManager::CheckInputPressed(Input::Type inputType, SDL_Scancode ke
         if(not input.InputDataMatches(key))
             continue;
 
+        bool executed{};
         auto range = m_commands.equal_range(action);
-        for(auto it = range.first; it != range.second; it++)
+        for(auto& [k, command] : std::ranges::subrange(range.first, range.second))
         {
-            it->second->Execute();
-            return true;
+            command->Execute();
+            executed = true;
         }
+        return executed;
     }
     return false;
 }
