@@ -1,0 +1,26 @@
+//
+// Created by lily-laptop on 11/03/2026.
+//
+
+#ifndef ENGINE_MOVECOMMAND_H
+#define ENGINE_MOVECOMMAND_H
+#include "GameObjectCommand.h"
+
+namespace dae
+{
+
+class MoveCommand : public GameObjectCommand
+{
+public:
+    explicit MoveCommand(GameObject* pCaller, const glm::vec3& velocity);
+    explicit MoveCommand(GameObject* pCaller, float x, float y, float z = 0);
+    ~MoveCommand() override = default;
+    void Execute() override;
+
+private:
+    glm::vec3 m_direction;
+};
+
+}  // namespace dae
+
+#endif  // ENGINE_MOVECOMMAND_H

@@ -32,7 +32,10 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM}
     engine/components/RotatorComponent.cpp
     engine/components/UIComponent.cpp
     engine/components/CacheComponent.cpp
+    engine/components/PlayerController.cpp
     engine/commands/CallbackCommand.cpp
+    engine/commands/GameObjectCommand.cpp
+    engine/commands/MoveCommand.cpp
 )
 
 # enable c++23 features

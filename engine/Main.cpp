@@ -7,6 +7,7 @@
 #include "commands/CallbackCommand.h"
 #include "components/CacheComponent.h"
 #include "components/FpsComponent.h"
+#include "components/PlayerController.h"
 #include "components/RenderComponent.h"
 #include "components/RotatorComponent.h"
 #include "components/TextComponent.h"
@@ -25,10 +26,6 @@ namespace fs = std::filesystem;
 
 static void load()
 {
-    // Temporary
-    // constexpr int width{ 1025 };
-    // constexpr int height{ 576 };
-
     auto& scene = dae::SceneManager::GetInstance().CreateScene();
     scene.Load();
 
@@ -58,6 +55,15 @@ static void load()
     input.BindAction<dae::CallbackCommand>("moveLeft", 0, []() { std::println("Moving left!"); });
     input.BindAction<dae::CallbackCommand>("moveDown", 0, []() { std::println("Moving down!"); });
     input.BindAction<dae::CallbackCommand>("moveRight", 0, []() { std::println("Moving right!"); });
+
+    {
+        auto* test = new dae::GameObject(10, 10, 0, "Test");
+        auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("earth.png");
+
+        test->AddComponent<dae::RenderComponent>(earthTexture);
+        test->AddComponent<dae::PlayerController>(0);
+        scene.Add(test);
+    }
 }
 
 int main()
