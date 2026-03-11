@@ -3,6 +3,7 @@
 #include <imgui_impl_sdl3.h>
 #include <SDL3/SDL.h>
 
+#include <algorithm>
 #include <print>
 
 #include "commands/CallbackCommand.h"
@@ -20,10 +21,10 @@ void dae::InputManager::InitializeInputs()
     RegisterInput(Input{ SDL_SCANCODE_D, Input::Type::held }, { .name = "moveRight", .playerIndex = 0 });
     RegisterInput(Input{ SDL_SCANCODE_SPACE, Input::Type::released }, { .name = "jump", .playerIndex = 0 });
 
-    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_UP, Input::Type::held}, { .name = "moveUp", .playerIndex = 0 });
-    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_LEFT, Input::Type::held}, { .name = "moveLeft", .playerIndex = 0 });
-    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_DOWN, Input::Type::held}, { .name = "moveDown", .playerIndex = 0 });
-    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_RIGHT, Input::Type::held}, { .name = "moveRight", .playerIndex = 0 });
+    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_UP, Input::Type::held }, { .name = "moveUp", .playerIndex = 0 });
+    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_LEFT, Input::Type::held }, { .name = "moveLeft", .playerIndex = 0 });
+    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_DOWN, Input::Type::held }, { .name = "moveDown", .playerIndex = 0 });
+    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_RIGHT, Input::Type::held }, { .name = "moveRight", .playerIndex = 0 });
 
     BindAction<dae::CallbackCommand>("jump", 0, []() { std::println("Jumping!"); });
 }
@@ -66,7 +67,6 @@ bool dae::InputManager::ProcessKeyBoardInput(const SDL_Event& event)
     return false;
 }
 
-
 void dae::InputManager::ProcessKeyBoardState()
 {
     const auto* pKeyboard = SDL_GetKeyboardState(nullptr);
@@ -102,10 +102,10 @@ bool dae::InputManager::CheckInputPressed(Input::Type inputType, SDL_Scancode ke
         if(not input.InputDataMatches(key))
             continue;
 
-        auto [fst, snd] = m_commands.equal_range(action);
-        for(auto& [k, command] : std::ranges::subrange(fst, snd))
+        auto range = m_commands.equal_range(action);
+        for(auto it = range.first; it != range.second; it++)
         {
-            command->Execute();
+            it->second->Execute();
             return true;
         }
     }

@@ -94,10 +94,10 @@ private:
             if(input.type != inputType or not input.InputDataMatches(button))
                 continue;
 
-            auto [fst, snd] = im->m_commands.equal_range(action);
-            for(auto& [k, command] : std::ranges::subrange(fst, snd))
+            auto range = im->m_commands.equal_range(action);
+            for(auto it = range.first; it != range.second; it++)
             {
-                command->Execute();
+                it->second->Execute();
                 return true;
             }
         }
