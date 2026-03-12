@@ -40,9 +40,6 @@ set(SOURCE_FILES
     engine/commands/MoveCommand.cpp
 )
 
-# TODO: Turn into if statement
-list(APPEND SOURCE_FILES engine/InputManagerImpl_SDL.cpp)
-
 add_executable(${TARGET_NAME} ${TARGET_PARAM} ${SOURCE_FILES})
 
 # enable c++23 features

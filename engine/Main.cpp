@@ -75,10 +75,15 @@ static void load()
         test->AddComponent<dae::PlayerController>(1);
         scene.Add(test);
 
-        input.RegisterInput( SDL_SCANCODE_UP, dae::Input::Type::held, "moveUp", 1 );
-        input.RegisterInput( SDL_SCANCODE_LEFT, dae::Input::Type::held, "moveLeft",1 );
-        input.RegisterInput( SDL_SCANCODE_DOWN, dae::Input::Type::held, "moveDown",1 );
-        input.RegisterInput( SDL_SCANCODE_RIGHT, dae::Input::Type::held, "moveRight",1 );
+        input.RegisterInput( SDL_GAMEPAD_BUTTON_DPAD_UP, dae::Input::Type::held, "moveUp", 1 );
+        input.RegisterInput( SDL_GAMEPAD_BUTTON_DPAD_LEFT, dae::Input::Type::held, "moveLeft",1 );
+        input.RegisterInput( SDL_GAMEPAD_BUTTON_DPAD_DOWN, dae::Input::Type::held, "moveDown",1 );
+        input.RegisterInput( SDL_GAMEPAD_BUTTON_DPAD_RIGHT, dae::Input::Type::held, "moveRight",1 );
+
+        // input.RegisterInput( SDL_SCANCODE_UP, dae::Input::Type::held, "moveUp", 1 );
+        // input.RegisterInput( SDL_SCANCODE_LEFT, dae::Input::Type::held, "moveLeft",1 );
+        // input.RegisterInput( SDL_SCANCODE_DOWN, dae::Input::Type::held, "moveDown",1 );
+        // input.RegisterInput( SDL_SCANCODE_RIGHT, dae::Input::Type::held, "moveRight",1 );
     }
 }
 

@@ -15,6 +15,8 @@
 namespace dae
 {
 
+template<typename InputDataType>
+concept InputConcept = std::same_as<InputDataType, SDL_Scancode> || std::same_as<InputDataType, SDL_GamepadButton>;
 
 struct Input
 {
@@ -39,11 +41,26 @@ struct Input
     {
     }
 
-    [[nodiscard]] bool InputDataMatches(SDL_Scancode) const;
-    [[nodiscard]] bool InputDataMatches(SDL_GamepadButton) const;
+    template<InputConcept T>
+    bool InputDataMatches(T otherData) const
+    {
+        if constexpr(std::same_as<T, SDL_Scancode>)
+        {
+            if(not std::holds_alternative<SDL_Scancode>(data))
+                return false;
 
-    [[nodiscard]] std::optional<SDL_Scancode> GetKey() const;
-    [[nodiscard]] std::optional<SDL_GamepadButton> GetButton() const;
+            const auto ourKey = std::get<SDL_Scancode>(data);
+            return ourKey == otherData;
+        }
+        else
+        {
+            if(not std::holds_alternative<SDL_GamepadButton>(data))
+                return false;
+
+            const auto ourButton = std::get<SDL_GamepadButton>(data);
+            return ourButton == otherData;
+        }
+    }
 };
 
 struct Action
@@ -71,10 +88,10 @@ public:
     InputManager();
     ~InputManager() override;
 
+    void Init();
     bool ProcessInput();
-    bool ProcessKeyBoardInput(const SDL_Event& event);
     bool ProcessGamepadInput(const SDL_Event& sdl_event, InputManager* im);
-    void ProcessKeyBoardState();
+    void ProcessInputHeld();
     void ProcessGamepadState(InputManager* im);
 
     template<typename T>
@@ -92,13 +109,33 @@ public:
     }
 
 private:
-    bool CheckInputPressed(Input::Type inputType, SDL_Scancode key);
+    template<InputConcept T>
+    bool HandleInputEvent(Input::Type inputType, T inputData)
+    {
+        for(auto& [action, registeredInput] : m_registeredInputs)
+        {
+            if(registeredInput.type != inputType)
+                continue;
+
+            if(not registeredInput.InputDataMatches(inputData))
+                continue;
+
+            bool executed{};
+            auto range = m_commands.equal_range(action);
+            for(auto& [k, command] : std::ranges::subrange(range.first, range.second))
+            {
+                command->Execute();
+                executed = true;
+            }
+            return executed;
+        }
+        return false;
+    }
 
     std::unordered_multimap<Action, Input, Action::Hash> m_registeredInputs;
     std::unordered_multimap<Action, std::unique_ptr<Command>, Action::Hash> m_commands;
 
-    class Impl;
-    std::unique_ptr<Impl> m_pImpl;
+    SDL_Gamepad* m_pGamepad{};
 };
 
 }  // namespace dae

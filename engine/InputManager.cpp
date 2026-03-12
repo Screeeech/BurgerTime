@@ -8,14 +8,39 @@
 
 #include "commands/CallbackCommand.h"
 
-namespace dae
+dae::InputManager::InputManager() {}
+
+dae::InputManager::~InputManager()
 {
+    if(m_pGamepad)
+        SDL_CloseGamepad(m_pGamepad);
+}
+
+void dae::InputManager::Init()
+{
+    int count = 0;
+    const SDL_JoystickID* ids = SDL_GetGamepads(&count);
+    const SDL_Gamepad* gamepad{};
+
+    for(int i{}; i < count; i++)
+    {
+        SDL_Gamepad* gp = SDL_OpenGamepad(ids[i]);
+        if(not gamepad)
+            gamepad = gp;
+
+        std::println("Gamepad connected: {}", SDL_GetGamepadName(gp));
+
+        // Close the other gamepads
+        if(i > 0)
+        {
+            SDL_CloseGamepad(gp);
+        }
+    }
 }
 
 bool dae::InputManager::ProcessInput()
 {
-    ProcessGamepadState(this);
-    ProcessKeyBoardState();
+    ProcessInputHeld();
 
     SDL_Event e;
     while(SDL_PollEvent(&e))
@@ -25,42 +50,74 @@ bool dae::InputManager::ProcessInput()
         if(e.type == SDL_EVENT_QUIT)
             return false;
 
-        if(ProcessGamepadInput(e, this))
-            continue;
+        switch(e.type)
+        {
+            case SDL_EVENT_KEY_UP:
+                HandleInputEvent(Input::Type::released, e.key.scancode);
+                break;
 
-        ProcessKeyBoardInput(e);
+            case SDL_EVENT_KEY_DOWN:
+                if(e.key.repeat)
+                    break;
+                HandleInputEvent(Input::Type::pressed, e.key.scancode);
+                break;
+
+            case SDL_EVENT_GAMEPAD_ADDED:
+                std::println("Gamepad added event");
+                if(not m_pGamepad)
+                {
+                    m_pGamepad = SDL_OpenGamepad(e.gdevice.which);
+                    if(m_pGamepad)
+                        std::println("Gamepad connected!");
+                }
+                else
+                    std::println("Gamepad already connected");
+                break;
+            case SDL_EVENT_GAMEPAD_REMOVED:
+                if(m_pGamepad)
+                {
+                    std::println("Gamepad removed!");
+                    m_pGamepad = nullptr;
+                }
+                break;
+
+            case SDL_EVENT_GAMEPAD_BUTTON_UP:
+                HandleInputEvent(Input::Type::released, static_cast<SDL_GamepadButton>(e.gbutton.button));
+                break;
+
+            case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+                if(e.key.repeat)
+                    break;
+                HandleInputEvent(Input::Type::pressed, static_cast<SDL_GamepadButton>(e.gbutton.button));
+                break;
+
+            default:;
+        }
     }
 
     return true;
 }
 
-bool dae::InputManager::ProcessKeyBoardInput(const SDL_Event& event)
+void dae::InputManager::ProcessInputHeld()
 {
-    switch(event.type)
-    {
-        case SDL_EVENT_KEY_UP:
-            return CheckInputPressed(Input::Type::released, event.key.scancode);
-
-        case SDL_EVENT_KEY_DOWN:
-            if(event.key.repeat)
-                return false;
-            return CheckInputPressed(Input::Type::pressed, event.key.scancode);
-        default:;
-    }
-    return false;
-}
-
-void dae::InputManager::ProcessKeyBoardState()
-{
-    const auto* pKeyboard = SDL_GetKeyboardState(nullptr);
     for(auto& [action, input] : m_registeredInputs)
     {
-        auto inputKey = input.GetKey();
-        if(not inputKey.has_value())
+        if(input.type != Input::Type::held)
             continue;
 
-        if(input.type != Input::Type::held or not pKeyboard[inputKey.value()])
-            continue;
+        if(std::holds_alternative<SDL_Scancode>(input.data))
+        {
+            const auto* pKeyboard = SDL_GetKeyboardState(nullptr);
+            const auto key = std::get<SDL_Scancode>(input.data);
+            if(input.type != Input::Type::held or not pKeyboard[key])
+                continue;
+        }
+        else
+        {
+            const auto button = std::get<SDL_GamepadButton>(input.data);
+            if(SDL_GetGamepadButton(m_pGamepad, button))
+                continue;
+        }
 
         auto [fst, snd] = m_commands.equal_range(action);
         for(auto& [k, command] : std::ranges::subrange(fst, snd))
@@ -68,60 +125,4 @@ void dae::InputManager::ProcessKeyBoardState()
             command->Execute();
         }
     }
-}
-
-
-bool dae::InputManager::CheckInputPressed(Input::Type inputType, SDL_Scancode key)
-{
-    for(auto& [action, input] : m_registeredInputs)
-    {
-        if(input.type != inputType)
-            continue;
-
-        if(not input.InputDataMatches(key))
-            continue;
-
-        bool executed{};
-        auto range = m_commands.equal_range(action);
-        for(auto& [k, command] : std::ranges::subrange(range.first, range.second))
-        {
-            command->Execute();
-            executed = true;
-        }
-        return executed;
-    }
-    return false;
-}
-
-bool dae::Input::InputDataMatches(SDL_Scancode key) const
-{
-    if(not std::holds_alternative<SDL_Scancode>(data))
-        return false;
-
-    const auto scancode = std::get<SDL_Scancode>(data);
-    return scancode == key;
-}
-
-bool dae::Input::InputDataMatches(SDL_GamepadButton button) const
-{
-    if(not std::holds_alternative<SDL_GamepadButton>(data))
-        return false;
-
-    return std::get<SDL_GamepadButton>(data) == button;
-}
-
-std::optional<SDL_Scancode> dae::Input::GetKey() const
-{
-    if(std::holds_alternative<SDL_Scancode>(data))
-        return std::get<SDL_Scancode>(data);
-
-    return std::nullopt;
-}
-
-std::optional<SDL_GamepadButton> dae::Input::GetButton() const
-{
-    if(std::holds_alternative<SDL_GamepadButton>(data))
-        return std::get<SDL_GamepadButton>(data);
-
-    return std::nullopt;
 }
