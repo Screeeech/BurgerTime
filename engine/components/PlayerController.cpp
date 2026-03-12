@@ -18,11 +18,10 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex)
     : Component(pPlayer)
 {
     auto& input = InputManager::GetInstance();
-    constexpr float speed{ 100.f };
-    input.BindAction<MoveCommand>("moveUp", playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 } * speed);
-    input.BindAction<MoveCommand>("moveLeft", playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 } * speed);
-    input.BindAction<MoveCommand>("moveDown", playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 } * speed);
-    input.BindAction<MoveCommand>("moveRight", playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 } * speed);
+    input.BindAction<MoveCommand>("moveUp", playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
+    input.BindAction<MoveCommand>("moveLeft", playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
+    input.BindAction<MoveCommand>("moveDown", playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
+    input.BindAction<MoveCommand>("moveRight", playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
 }
 
 PlayerController::~PlayerController() {}

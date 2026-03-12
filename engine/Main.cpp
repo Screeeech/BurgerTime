@@ -53,7 +53,7 @@ static void load()
 
     // Player 0
     {
-        auto* player0 = new dae::GameObject(150, 300, 0, "Player 0");
+        auto* player0 = new dae::GameObject(100, 300, 0, "Player 0");
         auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("earth.png");
 
         player0->AddComponent<dae::RenderComponent>(earthTexture);
@@ -68,7 +68,7 @@ static void load()
 
     // Player 1
     {
-        auto* test = new dae::GameObject(100, 300, 0, "Player 1");
+        auto* test = new dae::GameObject(300, 300, 0, "Player 1");
         auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("sun.png");
 
         test->AddComponent<dae::RenderComponent>(earthTexture);
