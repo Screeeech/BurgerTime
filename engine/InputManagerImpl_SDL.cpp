@@ -112,7 +112,6 @@ private:
 InputManager::InputManager()
     : m_pImpl(std::make_unique<Impl>())
 {
-    InitializeInputs();
 }
 
 InputManager::~InputManager() {}

@@ -49,13 +49,36 @@ static void load()
     scene.Add(go);
 
 
+    auto& input{ dae::InputManager::GetInstance() };
+
+    // Player 0
     {
-        auto* test = new dae::GameObject(10, 10, 0, "Test");
+        auto* player0 = new dae::GameObject(150, 300, 0, "Player 0");
         auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("earth.png");
 
+        player0->AddComponent<dae::RenderComponent>(earthTexture);
+        player0->AddComponent<dae::PlayerController>(0);
+        scene.Add(player0);
+
+        input.RegisterInput( SDL_SCANCODE_W, dae::Input::Type::held, "moveUp", 0 );
+        input.RegisterInput( SDL_SCANCODE_A, dae::Input::Type::held, "moveLeft",0 );
+        input.RegisterInput( SDL_SCANCODE_S, dae::Input::Type::held, "moveDown",0 );
+        input.RegisterInput( SDL_SCANCODE_D, dae::Input::Type::held, "moveRight",0 );
+    }
+
+    // Player 1
+    {
+        auto* test = new dae::GameObject(100, 300, 0, "Player 1");
+        auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("sun.png");
+
         test->AddComponent<dae::RenderComponent>(earthTexture);
-        test->AddComponent<dae::PlayerController>(0);
+        test->AddComponent<dae::PlayerController>(1);
         scene.Add(test);
+
+        input.RegisterInput( SDL_SCANCODE_UP, dae::Input::Type::held, "moveUp", 1 );
+        input.RegisterInput( SDL_SCANCODE_LEFT, dae::Input::Type::held, "moveLeft",1 );
+        input.RegisterInput( SDL_SCANCODE_DOWN, dae::Input::Type::held, "moveDown",1 );
+        input.RegisterInput( SDL_SCANCODE_RIGHT, dae::Input::Type::held, "moveRight",1 );
     }
 }
 

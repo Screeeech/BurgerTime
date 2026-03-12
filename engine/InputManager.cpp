@@ -12,24 +12,6 @@ namespace dae
 {
 }
 
-void dae::InputManager::InitializeInputs()
-{
-    // Move this elsewhere later
-    RegisterInput(Input{ SDL_SCANCODE_W, Input::Type::held }, { .name = "moveUp", .playerIndex = 0 });
-    RegisterInput(Input{ SDL_SCANCODE_A, Input::Type::held }, { .name = "moveLeft", .playerIndex = 0 });
-    RegisterInput(Input{ SDL_SCANCODE_S, Input::Type::held }, { .name = "moveDown", .playerIndex = 0 });
-    RegisterInput(Input{ SDL_SCANCODE_D, Input::Type::held }, { .name = "moveRight", .playerIndex = 0 });
-    RegisterInput(Input{ SDL_SCANCODE_SPACE, Input::Type::released }, { .name = "jump", .playerIndex = 0 });
-
-    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_UP, Input::Type::held }, { .name = "moveUp", .playerIndex = 0 });
-    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_LEFT, Input::Type::held }, { .name = "moveLeft", .playerIndex = 0 });
-    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_DOWN, Input::Type::held }, { .name = "moveDown", .playerIndex = 0 });
-    RegisterInput(Input{ SDL_GAMEPAD_BUTTON_DPAD_RIGHT, Input::Type::held }, { .name = "moveRight", .playerIndex = 0 });
-
-    BindAction<dae::CallbackCommand>("jump", 0, []() { std::println("Jumping!"); });
-    BindAction<dae::CallbackCommand>("bleeehh", 0, []() { std::println("Jumping!"); });
-}
-
 bool dae::InputManager::ProcessInput()
 {
     ProcessGamepadState(this);
@@ -88,10 +70,6 @@ void dae::InputManager::ProcessKeyBoardState()
     }
 }
 
-void dae::InputManager::RegisterInput(const Input& input, const Action& action)
-{
-    m_registeredInputs.insert({ action, input });
-}
 
 bool dae::InputManager::CheckInputPressed(Input::Type inputType, SDL_Scancode key)
 {

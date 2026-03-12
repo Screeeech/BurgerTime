@@ -32,6 +32,7 @@ struct Input
         , type{ _type }
     {
     }
+
     explicit Input(SDL_GamepadButton _key, Type _type = Type::released)
         : data{ _key }
         , type{ _type }
@@ -70,14 +71,18 @@ public:
     InputManager();
     ~InputManager() override;
 
-    void InitializeInputs();
     bool ProcessInput();
     bool ProcessKeyBoardInput(const SDL_Event& event);
     bool ProcessGamepadInput(const SDL_Event& sdl_event, InputManager* im);
     void ProcessKeyBoardState();
     void ProcessGamepadState(InputManager* im);
 
-    void RegisterInput(const Input& input, const Action& action);
+    template<typename T>
+        requires(std::same_as<T, SDL_Scancode> || std::same_as<T, SDL_GamepadButton>)
+    void RegisterInput(T inputData, Input::Type inputType, const std::string& name, int playerIndex)
+    {
+        m_registeredInputs.insert(std::pair{ Action{ name, playerIndex }, Input{ inputData, inputType } });
+    }
 
     template<typename CommandType, typename... Args>
         requires std::derived_from<CommandType, Command>

@@ -63,7 +63,6 @@ void dae::SceneManager::UnregisterRenderComponent(RenderComponent* component) co
 
 void dae::SceneManager::RegisterUIComponent(UIComponent* component) const
 {
-    std::println("Register UI Component");
     if(not m_currentScene)
         return;
 

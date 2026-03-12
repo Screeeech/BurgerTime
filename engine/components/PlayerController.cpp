@@ -23,8 +23,6 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex)
     input.BindAction<MoveCommand>("moveLeft", playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 } * speed);
     input.BindAction<MoveCommand>("moveDown", playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 } * speed);
     input.BindAction<MoveCommand>("moveRight", playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 } * speed);
-
-    // input.BindAction<MoveCommand>("moveReleased", playerIndex, m_pOwner, glm::vec3{ 0, 0, 0 });
 }
 
 PlayerController::~PlayerController() {}
@@ -36,7 +34,6 @@ void PlayerController::Update(float deltaTime)
     {
         const glm::vec3 direction = glm::normalize(m_direction);
         const glm::vec3 velocity = direction * deltaTime * m_speed;
-        std::println("Velocity: {}, {}", direction.x, direction.y);
         m_pOwner->GetTransform().ChangeLocalPosition(velocity);
     }
     // Reset direction for the next frame
