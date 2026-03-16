@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 18/02/2026.
-//
-
 #ifndef ENGINE_FPSCOMPONENT_H
 #define ENGINE_FPSCOMPONENT_H
 #include <SDL3/SDL_pixels.h>

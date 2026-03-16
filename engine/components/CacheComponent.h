@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 04/03/2026.
-//
-
 #ifndef ENGINE_CACHECOMPONENT_H
 #define ENGINE_CACHECOMPONENT_H
 #include <cstdint>

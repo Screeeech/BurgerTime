@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 02/03/2026.
-//
-
 #ifndef ENGINE_ROTATORCOMPONENT_H
 #define ENGINE_ROTATORCOMPONENT_H
 #include "Component.h"

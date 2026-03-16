@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 18/02/2026.
-//
-
 #ifndef ENGINE_SPRITECOMPONENT_H
 #define ENGINE_SPRITECOMPONENT_H
 #include <memory>

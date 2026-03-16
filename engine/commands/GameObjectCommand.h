@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 11/03/2026.
-//
-
 #ifndef ENGINE_GAMEOBJECTCOMMAND_H
 #define ENGINE_GAMEOBJECTCOMMAND_H
 #include <glm/vec3.hpp>

@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 15/03/2026.
-//
-
 #ifndef ENGINE_EVENTMANAGER_H
 #define ENGINE_EVENTMANAGER_H
 #include "Singleton.h"

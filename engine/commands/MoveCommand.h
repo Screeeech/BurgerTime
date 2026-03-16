@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 11/03/2026.
-//
-
 #ifndef ENGINE_MOVECOMMAND_H
 #define ENGINE_MOVECOMMAND_H
 #include "GameObjectCommand.h"

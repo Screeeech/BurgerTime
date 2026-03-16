@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 10/03/2026.
-//
-
 #ifndef ENGINE_CALLBACKCOMMAND_H
 #define ENGINE_CALLBACKCOMMAND_H
 

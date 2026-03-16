@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 11/03/2026.
-//
-
 #include "PlayerController.h"
 
 #include <algorithm>

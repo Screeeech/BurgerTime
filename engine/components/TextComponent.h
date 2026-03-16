@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 18/02/2026.
-//
-
 #ifndef MINIGIN_TEXTCOMPONENT_H
 #define MINIGIN_TEXTCOMPONENT_H
 

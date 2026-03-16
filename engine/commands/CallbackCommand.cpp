@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 10/03/2026.
-//
-
 #include "CallbackCommand.h"
 
 #include <utility>

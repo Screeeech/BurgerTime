@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 04/03/2026.
-//
-
 #include "UIComponent.h"
 
 #include <utility>

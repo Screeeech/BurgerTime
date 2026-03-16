@@ -1,7 +1,3 @@
-//
-// Created by lily-laptop on 02/03/2026.
-//
-
 #include "RotatorComponent.h"
 
 #include <glm/ext/scalar_constants.hpp>
