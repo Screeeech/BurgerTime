@@ -22,7 +22,7 @@ class TextComponent : public Component
 public:
     explicit TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font,
                   SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 });
-    ~TextComponent() override = default;
+    ~TextComponent() noexcept override = default;
 
     void Update(float deltaTime) override;
     void SetText(const std::string& text);

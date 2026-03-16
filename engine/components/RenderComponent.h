@@ -19,7 +19,8 @@ class RenderComponent : public Component
 public:
     explicit RenderComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture);
     explicit RenderComponent(GameObject* pOwner);
-    ~RenderComponent() override;
+    ~RenderComponent() noexcept override;
+
     void Update(float deltaTime) override;
     void Render() const;
 

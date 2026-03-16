@@ -21,7 +21,7 @@ dae::RenderComponent::RenderComponent(GameObject* pOwner)
     SceneManager::GetInstance().RegisterRenderComponent(this);
 }
 
-dae::RenderComponent::~RenderComponent()
+dae::RenderComponent::~RenderComponent() noexcept
 {
     SceneManager::GetInstance().UnregisterRenderComponent(this);
 }

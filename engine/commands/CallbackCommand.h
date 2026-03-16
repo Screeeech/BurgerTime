@@ -16,7 +16,7 @@ class CallbackCommand : public Command
 {
 public:
     explicit CallbackCommand(std::function<void()> callback);
-    ~CallbackCommand() override = default;
+    ~CallbackCommand() noexcept override = default;
     void Execute() override;
 private:
     std::function<void()> m_callback;

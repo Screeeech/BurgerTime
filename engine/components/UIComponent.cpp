@@ -15,7 +15,7 @@ dae::UIComponent::UIComponent(GameObject* pOwner, std::function<void(GameObject*
     SceneManager::GetInstance().RegisterUIComponent(this);
 }
 
-dae::UIComponent::~UIComponent()
+dae::UIComponent::~UIComponent() noexcept
 {
     SceneManager::GetInstance().UnregisterUIComponent(this);
 }

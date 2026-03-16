@@ -86,7 +86,7 @@ class InputManager final : public Singleton<InputManager>
 {
 public:
     InputManager();
-    ~InputManager() override;
+    ~InputManager() noexcept override;
 
     void Init();
     bool ProcessInput();

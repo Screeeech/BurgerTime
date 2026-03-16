@@ -15,6 +15,8 @@ class GameObjectCommand : public Command
 {
 public:
     explicit GameObjectCommand(GameObject* pCaller);
+    ~GameObjectCommand() noexcept override = default;
+
     void Execute() override;
 protected:
     GameObject* m_pCaller;

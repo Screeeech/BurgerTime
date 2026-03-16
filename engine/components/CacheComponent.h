@@ -19,6 +19,7 @@ class CacheComponent : public Component
 {
 public:
     explicit CacheComponent(GameObject* pOwner, int bufferSize = 10000);
+    ~CacheComponent() noexcept override = default;
 
     void Update(float deltaTime) override;
 

@@ -16,7 +16,7 @@ class PlayerController : public Component
 {
 public:
     explicit PlayerController(GameObject* pPlayer, int playerIndex);
-    ~PlayerController() override;
+    ~PlayerController() noexcept override = default;
 
     void Update(float deltaTime) override;
     void SetDirection(glm::vec3 direction);

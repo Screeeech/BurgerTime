@@ -10,7 +10,7 @@ class Minigin final
 {
 public:
     explicit Minigin(const std::filesystem::path& dataPath);
-    ~Minigin();
+    ~Minigin() noexcept;
     void Run(const std::function<void()>& load);
     void RunOneFrame();
 

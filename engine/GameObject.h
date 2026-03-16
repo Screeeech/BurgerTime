@@ -17,7 +17,7 @@ public:
     void Update(float deltaTime) const;
 
     explicit GameObject(float x, float y, float z = 0.0f, std::string  name = "new GameObject");
-    ~GameObject() = default;
+    ~GameObject() noexcept = default;
     GameObject(GameObject&& other) = delete;
     GameObject(const GameObject& other) = delete;
     GameObject& operator=(GameObject&& other) = delete;

@@ -13,9 +13,9 @@ class RotatorComponent : public Component
 {
 public:
     RotatorComponent(GameObject* pOwner, float rotationSpeed);
+    ~RotatorComponent() override = default;
 
     void Update(float deltaTime) override;
-    ~RotatorComponent() override = default;
 
 private:
     float m_rotationSpeed;

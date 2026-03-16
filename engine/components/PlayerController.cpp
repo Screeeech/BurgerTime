@@ -24,8 +24,6 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex)
     input.BindAction<MoveCommand>("moveRight", playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
 }
 
-PlayerController::~PlayerController() {}
-
 void PlayerController::Update(float deltaTime)
 {
     // Check if the direction vector has significant length

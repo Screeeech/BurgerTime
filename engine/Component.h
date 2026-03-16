@@ -14,7 +14,7 @@ class GameObject;
 class Component
 {
 public:
-    virtual ~Component() = default;
+    virtual ~Component() noexcept = default;
     Component(Component&&) = delete;
     Component(Component const&) = delete;
     Component& operator=(Component&&) = delete;

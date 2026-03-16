@@ -3,7 +3,7 @@
 #include "Renderer.h"
 #include <stdexcept>
 
-dae::Texture2D::~Texture2D()
+dae::Texture2D::~Texture2D() noexcept
 {
 	SDL_DestroyTexture(m_texture);
 }

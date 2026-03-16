@@ -15,7 +15,7 @@ public:
     [[nodiscard]] SDL_Texture* GetSDLTexture() const;
     explicit Texture2D(SDL_Texture* texture);
     explicit Texture2D(const std::string& fullPath);
-    ~Texture2D();
+    ~Texture2D() noexcept;
 
     [[nodiscard]] glm::vec2 GetSize() const;
 

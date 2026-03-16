@@ -16,7 +16,7 @@ class UIComponent : public Component
 {
 public:
     UIComponent(GameObject* pOwner, std::function<void(GameObject* pCaller)> drawFunc);
-    ~UIComponent() override;
+    ~UIComponent() noexcept override;
 
     void Update(float deltaTime) override;
     void DrawUI() const;

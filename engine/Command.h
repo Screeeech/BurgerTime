@@ -13,7 +13,7 @@ class Command
 {
 public:
     Command() = default;
-    virtual ~Command() = default;
+    virtual ~Command() noexcept = default;
     virtual void Execute() = 0;
 };
 

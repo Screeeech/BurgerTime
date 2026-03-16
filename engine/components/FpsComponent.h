@@ -20,6 +20,8 @@ class FpsComponent : public Component
 {
 public:
     explicit FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color = { .r=255, .g=255, .b=255, .a=255 });
+    ~FpsComponent() noexcept override = default;
+
     void Update(float deltaTime) override;
 private:
     int m_frameCount{};
