@@ -28,6 +28,7 @@ set(SOURCE_FILES
     engine/SceneManager.cpp
     engine/Texture2D.cpp
     engine/Transform.cpp
+    engine/EventManager.cpp
     engine/components/TextComponent.cpp
     engine/components/RenderComponent.cpp
     engine/components/FpsComponent.cpp

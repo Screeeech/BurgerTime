@@ -7,6 +7,7 @@
 
 namespace dae
 {
+struct Event;
 
 class PlayerController : public Component
 {
@@ -17,7 +18,9 @@ public:
     void Update(float deltaTime) override;
     void SetDirection(glm::vec3 direction);
 
+    void Test(const Event& event);
 private:
+
     glm::vec3 m_direction{};
     float m_speed{ 100.f };
 };

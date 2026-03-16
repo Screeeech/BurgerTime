@@ -3,7 +3,10 @@
 #include <algorithm>
 #include <print>
 
+#include "commands/CallbackCommand.h"
 #include "commands/MoveCommand.h"
+#include "EventManager.h"
+#include "Events.h"
 #include "GameObject.h"
 #include "InputManager.h"
 
@@ -18,6 +21,11 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex)
     input.BindAction<MoveCommand>("moveLeft", playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
     input.BindAction<MoveCommand>("moveDown", playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
     input.BindAction<MoveCommand>("moveRight", playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
+
+    HealthEvent hpEvent{ 100, 3 };
+    input.BindAction<CallbackCommand>("test", playerIndex, [hpEvent](){ EventManager::GetInstance().InvokeEvent(100, hpEvent); });
+
+    EventManager::GetInstance().AddListener(100, this, std::bind(&PlayerController::Test, this , std::placeholders::_1));
 }
 
 void PlayerController::Update(float deltaTime)
@@ -39,5 +47,9 @@ void PlayerController::SetDirection(glm::vec3 direction)
     m_direction.y = std::clamp(m_direction.y + direction.y, -1.f, 1.f);
 }
 
+void PlayerController::Test(const Event& event)
+{
+    std::println("HP Event id: {}", event.eventID);
+}
 
 }  // namespace dae
