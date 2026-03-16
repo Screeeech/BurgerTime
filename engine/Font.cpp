@@ -15,7 +15,7 @@ dae::Font::Font(const std::string& fullPath, float size) : m_font(nullptr)
 	}
 }
 
-dae::Font::~Font()
+dae::Font::~Font() noexcept
 {
 	TTF_CloseFont(m_font);
 }

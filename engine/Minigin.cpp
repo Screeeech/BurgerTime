@@ -80,7 +80,7 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
     InputManager::GetInstance().Init();
 }
 
-dae::Minigin::~Minigin()
+dae::Minigin::~Minigin() noexcept
 {
     Renderer::GetInstance().Destroy();
     SDL_DestroyWindow(g_window);

@@ -10,7 +10,7 @@
 
 dae::InputManager::InputManager() {}
 
-dae::InputManager::~InputManager()
+dae::InputManager::~InputManager() noexcept
 {
     if(m_pGamepad)
         SDL_CloseGamepad(m_pGamepad);
