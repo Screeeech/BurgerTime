@@ -66,6 +66,7 @@ static void load()
         input.RegisterInput( SDL_SCANCODE_D, dae::Input::Type::held, "moveRight",0 );
 
         input.RegisterInput( SDL_SCANCODE_SPACE, dae::Input::Type::released, "test",0 );
+        input.RegisterInput( SDL_SCANCODE_R, dae::Input::Type::released, "removeEvent",0 );
     }
 
     // Player 1

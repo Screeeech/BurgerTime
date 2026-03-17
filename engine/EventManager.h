@@ -7,6 +7,7 @@
 
 namespace dae
 {
+class PlayerController;
 struct Event;
 class EventListener;
 class Observer;
@@ -18,13 +19,13 @@ class EventManager final : public Singleton<EventManager>
 {
 public:
     template <typename T>
-    void AddListener(EventID id, T* listener, EventCallback callback)
+    void BindEvent(EventID id, T* listener, void(T::*callback)(const Event&))
     {
-        m_listeners.emplace( id, std::pair{ listener, std::move(callback) } );
+        m_listeners.emplace( id, std::pair{ listener, std::bind(callback, listener, std::placeholders::_1) } );
     }
 
     template <typename T>
-    void RemoveListeners(EventID id, T* listener)
+    void UnbindEvent(EventID id, T* listener)
     {
         std::erase_if(m_listeners, [&](const auto& pair)
         {
