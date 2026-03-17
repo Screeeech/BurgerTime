@@ -90,15 +90,23 @@ public:
 
     void Init();
     bool ProcessInput();
-    bool ProcessGamepadInput(const SDL_Event& sdl_event, InputManager* im);
     void ProcessInputHeld();
-    void ProcessGamepadState(InputManager* im);
 
-    template<typename T>
-        requires(std::same_as<T, SDL_Scancode> || std::same_as<T, SDL_GamepadButton>)
+    template<InputConcept T>
     void RegisterInput(T inputData, Input::Type inputType, const std::string& name, int playerIndex)
     {
         m_registeredInputs.insert(std::pair{ Action{ name, playerIndex }, Input{ inputData, inputType } });
+    }
+
+    template<InputConcept T>
+    void UnregisterInput(T inputData, const std::string& name, int playerIndex)
+    {
+        std::erase_if(m_registeredInputs,
+                      [inputData, name, playerIndex](const std::pair<Action, Input>& input)
+                      {
+                          return input.first.name == name and input.first.playerIndex == playerIndex and
+                              input.second.InputDataMatches(inputData);
+                      });
     }
 
     template<typename CommandType, typename... Args>

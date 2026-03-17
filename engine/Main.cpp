@@ -65,6 +65,8 @@ static void load()
         input.RegisterInput( SDL_SCANCODE_S, dae::Input::Type::held, "moveDown",0 );
         input.RegisterInput( SDL_SCANCODE_D, dae::Input::Type::held, "moveRight",0 );
 
+        input.UnregisterInput( SDL_SCANCODE_W, "moveUp", 0 );
+
         input.RegisterInput( SDL_SCANCODE_SPACE, dae::Input::Type::released, "test",0 );
         input.RegisterInput( SDL_SCANCODE_R, dae::Input::Type::released, "removeEvent",0 );
     }
