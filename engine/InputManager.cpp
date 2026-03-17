@@ -126,3 +126,8 @@ void dae::InputManager::ProcessInputHeld()
         }
     }
 }
+
+void dae::InputManager::UnbindAction(const std::string& name, int playerIndex)
+{
+    m_commands.erase(Action{name, playerIndex});
+}

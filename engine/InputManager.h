@@ -116,6 +116,8 @@ public:
         m_commands.emplace(Action{ .name = name, .playerIndex = playerIndex }, std::make_unique<CommandType>(args...));
     }
 
+    void UnbindAction(const std::string& name, int playerIndex);
+
 private:
     template<InputConcept T>
     bool HandleInputEvent(Input::Type inputType, T inputData)

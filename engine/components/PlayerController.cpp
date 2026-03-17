@@ -22,11 +22,6 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex)
     input.BindAction<MoveCommand>("moveDown", playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
     input.BindAction<MoveCommand>("moveRight", playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
 
-    HealthEvent hpEvent{ 100, 3 };
-    input.BindAction<CallbackCommand>("test", playerIndex, [hpEvent](){ EventManager::GetInstance().InvokeEvent(100, hpEvent); });
-    input.BindAction<CallbackCommand>("removeEvent", playerIndex, [this](){ EventManager::GetInstance().UnbindEvent(100, this);});
-
-    EventManager::GetInstance().BindEvent(100, this, &PlayerController::Test);
 }
 
 void PlayerController::Update(float deltaTime)

@@ -1,22 +1,17 @@
-#include <SDL3/SDL_render.h>
 
 #include <filesystem>
-#include <glm/gtc/constants.hpp>
 #include <print>
 
-#include "commands/CallbackCommand.h"
-#include "components/CacheComponent.h"
 #include "components/FpsComponent.h"
 #include "components/PlayerController.h"
 #include "components/RenderComponent.h"
-#include "components/RotatorComponent.h"
 #include "components/TextComponent.h"
+#include "EventManager.h"
 #include "InputManager.h"
 #include "Minigin.h"
 #include "ResourceManager.h"
 #include "Scene.h"
 #include "SceneManager.h"
-#include "Texture2D.h"
 
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>
@@ -50,6 +45,7 @@ static void load()
 
 
     auto& input{ dae::InputManager::GetInstance() };
+    auto& event{ dae::EventManager::GetInstance() };
 
     // Player 0
     {
@@ -57,7 +53,7 @@ static void load()
         auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("earth.png");
 
         player0->AddComponent<dae::RenderComponent>(earthTexture);
-        player0->AddComponent<dae::PlayerController>(0);
+        auto* playerController = player0->AddComponent<dae::PlayerController>(0);
         scene.Add(player0);
 
         input.RegisterInput( SDL_SCANCODE_W, dae::Input::Type::held, "moveUp", 0 );
@@ -65,10 +61,10 @@ static void load()
         input.RegisterInput( SDL_SCANCODE_S, dae::Input::Type::held, "moveDown",0 );
         input.RegisterInput( SDL_SCANCODE_D, dae::Input::Type::held, "moveRight",0 );
 
-        input.UnregisterInput( SDL_SCANCODE_W, "moveUp", 0 );
-
         input.RegisterInput( SDL_SCANCODE_SPACE, dae::Input::Type::released, "test",0 );
         input.RegisterInput( SDL_SCANCODE_R, dae::Input::Type::released, "removeEvent",0 );
+
+        event.BindEvent(100, playerController, &dae::PlayerController::Test);
     }
 
     // Player 1
