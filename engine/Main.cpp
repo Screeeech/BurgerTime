@@ -12,6 +12,7 @@
 #include "ResourceManager.h"
 #include "Scene.h"
 #include "SceneManager.h"
+#include "Events.h"
 
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>
@@ -79,13 +80,13 @@ static void load()
         player0->AddComponent<dae::PlayerController>(0, healthDisplayComponent, scoreDisplayComponent);
         scene.Add(player0);
 
-        input.RegisterInput(SDL_SCANCODE_W, dae::Input::Type::held, "moveUp", 0);
-        input.RegisterInput(SDL_SCANCODE_A, dae::Input::Type::held, "moveLeft", 0);
-        input.RegisterInput(SDL_SCANCODE_S, dae::Input::Type::held, "moveDown", 0);
-        input.RegisterInput(SDL_SCANCODE_D, dae::Input::Type::held, "moveRight", 0);
+        input.RegisterInput(SDL_SCANCODE_W, dae::Input::Type::held, dae::sdbm("moveUp"), 0);
+        input.RegisterInput(SDL_SCANCODE_A, dae::Input::Type::held, dae::sdbm("moveLeft"), 0);
+        input.RegisterInput(SDL_SCANCODE_S, dae::Input::Type::held, dae::sdbm("moveDown"), 0);
+        input.RegisterInput(SDL_SCANCODE_D, dae::Input::Type::held, dae::sdbm("moveRight"), 0);
 
-        input.RegisterInput(SDL_SCANCODE_Q, dae::Input::Type::released, "damage", 0);
-        input.RegisterInput(SDL_SCANCODE_E, dae::Input::Type::released, "attack", 0);
+        input.RegisterInput(SDL_SCANCODE_Q, dae::Input::Type::released, dae::sdbm("damage"), 0);
+        input.RegisterInput(SDL_SCANCODE_E, dae::Input::Type::released, dae::sdbm("attack"), 0);
     }
 
     // Player 1
@@ -109,13 +110,13 @@ static void load()
         player1->AddComponent<dae::PlayerController>(1, healthDisplayComponent, scoreDisplayComponent);
         scene.Add(player1);
 
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, dae::Input::Type::held, "moveUp", 1);
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, dae::Input::Type::held, "moveLeft", 1);
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, dae::Input::Type::held, "moveDown", 1);
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, dae::Input::Type::held, "moveRight", 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, dae::Input::Type::held, dae::sdbm("moveUp"), 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, dae::Input::Type::held, dae::sdbm("moveLeft"), 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, dae::Input::Type::held, dae::sdbm("moveDown"), 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, dae::Input::Type::held, dae::sdbm("moveRight"), 1);
 
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_SOUTH, dae::Input::Type::released, "damage", 1);
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_WEST, dae::Input::Type::released, "attack", 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_SOUTH, dae::Input::Type::released, dae::sdbm("damage"), 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_WEST, dae::Input::Type::released, dae::sdbm("attack"), 1);
     }
 }
 

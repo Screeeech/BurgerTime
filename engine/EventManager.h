@@ -15,7 +15,7 @@ struct Event;
 class EventListener;
 class Observer;
 
-using EventID = std::string;
+using EventID = unsigned int;
 using EventCallback = std::function<void(const Event&)>;
 
 class EventManager final : public Singleton<EventManager>

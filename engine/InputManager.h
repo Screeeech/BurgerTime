@@ -15,6 +15,8 @@
 namespace dae
 {
 
+using ActionID = unsigned int;
+
 template<typename InputDataType>
 concept InputConcept = std::same_as<InputDataType, SDL_Scancode> || std::same_as<InputDataType, SDL_GamepadButton>;
 
@@ -65,7 +67,7 @@ struct Input
 
 struct Action
 {
-    std::string name;
+    ActionID name;
     int playerIndex{};
 
     bool operator==(const Action& other) const
@@ -77,7 +79,7 @@ struct Action
     {
         size_t operator()(const Action& action) const noexcept
         {
-            return std::hash<std::string>{}(action.name);
+            return std::hash<ActionID>{}(action.name);
         }
     };
 };
@@ -93,13 +95,13 @@ public:
     void ProcessInputHeld();
 
     template<InputConcept T>
-    void RegisterInput(T inputData, Input::Type inputType, const std::string& name, int playerIndex)
+    void RegisterInput(T inputData, Input::Type inputType, const ActionID& name, int playerIndex)
     {
         m_registeredInputs.insert(std::pair{ Action{ name, playerIndex }, Input{ inputData, inputType } });
     }
 
     template<InputConcept T>
-    void UnregisterInput(T inputData, const std::string& name, int playerIndex)
+    void UnregisterInput(T inputData, const ActionID& name, int playerIndex)
     {
         std::erase_if(m_registeredInputs,
                       [inputData, name, playerIndex](const std::pair<Action, Input>& input)
@@ -111,12 +113,12 @@ public:
 
     template<typename CommandType, typename... Args>
         requires std::derived_from<CommandType, Command>
-    void BindAction(const std::string& name, int playerIndex, Args... args)
+    void BindAction(const ActionID& name, int playerIndex, Args... args)
     {
         m_commands.emplace(Action{ .name = name, .playerIndex = playerIndex }, std::make_unique<CommandType>(args...));
     }
 
-    void UnbindAction(const std::string& name, int playerIndex);
+    void UnbindAction(const ActionID& name, int playerIndex);
 
 private:
     template<InputConcept T>
