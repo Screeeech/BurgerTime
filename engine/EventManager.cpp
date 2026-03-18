@@ -1,11 +1,13 @@
 #include "EventManager.h"
 
+#include "Events.h"
+
 namespace dae
 {
 
-void EventManager::InvokeEvent(EventID id, const Event& event)
+void EventManager::InvokeEvent(const Event& event)
 {
-    auto range = m_listeners.equal_range(id);
+    auto range = m_listeners.equal_range(event.eventID);
     for(auto&& [key, value]  : std::ranges::subrange(range.first, range.second))
     {
         value.second(event);

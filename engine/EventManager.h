@@ -1,6 +1,7 @@
 #ifndef ENGINE_EVENTMANAGER_H
 #define ENGINE_EVENTMANAGER_H
 #include <functional>
+#include <string>
 #include <unordered_map>
 
 #include "Singleton.h"
@@ -12,8 +13,8 @@ struct Event;
 class EventListener;
 class Observer;
 
-using EventID = unsigned int;
-using EventCallback = std::function<void(const Event& event)>;
+using EventID = std::string;
+using EventCallback = std::function<void(const Event&)>;
 
 class EventManager final : public Singleton<EventManager>
 {
@@ -33,7 +34,7 @@ public:
         });
     }
 
-    void InvokeEvent(EventID id, const Event& event);
+    void InvokeEvent(const Event& event);
 
 private:
     std::unordered_multimap<EventID, std::pair<void*, EventCallback>> m_listeners;

@@ -29,6 +29,9 @@ set(SOURCE_FILES
     engine/Texture2D.cpp
     engine/Transform.cpp
     engine/EventManager.cpp
+    engine/commands/CallbackCommand.cpp
+    engine/commands/GameObjectCommand.cpp
+    engine/commands/MoveCommand.cpp
     engine/components/TextComponent.cpp
     engine/components/RenderComponent.cpp
     engine/components/FpsComponent.cpp
@@ -36,9 +39,8 @@ set(SOURCE_FILES
     engine/components/UIComponent.cpp
     engine/components/CacheComponent.cpp
     engine/components/PlayerController.cpp
-    engine/commands/CallbackCommand.cpp
-    engine/commands/GameObjectCommand.cpp
-    engine/commands/MoveCommand.cpp
+    engine/components/HealthComponent.cpp
+    engine/components/ScoreComponent.cpp
 )
 
 add_executable(${TARGET_NAME} ${TARGET_PARAM} ${SOURCE_FILES})

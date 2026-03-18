@@ -5,16 +5,25 @@
 
 #include "commands/CallbackCommand.h"
 #include "commands/MoveCommand.h"
+#include "components/TextComponent.h"
 #include "EventManager.h"
 #include "Events.h"
 #include "GameObject.h"
 #include "InputManager.h"
+#include "ScoreComponent.h"
 
 namespace dae
 {
+class Font;
 
-PlayerController::PlayerController(GameObject* pPlayer, int playerIndex)
+PlayerController::PlayerController(GameObject* pPlayer, int playerIndex, TextComponent* healthDisplay, TextComponent* scoreDisplay)
     : Component(pPlayer)
+    , m_playerIndex(playerIndex)
+    , m_health(pPlayer->AddComponent<HealthComponent>())
+    , m_healthDisplay(healthDisplay)
+    , m_score(pPlayer->AddComponent<ScoreComponent>())
+    , m_scoreDisplay(scoreDisplay)
+
 {
     auto& input = InputManager::GetInstance();
     input.BindAction<MoveCommand>("moveUp", playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
@@ -22,6 +31,17 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex)
     input.BindAction<MoveCommand>("moveDown", playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
     input.BindAction<MoveCommand>("moveRight", playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
 
+    input.BindAction<CallbackCommand>(
+        "damage", playerIndex, [playerIndex]() { EventManager::GetInstance().InvokeEvent(HealthEvent{ "healthChange", playerIndex, -1 }); });
+    input.BindAction<CallbackCommand>(
+        "attack", playerIndex, [playerIndex]() { EventManager::GetInstance().InvokeEvent(ScoreEvent{ "enemyKill", playerIndex, 10 }); });
+
+    auto& event = EventManager::GetInstance();
+    event.BindEvent("healthChange", this, &PlayerController::OnHealthChange);
+    event.BindEvent("enemyKill", this, &PlayerController::OnEnemyKill);
+
+    m_healthDisplay->SetText(std::format("Lives: {}", m_health->GetHealth()));
+    m_scoreDisplay->SetText(std::format("Score: {}", m_score->GetScore()));
 }
 
 void PlayerController::Update(float deltaTime)
@@ -43,9 +63,32 @@ void PlayerController::SetDirection(glm::vec3 direction)
     m_direction.y = std::clamp(m_direction.y + direction.y, -1.f, 1.f);
 }
 
-void PlayerController::Test(const Event& event)
+void PlayerController::OnHealthChange(const Event& event)
 {
-    std::println("HP Event id: {}", event.eventID);
+    const auto& hpEvent = dynamic_cast<const HealthEvent&>(event);
+
+    if(hpEvent.playerIndex != m_playerIndex)
+        return;
+
+    if(m_health->ChangeHealth(hpEvent.health))
+    {
+        EventManager::GetInstance().InvokeEvent(PlayerEvent{"die", m_playerIndex });
+    }
+    if(m_healthDisplay)
+        m_healthDisplay->SetText(std::format("Lives: {}", m_health->GetHealth()));
+}
+
+void PlayerController::OnEnemyKill(const Event& event)
+{
+    const auto& scoreEvent{ dynamic_cast<const ScoreEvent&>(event) };
+
+    if(scoreEvent.playerIndex != m_playerIndex)
+        return;
+
+    m_score->ChangeScore(scoreEvent.score);
+
+    if(m_scoreDisplay)
+        m_scoreDisplay->SetText(std::format("Score: {}", m_score->GetScore()));
 }
 
 }  // namespace dae

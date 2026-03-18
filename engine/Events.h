@@ -9,25 +9,44 @@ struct Event
     virtual ~Event() = default;
     explicit Event(EventID id)
         : eventID{ id }
-    {}
+    {
+    }
+
     const EventID eventID{};
 };
 
-struct HealthEvent : Event
+struct PlayerEvent : Event
 {
-    explicit HealthEvent(EventID id, int _health)
+    ~PlayerEvent() override = default;
+    explicit PlayerEvent(EventID id, int playerIndex)
         : Event(id)
-        , health(_health)
-    {}
+        , playerIndex{ playerIndex }
+    {
+    }
+
+    int playerIndex;
+};
+
+struct HealthEvent : PlayerEvent
+{
     ~HealthEvent() override = default;
+    explicit HealthEvent(EventID id, int playerIndex, int healthChange)
+        : PlayerEvent(id, playerIndex)
+        , health(healthChange)
+    {
+    }
+
     int health;
 };
 
-class EventListener
+struct ScoreEvent : PlayerEvent
 {
-public:
-    virtual ~EventListener() = default;
-    virtual void OnEvent(const Event& event) = 0;
+    ~ScoreEvent() override = default;
+    explicit ScoreEvent(EventID id, int playerIndex, int scoreChange)
+        : PlayerEvent(id, playerIndex)
+        , score{ scoreChange }
+    {}
+    int score;
 };
 
 }  // namespace dae
