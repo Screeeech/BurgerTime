@@ -115,7 +115,7 @@ void dae::InputManager::ProcessInputHeld()
         else
         {
             const auto button = std::get<SDL_GamepadButton>(input.data);
-            if(SDL_GetGamepadButton(m_pGamepad, button))
+            if(not SDL_GetGamepadButton(m_pGamepad, button))
                 continue;
         }
 
