@@ -3,8 +3,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(engine)
 
-option(USE_ASAN "Enable AddressSanitizer" ON)
-option(USE_MSAN "Enable MemorySanitizer" ON)
+option(USE_ASAN "Enable AddressSanitizer" OFF)
 
 if(USE_ASAN)
     message(STATUS "AddressSanitizer is enabled")
