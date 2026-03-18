@@ -19,7 +19,7 @@ dae::InputManager::~InputManager() noexcept
 void dae::InputManager::Init()
 {
     int count = 0;
-    const SDL_JoystickID* ids = SDL_GetGamepads(&count);
+    SDL_JoystickID* ids = SDL_GetGamepads(&count);
     const SDL_Gamepad* gamepad{};
 
     for(int i{}; i < count; i++)
@@ -36,6 +36,8 @@ void dae::InputManager::Init()
             SDL_CloseGamepad(gp);
         }
     }
+
+    SDL_free(ids);
 }
 
 bool dae::InputManager::ProcessInput()

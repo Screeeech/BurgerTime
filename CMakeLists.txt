@@ -3,6 +3,15 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(engine)
 
+option(USE_ASAN "Enable AddressSanitizer" ON)
+option(USE_MSAN "Enable MemorySanitizer" ON)
+
+if(USE_ASAN)
+    message(STATUS "AddressSanitizer is enabled")
+    add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
+    add_link_options(-fsanitize=address)
+endif()
+
 if (EMSCRIPTEN)
   message("Using Emscripten!")
 endif ()

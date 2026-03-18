@@ -73,6 +73,8 @@ void dae::Renderer::Destroy()
     {
         SDL_DestroyRenderer(m_renderer);
         m_renderer = nullptr;
+        SDL_DestroyWindow(m_window);
+        m_window = nullptr;
     }
 }
 

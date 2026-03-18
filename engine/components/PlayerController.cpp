@@ -45,6 +45,22 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex, TextCom
     m_scoreDisplay->SetText(std::format("Score: {}", m_score->GetScore()));
 }
 
+PlayerController::~PlayerController() noexcept
+{
+    auto& input = InputManager::GetInstance();
+    input.UnbindAction("moveUp", m_playerIndex);
+    input.UnbindAction("moveLeft", m_playerIndex);
+    input.UnbindAction("moveDown", m_playerIndex);
+    input.UnbindAction("moveRight", m_playerIndex);
+    input.UnbindAction("damage", m_playerIndex);
+    input.UnbindAction("attack", m_playerIndex);
+
+    auto& event = EventManager::GetInstance();
+    event.UnbindEvent("healthChange", this);
+    event.UnbindEvent("enemyKill", this);
+    event.UnbindEvent("die", this);
+}
+
 void PlayerController::Update(float deltaTime)
 {
     // Check if the direction vector has significant length
@@ -73,7 +89,7 @@ void PlayerController::OnHealthChange(const Event& event)
 
     if(m_health->ChangeHealth(hpEvent.health))
     {
-        EventManager::GetInstance().InvokeEvent(PlayerEvent{"die", m_playerIndex });
+        EventManager::GetInstance().QueueEvent(PlayerEvent{"die", m_playerIndex });
     }
     if(m_healthDisplay)
         m_healthDisplay->SetText(std::format("Lives: {}", m_health->GetHealth()));

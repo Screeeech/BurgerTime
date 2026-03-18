@@ -2,13 +2,14 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "EventManager.h"
+
 #if WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
 #include <SDL3/SDL.h>
-// #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "InputManager.h"
@@ -16,6 +17,7 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
+#include "Events.h"
 
 SDL_Window* g_window{};
 
@@ -107,5 +109,6 @@ void dae::Minigin::RunOneFrame()
 
     m_quit = !InputManager::GetInstance().ProcessInput();
     SceneManager::GetInstance().Update(deltaTime);
+    EventManager::GetInstance().ExecuteQueuedEvents();
     Renderer::GetInstance().Render();
 }

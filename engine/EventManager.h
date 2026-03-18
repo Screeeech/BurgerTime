@@ -1,6 +1,8 @@
 #ifndef ENGINE_EVENTMANAGER_H
 #define ENGINE_EVENTMANAGER_H
 #include <functional>
+#include <memory>
+#include <queue>
 #include <string>
 #include <unordered_map>
 
@@ -36,7 +38,23 @@ public:
 
     void InvokeEvent(const Event& event);
 
+    template <typename T>
+        requires std::derived_from<T, Event>
+    void QueueEvent(const T& event)
+    {
+        auto range = m_listeners.equal_range(event.eventID);
+        for(auto&& [key, value]  : std::ranges::subrange(range.first, range.second))
+        {
+            m_queuedEvents.emplace(std::make_unique<T>(event), value.second);
+        }
+    }
+
+
+    void ExecuteQueuedEvents();
+
 private:
+    // What if object gets deleted before event can fire?
+    std::queue<std::pair<std::unique_ptr<Event>, EventCallback>> m_queuedEvents;
     std::unordered_multimap<EventID, std::pair<void*, EventCallback>> m_listeners;
 };
 

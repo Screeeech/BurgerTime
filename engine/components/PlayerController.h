@@ -2,7 +2,6 @@
 #define ENGINE_PLAYERCONTROLLER_H
 
 #include <glm/vec3.hpp>
-#include <memory>
 
 #include "Component.h"
 #include "HealthComponent.h"
@@ -18,7 +17,7 @@ class PlayerController : public Component
 {
 public:
     explicit PlayerController(GameObject* pPlayer, int playerIndex, TextComponent* healthDisplay, TextComponent* scoreDisplay);
-    ~PlayerController() noexcept override = default;
+    ~PlayerController() noexcept override;
 
     void Update(float deltaTime) override;
     void SetDirection(glm::vec3 direction);
