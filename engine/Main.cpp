@@ -37,11 +37,11 @@ static void load()
     scene.Add(go);
 
     // Logo
-    go = new dae::GameObject(358, 80, 0, "Logo");
+    go = new dae::GameObject(358, 150, 0, "Logo");
     go->AddComponent<dae::RenderComponent>(logoTexture);
     scene.Add(go);
 
-    // Text display
+    // FPS display
     go = new dae::GameObject(10, 10, 0, "FPS Counter");
     go->AddComponent<dae::FpsComponent>(font);
     scene.Add(go);
@@ -50,12 +50,20 @@ static void load()
     auto& input{ dae::InputManager::GetInstance() };
     // auto& event{ dae::EventManager::GetInstance() };
 
+    auto* infoTextP0{ new dae::GameObject(10, 60) };
+    infoTextP0->AddComponent<dae::TextComponent>("Movement: WASD, Kill enemy: E, Take Damage: Q", smallFont);
+    scene.Add(infoTextP0);
+
+    auto* infoTextP1{ new dae::GameObject(10, 90) };
+    infoTextP1->AddComponent<dae::TextComponent>("Movement: DPAD, Kill enemy: X, Take Damage: A", smallFont);
+    scene.Add(infoTextP1);
+
     // Player 0
     {
         auto* player0 = new dae::GameObject(100, 300, 0, "Player 0");
-        auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("earth.png");
+        auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("player.png");
 
-        auto* playerDisplay = new dae::GameObject(10, 100);
+        auto* playerDisplay = new dae::GameObject(10, 150);
         playerDisplay->AddComponent<dae::TextComponent>("Player 0", mediumFont);
         scene.Add(playerDisplay);
 
@@ -71,21 +79,21 @@ static void load()
         player0->AddComponent<dae::PlayerController>(0, healthDisplayComponent, scoreDisplayComponent);
         scene.Add(player0);
 
-        input.RegisterInput( SDL_SCANCODE_W, dae::Input::Type::held, "moveUp", 0 );
-        input.RegisterInput( SDL_SCANCODE_A, dae::Input::Type::held, "moveLeft",0 );
-        input.RegisterInput( SDL_SCANCODE_S, dae::Input::Type::held, "moveDown",0 );
-        input.RegisterInput( SDL_SCANCODE_D, dae::Input::Type::held, "moveRight",0 );
+        input.RegisterInput(SDL_SCANCODE_W, dae::Input::Type::held, "moveUp", 0);
+        input.RegisterInput(SDL_SCANCODE_A, dae::Input::Type::held, "moveLeft", 0);
+        input.RegisterInput(SDL_SCANCODE_S, dae::Input::Type::held, "moveDown", 0);
+        input.RegisterInput(SDL_SCANCODE_D, dae::Input::Type::held, "moveRight", 0);
 
-        input.RegisterInput( SDL_SCANCODE_Q, dae::Input::Type::released, "damage",0 );
-        input.RegisterInput( SDL_SCANCODE_E, dae::Input::Type::released, "attack",0 );
+        input.RegisterInput(SDL_SCANCODE_Q, dae::Input::Type::released, "damage", 0);
+        input.RegisterInput(SDL_SCANCODE_E, dae::Input::Type::released, "attack", 0);
     }
 
     // Player 1
     {
         auto* player1 = new dae::GameObject(300, 300, 0, "Player 1");
-        auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("sun.png");
+        auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("enemy.png");
 
-        auto* playerDisplay = new dae::GameObject(10, 230);
+        auto* playerDisplay = new dae::GameObject(10, 280);
         playerDisplay->AddComponent<dae::TextComponent>("Player 1", mediumFont);
         scene.Add(playerDisplay);
 
@@ -101,14 +109,13 @@ static void load()
         player1->AddComponent<dae::PlayerController>(1, healthDisplayComponent, scoreDisplayComponent);
         scene.Add(player1);
 
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, dae::Input::Type::held, "moveUp", 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, dae::Input::Type::held, "moveLeft", 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, dae::Input::Type::held, "moveDown", 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, dae::Input::Type::held, "moveRight", 1);
 
-        input.RegisterInput( SDL_GAMEPAD_BUTTON_DPAD_UP, dae::Input::Type::held, "moveUp", 1 );
-        input.RegisterInput( SDL_GAMEPAD_BUTTON_DPAD_LEFT, dae::Input::Type::held, "moveLeft",1 );
-        input.RegisterInput( SDL_GAMEPAD_BUTTON_DPAD_DOWN, dae::Input::Type::held, "moveDown",1 );
-        input.RegisterInput( SDL_GAMEPAD_BUTTON_DPAD_RIGHT, dae::Input::Type::held, "moveRight",1 );
-
-        input.RegisterInput( SDL_GAMEPAD_BUTTON_SOUTH, dae::Input::Type::released, "damage",1 );
-        input.RegisterInput( SDL_GAMEPAD_BUTTON_WEST, dae::Input::Type::released, "attack",1 );
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_SOUTH, dae::Input::Type::released, "damage", 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_WEST, dae::Input::Type::released, "attack", 1);
     }
 }
 
