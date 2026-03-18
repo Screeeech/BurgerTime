@@ -1,7 +1,7 @@
 #include "PlayerController.h"
 
 #include <algorithm>
-#include <print>
+#include <format>
 
 #include "commands/CallbackCommand.h"
 #include "commands/MoveCommand.h"
@@ -25,18 +25,18 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex, TextCom
     , m_scoreDisplay(scoreDisplay)
 
 {
-    auto& input = InputManager::GetInstance();
+    auto& input = InputManager::Get();
     input.BindAction<MoveCommand>("moveUp", playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
     input.BindAction<MoveCommand>("moveLeft", playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
     input.BindAction<MoveCommand>("moveDown", playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
     input.BindAction<MoveCommand>("moveRight", playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
 
     input.BindAction<CallbackCommand>(
-        "damage", playerIndex, [playerIndex]() { EventManager::GetInstance().InvokeEvent(HealthEvent{ "healthChange", playerIndex, -1 }); });
+        "damage", playerIndex, [playerIndex]() { EventManager::Get().InvokeEvent(HealthEvent{ "healthChange", playerIndex, -1 }); });
     input.BindAction<CallbackCommand>(
-        "attack", playerIndex, [playerIndex]() { EventManager::GetInstance().InvokeEvent(ScoreEvent{ "enemyKill", playerIndex, 10 }); });
+        "attack", playerIndex, [playerIndex]() { EventManager::Get().InvokeEvent(ScoreEvent{ "enemyKill", playerIndex, 10 }); });
 
-    auto& event = EventManager::GetInstance();
+    auto& event = EventManager::Get();
     event.BindEvent("healthChange", this, &PlayerController::OnHealthChange);
     event.BindEvent("enemyKill", this, &PlayerController::OnEnemyKill);
     event.BindEvent("die", this , &PlayerController::OnDeath);
@@ -47,7 +47,7 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex, TextCom
 
 PlayerController::~PlayerController() noexcept
 {
-    auto& input = InputManager::GetInstance();
+    auto& input = InputManager::Get();
     input.UnbindAction("moveUp", m_playerIndex);
     input.UnbindAction("moveLeft", m_playerIndex);
     input.UnbindAction("moveDown", m_playerIndex);
@@ -55,7 +55,7 @@ PlayerController::~PlayerController() noexcept
     input.UnbindAction("damage", m_playerIndex);
     input.UnbindAction("attack", m_playerIndex);
 
-    auto& event = EventManager::GetInstance();
+    auto& event = EventManager::Get();
     event.UnbindEvent("healthChange", this);
     event.UnbindEvent("enemyKill", this);
     event.UnbindEvent("die", this);
@@ -89,7 +89,7 @@ void PlayerController::OnHealthChange(const Event& event)
 
     if(m_health->ChangeHealth(hpEvent.health))
     {
-        EventManager::GetInstance().QueueEvent(PlayerEvent{"die", m_playerIndex });
+        EventManager::Get().QueueEvent(PlayerEvent{"die", m_playerIndex });
     }
     if(m_healthDisplay)
         m_healthDisplay->SetText(std::format("Lives: {}", m_health->GetHealth()));
@@ -115,7 +115,7 @@ void PlayerController::OnDeath(const Event& event)
     if(playerEvent.playerIndex != m_playerIndex)
         return;
 
-    auto* scene = SceneManager::GetInstance().GetActiveScene();
+    auto* scene = SceneManager::Get().GetActiveScene();
     scene->Remove(m_pOwner);
 }
 

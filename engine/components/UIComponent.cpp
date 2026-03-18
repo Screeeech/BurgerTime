@@ -8,12 +8,12 @@ dae::UIComponent::UIComponent(GameObject* pOwner, std::function<void(GameObject*
     : Component(pOwner)
     , m_drawFunc(std::move(drawFunc))
 {
-    SceneManager::GetInstance().RegisterUIComponent(this);
+    SceneManager::Get().RegisterUIComponent(this);
 }
 
 dae::UIComponent::~UIComponent() noexcept
 {
-    SceneManager::GetInstance().UnregisterUIComponent(this);
+    SceneManager::Get().UnregisterUIComponent(this);
 }
 
 void dae::UIComponent::Update(float /*deltaTime*/)

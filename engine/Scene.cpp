@@ -47,7 +47,7 @@ void Scene::DrawUI()
 
 void Scene::Load()
 {
-    SceneManager::GetInstance().LoadScene(this);
+    SceneManager::Get().LoadScene(this);
 }
 
 void Scene::RegisterRenderComponent(RenderComponent* renderComponent)
@@ -57,7 +57,8 @@ void Scene::RegisterRenderComponent(RenderComponent* renderComponent)
 
 void Scene::UnregisterRenderComponent(RenderComponent* component)
 {
-    std::erase(m_renderComponents, component);
+    if(not m_renderComponents.empty())
+        std::erase(m_renderComponents, component);
 }
 
 void Scene::RegisterUIComponent(UIComponent* component)

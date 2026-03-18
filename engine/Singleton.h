@@ -5,7 +5,7 @@ namespace dae
 	class Singleton
 	{
 	public:
-		[[nodiscard]] static T& GetInstance()
+		[[nodiscard]] static T& Get()
 		{
 			static T instance{};
 			return instance;

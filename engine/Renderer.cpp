@@ -48,7 +48,7 @@ void dae::Renderer::Render() const
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    SceneManager::GetInstance().DrawUI();
+    SceneManager::Get().DrawUI();
 
     ImGui::Render();
 
@@ -56,7 +56,7 @@ void dae::Renderer::Render() const
     SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
     SDL_RenderClear(m_renderer);
 
-    SceneManager::GetInstance().Render();
+    SceneManager::Get().Render();
 
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_renderer);
     SDL_RenderPresent(m_renderer);

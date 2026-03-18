@@ -21,11 +21,11 @@ namespace fs = std::filesystem;
 
 static void load()
 {
-    auto& scene = dae::SceneManager::GetInstance().CreateScene();
+    auto& scene = dae::SceneManager::Get().CreateScene();
     scene.Load();
 
-    auto backgroundTexture = dae::ResourceManager::GetInstance().LoadTexture("background.png");
-    auto logoTexture = dae::ResourceManager::GetInstance().LoadTexture("logo.png");
+    auto backgroundTexture = dae::ResourceManager::Get().LoadTexture("background.png");
+    auto logoTexture = dae::ResourceManager::Get().LoadTexture("logo.png");
 
     auto font = std::make_shared<dae::Font>("Lingua.otf", 36.f);
     auto smallFont = std::make_shared<dae::Font>("Lingua.otf", 21.f);
@@ -47,7 +47,7 @@ static void load()
     scene.Add(go);
 
 
-    auto& input{ dae::InputManager::GetInstance() };
+    auto& input{ dae::InputManager::Get() };
     // auto& event{ dae::EventManager::GetInstance() };
 
     auto* infoTextP0{ new dae::GameObject(10, 60) };
@@ -61,7 +61,7 @@ static void load()
     // Player 0
     {
         auto* player0 = new dae::GameObject(100, 300, 0, "Player 0");
-        auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("player.png");
+        auto earthTexture = dae::ResourceManager::Get().LoadTexture("player.png");
 
         auto* playerDisplay = new dae::GameObject(10, 150);
         playerDisplay->AddComponent<dae::TextComponent>("Player 0", mediumFont);
@@ -91,7 +91,7 @@ static void load()
     // Player 1
     {
         auto* player1 = new dae::GameObject(300, 300, 0, "Player 1");
-        auto earthTexture = dae::ResourceManager::GetInstance().LoadTexture("enemy.png");
+        auto earthTexture = dae::ResourceManager::Get().LoadTexture("enemy.png");
 
         auto* playerDisplay = new dae::GameObject(10, 280);
         playerDisplay->AddComponent<dae::TextComponent>("Player 1", mediumFont);

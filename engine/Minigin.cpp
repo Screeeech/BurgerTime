@@ -77,14 +77,15 @@ dae::Minigin::Minigin(const std::filesystem::path& dataPath)
         throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
     }
 
-    Renderer::GetInstance().Init(g_window);
-    ResourceManager::GetInstance().Init(dataPath);
-    InputManager::GetInstance().Init();
+    Renderer::Get().Init(g_window);
+    ResourceManager::Get().Init(dataPath);
+    InputManager::Get().Init();
 }
 
 dae::Minigin::~Minigin() noexcept
 {
-    Renderer::GetInstance().Destroy();
+    SceneManager::Get().Cleanup();
+    Renderer::Get().Destroy();
     SDL_DestroyWindow(g_window);
     g_window = nullptr;
     SDL_Quit();
@@ -107,8 +108,8 @@ void dae::Minigin::RunOneFrame()
     const float deltaTime{ std::chrono::duration<float>(now - lastTime).count() };
     lastTime = now;
 
-    m_quit = !InputManager::GetInstance().ProcessInput();
-    SceneManager::GetInstance().Update(deltaTime);
-    EventManager::GetInstance().ExecuteQueuedEvents();
-    Renderer::GetInstance().Render();
+    m_quit = !InputManager::Get().ProcessInput();
+    SceneManager::Get().Update(deltaTime);
+    EventManager::Get().ExecuteQueuedEvents();
+    Renderer::Get().Render();
 }

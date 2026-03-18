@@ -27,9 +27,10 @@ public:
     void RegisterUIComponent(UIComponent* component) const;
     void UnregisterUIComponent(UIComponent* component) const;
 
+    void Cleanup();
+
 private:
     friend class Singleton<SceneManager>;
-    SceneManager() = default;
     std::vector<std::unique_ptr<Scene>> m_scenes;
     Scene* m_currentScene{};
 };
