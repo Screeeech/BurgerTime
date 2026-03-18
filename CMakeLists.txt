@@ -166,7 +166,7 @@ endif ()
 
 # Add steam if available
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/steam")
-find_package(Steamworks QUIET)
+find_package(Steamworks)
 
 target_include_directories("${TARGET_NAME}" PUBLIC
     ${CMAKE_SOURCE_DIR}/engine/
