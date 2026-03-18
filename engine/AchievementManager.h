@@ -1,8 +1,6 @@
 #ifndef ENGINE_ACHIEVEMENTMANAGER_H
 #define ENGINE_ACHIEVEMENTMANAGER_H
 
-#include <steamtypes.h>
-
 #include <cstdint>
 #include <set>
 
