@@ -21,6 +21,7 @@ public:
     void DrawUI() const;
 
     void LoadScene(Scene* scene);
+    [[nodiscard]] Scene* GetActiveScene() const;
     void RegisterRenderComponent(RenderComponent* component) const;
     void UnregisterRenderComponent(RenderComponent* component) const;
     void RegisterUIComponent(UIComponent* component) const;

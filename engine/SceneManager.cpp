@@ -39,6 +39,11 @@ void dae::SceneManager::LoadScene(Scene* scene)
     }
 }
 
+dae::Scene* dae::SceneManager::GetActiveScene() const
+{
+    return m_currentScene;
+}
+
 dae::Scene& dae::SceneManager::CreateScene()
 {
     m_scenes.emplace_back(new Scene());

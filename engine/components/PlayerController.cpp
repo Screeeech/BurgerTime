@@ -39,6 +39,7 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex, TextCom
     auto& event = EventManager::GetInstance();
     event.BindEvent("healthChange", this, &PlayerController::OnHealthChange);
     event.BindEvent("enemyKill", this, &PlayerController::OnEnemyKill);
+    event.BindEvent("die", this , &PlayerController::OnDeath);
 
     m_healthDisplay->SetText(std::format("Lives: {}", m_health->GetHealth()));
     m_scoreDisplay->SetText(std::format("Score: {}", m_score->GetScore()));
@@ -90,5 +91,17 @@ void PlayerController::OnEnemyKill(const Event& event)
     if(m_scoreDisplay)
         m_scoreDisplay->SetText(std::format("Score: {}", m_score->GetScore()));
 }
+
+void PlayerController::OnDeath(const Event& event)
+{
+    const auto& playerEvent{ dynamic_cast<const PlayerEvent&>(event) };
+
+    if(playerEvent.playerIndex != m_playerIndex)
+        return;
+
+    auto* scene = SceneManager::GetInstance().GetActiveScene();
+    scene->Remove(m_pOwner);
+}
+
 
 }  // namespace dae

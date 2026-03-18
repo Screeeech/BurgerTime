@@ -11,7 +11,7 @@ class Scene final
 {
 public:
     void Add(GameObject* object);
-    void Remove(const GameObject& object);
+    void Remove(GameObject* pGameObject);
     void RemoveAll();
 
     void Update(float deltaTime);

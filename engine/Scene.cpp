@@ -11,9 +11,9 @@ void Scene::Add(GameObject* object)
     m_objects.emplace_back(object);
 }
 
-void Scene::Remove(const GameObject& object)
+void Scene::Remove(GameObject* pGameObject)
 {
-    std::erase_if(m_objects, [&object](const std::unique_ptr<GameObject>& ptr) { return ptr.get() == &object; });
+    std::erase_if(m_objects, [&pGameObject](const std::unique_ptr<GameObject>& ptr) { return ptr.get() == pGameObject; });
 }
 
 void Scene::RemoveAll()

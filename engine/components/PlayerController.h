@@ -25,6 +25,7 @@ public:
 
     void OnHealthChange(const Event& event);
     void OnEnemyKill(const Event& event);
+    void OnDeath(const Event& event);
 private:
     int m_playerIndex;
 
