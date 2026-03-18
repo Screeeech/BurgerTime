@@ -37,6 +37,7 @@ set(SOURCE_FILES
     engine/Texture2D.cpp
     engine/Transform.cpp
     engine/EventManager.cpp
+    engine/AchievementManager.cpp
     engine/commands/CallbackCommand.cpp
     engine/commands/GameObjectCommand.cpp
     engine/commands/MoveCommand.cpp

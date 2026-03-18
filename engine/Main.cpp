@@ -2,17 +2,18 @@
 #include <filesystem>
 #include <print>
 
+#include "AchievementManager.h"
 #include "components/FpsComponent.h"
 #include "components/PlayerController.h"
 #include "components/RenderComponent.h"
 #include "components/TextComponent.h"
 #include "EventManager.h"
+#include "Events.h"
 #include "InputManager.h"
 #include "Minigin.h"
 #include "ResourceManager.h"
 #include "Scene.h"
 #include "SceneManager.h"
-#include "Events.h"
 
 #if _DEBUG && __has_include(<vld.h>)
 #include <vld.h>
@@ -118,6 +119,9 @@ static void load()
         input.RegisterInput(SDL_GAMEPAD_BUTTON_SOUTH, dae::Input::Type::released, dae::sdbm("damage"), 1);
         input.RegisterInput(SDL_GAMEPAD_BUTTON_WEST, dae::Input::Type::released, dae::sdbm("attack"), 1);
     }
+
+    // Achievement Event
+    dae::EventManager::Get().BindEvent(dae::sdbm("win"), &dae::AchievementManager::Get(), &dae::AchievementManager::OnWin);
 }
 
 int main()

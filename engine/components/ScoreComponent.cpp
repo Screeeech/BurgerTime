@@ -4,6 +4,9 @@
 
 #include "ScoreComponent.h"
 
+#include "EventManager.h"
+#include "Events.h"
+
 namespace dae
 {
 ScoreComponent::ScoreComponent(GameObject* pOwner, int initialScore)
@@ -17,6 +20,10 @@ void ScoreComponent::Update(float) {}
 void ScoreComponent::ChangeScore(int change)
 {
     m_score += change;
+
+    if(m_score >= 500)
+        EventManager::Get().InvokeEvent(Event{sdbm("win")});
+
     // Future logic related to reaching score thresholds could go here
 }
 

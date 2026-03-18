@@ -80,11 +80,11 @@ struct ScoreEvent : PlayerEvent
 
     explicit ScoreEvent(EventID id, int playerIndex, int scoreChange)
         : PlayerEvent(id, playerIndex)
-        , score{ scoreChange }
+        , scoreChange{ scoreChange }
     {
     }
 
-    int score;
+    int scoreChange;
 };
 
 }  // namespace dae

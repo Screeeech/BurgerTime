@@ -102,7 +102,7 @@ void PlayerController::OnEnemyKill(const Event& event)
     if(scoreEvent.playerIndex != m_playerIndex)
         return;
 
-    m_score->ChangeScore(scoreEvent.score);
+    m_score->ChangeScore(scoreEvent.scoreChange);
 
     if(m_scoreDisplay)
         m_scoreDisplay->SetText(std::format("Score: {}", m_score->GetScore()));
