@@ -16,7 +16,7 @@ class Texture2D;
 class TextComponent : public Component
 {
 public:
-    explicit TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font,
+    explicit TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, int zIndex = 0,
                   SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 });
     ~TextComponent() noexcept override = default;
 

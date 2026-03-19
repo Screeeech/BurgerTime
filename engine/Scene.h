@@ -22,6 +22,7 @@ public:
     void UnregisterRenderComponent(RenderComponent* component);
     void RegisterUIComponent(UIComponent* component);
     void UnregisterUIComponent(UIComponent* component);
+    void SortCachedRenderComponents();
 
     ~Scene() = default;
     Scene(const Scene& other) = delete;

@@ -7,7 +7,7 @@
 
 dae::FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color color)
     : Component(pOwner)
-    , m_pTextComponent(pOwner->AddComponent<TextComponent>("FPS: ", std::move(font), color))
+    , m_pTextComponent(pOwner->AddComponent<TextComponent>("FPS: ", std::move(font), 999, color))
 {
 }
 

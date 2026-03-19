@@ -82,8 +82,17 @@ void dae::SceneManager::UnregisterUIComponent(UIComponent* component) const
     m_currentScene->UnregisterUIComponent(component);
 }
 
+
 void dae::SceneManager::Cleanup()
 {
     m_scenes.clear();
     m_currentScene = nullptr;
+}
+
+void dae::SceneManager::SortCachedRenderComponents()
+{
+    if(not m_currentScene)
+        return;
+
+    m_currentScene->SortCachedRenderComponents();
 }

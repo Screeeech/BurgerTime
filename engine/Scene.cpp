@@ -53,6 +53,7 @@ void Scene::Load()
 void Scene::RegisterRenderComponent(RenderComponent* renderComponent)
 {
     m_renderComponents.push_back(renderComponent);
+    SortCachedRenderComponents();
 }
 
 void Scene::UnregisterRenderComponent(RenderComponent* component)
@@ -69,4 +70,12 @@ void Scene::RegisterUIComponent(UIComponent* component)
 void Scene::UnregisterUIComponent(UIComponent* component)
 {
     std::erase(m_uiComponents, component);
+}
+
+void Scene::SortCachedRenderComponents()
+{
+    std::ranges::sort(m_renderComponents, [](RenderComponent* pComp1, RenderComponent* pComp2)
+    {
+        return pComp1->GetZIndex() < pComp2->GetZIndex();
+    } );
 }

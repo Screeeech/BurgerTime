@@ -29,6 +29,8 @@ public:
 
     void Cleanup();
 
+    void SortCachedRenderComponents();
+
 private:
     friend class Singleton<SceneManager>;
     std::vector<std::unique_ptr<Scene>> m_scenes;

@@ -13,8 +13,8 @@ class GameObject;
 class RenderComponent : public Component
 {
 public:
-    explicit RenderComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture);
-    explicit RenderComponent(GameObject* pOwner);
+    explicit RenderComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture, int zIndex = 0);
+    explicit RenderComponent(GameObject* pOwner, int zIndex = 0);
     ~RenderComponent() noexcept override;
 
     void Update(float deltaTime) override;
@@ -22,8 +22,11 @@ public:
 
     void SetTexture(std::shared_ptr<Texture2D> texture);
 
+    void SetZIndex(int zIndex);
+    [[nodiscard]] int GetZIndex() const;
 private:
     std::shared_ptr<Texture2D> m_Texture;
+    int m_zIndex;
 };
 
 }  // namespace dae

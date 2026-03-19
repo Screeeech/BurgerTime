@@ -1,19 +1,19 @@
 #include "TextComponent.h"
 
-#include <utility>
 #include <stdexcept>
+#include <utility>
 
 #include "GameObject.h"
 #include "Renderer.h"
 #include "SDL3_ttf/SDL_ttf.h"
 #include "Texture2D.h"
 
-dae::TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, SDL_Color color)
+dae::TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, int zIndex, SDL_Color color)
     : Component(pOwner)
     , m_Font(std::move(font))
     , m_Color(color)
     , m_Text(std::move(text))
-    , m_pRenderComponent(pOwner->AddComponent<RenderComponent>())
+    , m_pRenderComponent(pOwner->AddComponent<RenderComponent>(zIndex))
 {
     m_TextTexture = UpdateTexture();
     m_pRenderComponent->SetTexture(m_TextTexture);
@@ -56,4 +56,3 @@ std::shared_ptr<dae::Texture2D> dae::TextComponent::UpdateTexture() const
 
     return std::make_shared<Texture2D>(texture);
 }
-
