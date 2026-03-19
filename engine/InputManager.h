@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <optional>
+#include <print>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -97,6 +98,16 @@ public:
     template<InputConcept T>
     void RegisterInput(T inputData, Input::Type inputType, const ActionID& name, int playerIndex)
     {
+        if(m_registeredInputs.contains(Action{ name, playerIndex }))
+        {
+            if constexpr(std::same_as<T, SDL_Scancode>)
+                std::println("Warning! \tAttempting to bind Input: \'{}\' to Action: ({}, {}) which is already bound!",
+                             SDL_GetScancodeName(inputData), name, playerIndex);
+            else if constexpr(std::same_as<T, SDL_GamepadButton>)
+                std::println("Warning! \tAttempting to bind Input: \'{}\' to Action: ({}, {}) which is already bound!",
+                             SDL_GetGamepadStringForButton(inputData), name, playerIndex);
+        }
+
         m_registeredInputs.insert(std::pair{ Action{ name, playerIndex }, Input{ inputData, inputType } });
     }
 
