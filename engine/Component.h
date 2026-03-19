@@ -21,7 +21,7 @@ public:
 protected:
     explicit Component(GameObject* pOwner)
         : m_pOwner(pOwner) {}
-    GameObject* m_pOwner;
+    GameObject* const m_pOwner;
 };
 
 template<typename ComponentType>
