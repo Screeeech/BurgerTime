@@ -16,6 +16,8 @@ void AchievementManager::Achieve(AchievementType achievement)
     if(m_Achievements.contains(achievement))
         return;
 
+    m_Achievements.insert(achievement);
+
 #if USE_STEAMWORKS
     std::string name{};
     switch (achievement)
