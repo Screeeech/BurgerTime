@@ -12,6 +12,7 @@
 
 compile_commands.json
 cmake-*/
+out/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
