@@ -136,30 +136,30 @@ private:
     template<InputConcept T>
     bool HandleInputEvent(Input::Type inputType, T inputData)
     {
-        bool executed{};
+        auto actionFilter = [&](const auto& pair)
+        {
+            const auto& [action, registeredInput] = pair;
+            return registeredInput.type != inputType and registeredInput.InputDataMatches(inputData);
+        };
 
-        // clang-format off
-        auto pressedActions =
-            m_registeredInputs |
-            std::views::filter([&](const auto& entry)
-                {
-                    const auto& [action, registeredInput] = entry;
-                    return registeredInput.type != inputType and registeredInput.InputDataMatches(inputData);
-                }) |
-            std::views::keys;
-
-        if(pressedActions.empty())
-            return false;
-
-        for(auto& action : pressedActions)
+        auto getCommands = [this](const Action& action)
         {
             auto range = m_commands.equal_range(action);
-            auto commands = std::ranges::subrange(range.first, range.second) | std::views::values;
-            for(auto& command : commands)
-            {
-                command->Execute();
-                executed = true;
-            }
+            return std::ranges::subrange(range.first, range.second) | std::views::values;
+        };
+
+        // clang-format off
+        auto allCommands = m_registeredInputs
+            | std::views::filter(actionFilter)
+            | std::views::keys
+            | std::views::transform(getCommands)
+            | std::views::join;
+
+        bool executed{};
+        for(auto& command : allCommands)
+        {
+            command->Execute();
+            executed = true;
         }
 
         return executed;
