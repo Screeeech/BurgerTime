@@ -34,53 +34,44 @@ static void load()
     auto mediumFont = std::make_shared<dae::Font>("Lingua.otf", 28.f);
 
     // Background
-    auto go = std::make_unique<dae::GameObject>(0, 0, 0, "Background");
+    auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Background");
     go->AddComponent<dae::RenderComponent>(backgroundTexture, -2);
-    scene.Add(std::move(go));
 
     // Logo
-    go = std::make_unique<dae::GameObject>(358, 150, 0, "Logo");
+    go = scene.GetRoot()->CreateChild(358, 150, 0, "Logo");
     go->AddComponent<dae::RenderComponent>(logoTexture, -1);
-    scene.Add(std::move(go));
 
     // FPS display
-    go = std::make_unique<dae::GameObject>(10, 10, 0, "FPS Counter");
+    go = scene.GetRoot()->CreateChild(10, 10, 0, "FPS Counter");
     go->AddComponent<dae::FpsComponent>(font);
-    scene.Add(std::move(go));
 
 
     auto& input{ dae::InputManager::Get() };
     // auto& event{ dae::EventManager::GetInstance() };
 
-    auto infoTextP0{ std::make_unique<dae::GameObject>(10, 60) };
+    auto* infoTextP0{ scene.GetRoot()->CreateChild(10, 60) };
     infoTextP0->AddComponent<dae::TextComponent>("Movement: WASD, Kill enemy: E, Take Damage: Q", smallFont, 1);
-    scene.Add(std::move(infoTextP0));
 
-    auto infoTextP1{ std::make_unique<dae::GameObject>(10, 90) };
+    auto* infoTextP1{ scene.GetRoot()->CreateChild(10, 90) };
     infoTextP1->AddComponent<dae::TextComponent>("Movement: DPAD, Kill enemy: X, Take Damage: A", smallFont, 1);
-    scene.Add(std::move(infoTextP1));
 
     // Player 0
     {
-        auto player0 = std::make_unique<dae::GameObject>(100, 300, 0, "Player 0");
-        auto playerTexture = dae::ResourceManager::Get().LoadTexture("player.png");
+        auto* player0{ scene.GetRoot()->CreateChild(100, 300, 0, "Player 0") };
+        auto playerTexture{ dae::ResourceManager::Get().LoadTexture("player.png") };
 
-        auto playerDisplay = std::make_unique<dae::GameObject>(10, 150, 0, "Player display p0");
+        auto* playerDisplay{ scene.GetRoot()->CreateChild(10, 150, 0, "Player display p0") };
         playerDisplay->AddComponent<dae::TextComponent>("Player 0", mediumFont);
 
         // NOTE: Ask about how to transfer ownership here
-        auto* healthDisplay = new dae::GameObject(0, 40, 0, "Health display p0");
+        auto* healthDisplay{ playerDisplay->CreateChild(0, 40, 0, "Health display p0") };
         auto* healthDisplayComponent{ healthDisplay->AddComponent<dae::TextComponent>("Lives: ", smallFont, 1) };
-        healthDisplay->SetParent(playerDisplay.get());
 
-        auto* scoreDisplay = new dae::GameObject(0, 30, 0, "Score display p0");
+        auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p0") };
         auto* scoreDisplayComponent{ scoreDisplay->AddComponent<dae::TextComponent>("Score: ", smallFont, 1) };
-        scoreDisplay->SetParent(healthDisplay);
 
         player0->AddComponent<dae::RenderComponent>(playerTexture);
         player0->AddComponent<dae::PlayerController>(0, healthDisplayComponent, scoreDisplayComponent);
-        scene.Add(std::move(player0));
-        scene.Add(std::move(playerDisplay));
 
         input.RegisterInput(SDL_SCANCODE_W, dae::Input::Type::held, dae::sdbm("moveUp"), 0);
         input.RegisterInput(SDL_SCANCODE_A, dae::Input::Type::held, dae::sdbm("moveLeft"), 0);
@@ -93,25 +84,20 @@ static void load()
 
     // Player 1
     {
-        auto player1 = std::make_unique<dae::GameObject>(300, 300, 0, "Player 1");
-        auto enemyTexture = dae::ResourceManager::Get().LoadTexture("enemy.png");
+        auto* player1{ scene.GetRoot()->CreateChild(300, 300, 0, "Player 1") };
+        auto enemyTexture{ dae::ResourceManager::Get().LoadTexture("enemy.png") };
 
-        auto playerDisplay = std::make_unique<dae::GameObject>(10, 280, 0, "Player display p1");
+        auto* playerDisplay{ scene.GetRoot()->CreateChild(10, 280, 0, "Player display p1") };
         playerDisplay->AddComponent<dae::TextComponent>("Player 1", mediumFont);
 
-        auto* healthDisplay = new dae::GameObject(0, 40, 0, "Health display p1");
+        auto* healthDisplay{ playerDisplay->CreateChild(0, 40, 0, "Health display p1") };
         auto* healthDisplayComponent{ healthDisplay->AddComponent<dae::TextComponent>("Lives: ", smallFont) };
-        healthDisplay->SetParent(playerDisplay.get());
 
-        auto* scoreDisplay = new dae::GameObject(0, 30, 0, "Score display p1");
+        auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p1") };
         auto* scoreDisplayComponent{ scoreDisplay->AddComponent<dae::TextComponent>("Score: ", smallFont) };
-        scoreDisplay->SetParent(healthDisplay);
 
         player1->AddComponent<dae::RenderComponent>(enemyTexture);
         player1->AddComponent<dae::PlayerController>(1, healthDisplayComponent, scoreDisplayComponent);
-
-        scene.Add(std::move(player1));
-        scene.Add(std::move(playerDisplay));
 
         input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, dae::Input::Type::held, dae::sdbm("moveUp"), 1);
         input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, dae::Input::Type::held, dae::sdbm("moveLeft"), 1);

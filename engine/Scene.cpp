@@ -1,32 +1,18 @@
 #include "Scene.h"
 
 #include <algorithm>
-#include <cassert>
 
 using namespace dae;
 
-void Scene::Add(std::unique_ptr<GameObject>&& object)
+void Scene::RemoveGameObject(GameObject* pObject)
 {
-    assert(object != nullptr && "Cannot add a null GameObject to the scene.");
-    m_objects.emplace_back(std::move(object));
-}
-
-void Scene::Remove(GameObject* pGameObject)
-{
-    std::erase_if(m_objects, [&pGameObject](const std::unique_ptr<GameObject>& ptr) { return ptr.get() == pGameObject; });
-}
-
-void Scene::RemoveAll()
-{
-    m_objects.clear();
+    assert(pObject != nullptr && "pObject is nullptr");
+    m_pRootObject->RemoveChild(pObject);
 }
 
 void Scene::Update(float deltaTime)
 {
-    for(const auto& object : m_objects)
-    {
-        object->Update(deltaTime);
-    }
+    m_pRootObject->Update(deltaTime);
 }
 
 void Scene::Render()
@@ -74,8 +60,15 @@ void Scene::UnregisterUIComponent(UIComponent* component)
 
 void Scene::SortCachedRenderComponents()
 {
-    std::ranges::sort(m_renderComponents, [](RenderComponent* pComp1, RenderComponent* pComp2)
-    {
-        return pComp1->GetZIndex() < pComp2->GetZIndex();
-    } );
+    std::ranges::sort(m_renderComponents,
+                      [](RenderComponent* pComp1, RenderComponent* pComp2) { return pComp1->GetZIndex() < pComp2->GetZIndex(); });
 }
+
+GameObject* Scene::GetRoot()
+{
+    return m_pRootObject.get();
+}
+
+Scene::Scene()
+    : m_pRootObject{new GameObject(0, 0, 0, "Scene root")}
+{}

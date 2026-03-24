@@ -116,7 +116,7 @@ void PlayerController::OnDeath(const Event& event)
         return;
 
     auto* scene = SceneManager::Get().GetActiveScene();
-    scene->Remove(m_pOwner);
+    scene->RemoveGameObject(m_pOwner);
 }
 
 

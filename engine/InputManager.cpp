@@ -8,8 +8,6 @@
 
 #include "commands/CallbackCommand.h"
 
-dae::InputManager::InputManager() {}
-
 dae::InputManager::~InputManager() noexcept
 {
     if(m_pGamepad)

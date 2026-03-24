@@ -88,7 +88,7 @@ struct Action
 class InputManager final : public Singleton<InputManager>
 {
 public:
-    InputManager();
+    InputManager() = default;
     ~InputManager() noexcept override;
 
     void Init();

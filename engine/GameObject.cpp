@@ -6,8 +6,8 @@
 
 #include "ResourceManager.h"
 
-dae::GameObject::GameObject(float x, float y, float z, std::string  name)
-    : m_name(std::move(name))
+dae::GameObject::GameObject(float x, float y, float z, std::string_view name)
+    : name(name)
     , m_transform(x, y, z, this)
 {
 }
@@ -30,11 +30,6 @@ glm::vec3 dae::GameObject::GetWorldPosition()
     return GetTransform().GetWorldPosition();
 }
 
-std::string dae::GameObject::GetName()
-{
-    return m_name;
-}
-
 bool dae::GameObject::IsChild(GameObject* pChild)
 {
     if(not pChild or pChild == this)
@@ -44,7 +39,7 @@ bool dae::GameObject::IsChild(GameObject* pChild)
     return it != m_children.end();
 }
 
-void dae::GameObject::SetParent(GameObject* pParent, bool keepWorldPosition)
+void dae::GameObject::Reparent(GameObject* pParent, bool keepWorldPosition)
 {
     // Is the parent valid?
     if(IsChild(pParent) or pParent == this or pParent == m_pParent)
@@ -67,7 +62,7 @@ void dae::GameObject::SetParent(GameObject* pParent, bool keepWorldPosition)
 
     // Remove the object itself from the current parent's list of children
     if(m_pParent)
-        self = m_pParent->RemoveChild(this);
+        self = m_pParent->DisownChild(this);
 
     // Set new parent
     m_pParent = pParent;
@@ -86,25 +81,55 @@ void dae::GameObject::AddChild(std::unique_ptr<GameObject> pChild)
     m_children.push_back(std::move(pChild));
 }
 
-std::unique_ptr<dae::GameObject> dae::GameObject::RemoveChild(GameObject* pParent)
+std::unique_ptr<dae::GameObject> dae::GameObject::DisownChild(GameObject* pParent)
 {
     // We have to move ownership of the child pointer from the parent
     // and return it to instantiate a new unique_ptr
     // I think this is a good approach?
     auto it = std::ranges::find_if(m_children, [pParent](const auto& child) { return child.get() == pParent; });
 
-    std::unique_ptr<GameObject> pChild{};
+    std::unique_ptr<GameObject> newChild{};
     if(it != m_children.end())
     {
         // I'm not sure if this is a good idea, but we ball lol
         // Releasing here "deactivates" the unique_ptr so erasing it doesn't free the GameObject
-        pChild = std::move(*it);
+        newChild = std::move(*it);
 
         // Thus we can safely remove it from the list while keeping the pointer and returning it
         m_children.erase(it);
     }
 
-    return pChild;
+    return newChild;
+}
+
+bool dae::GameObject::RemoveChild(GameObject* pChild)
+{
+    // See if child is in current GameObject's list of children
+    auto it = std::ranges::find_if(m_children, [pChild](const auto& child) { return child.get() == pChild; });
+    if(it != m_children.end())
+    {
+        m_children.erase(it);
+        return true;
+    }
+
+    // Otherwise check children of children
+    for(const auto& child : m_children)
+    {
+        if(child->RemoveChild(pChild))
+            return true;
+    }
+
+    return false;
+}
+
+dae::GameObject* dae::GameObject::CreateChild(float x, float y, float z, std::string_view name)
+{
+    m_children.emplace_back(std::make_unique<GameObject>(x, y, z, name));
+
+    GameObject* child = m_children.back().get();
+    child->m_pParent = this;
+
+    return child;
 }
 
 void dae::GameObject::SetDirty()

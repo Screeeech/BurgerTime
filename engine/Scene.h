@@ -10,10 +10,7 @@ namespace dae
 class Scene final
 {
 public:
-    void Add(std::unique_ptr<GameObject>&& object);
-    void Remove(GameObject* pGameObject);
-    void RemoveAll();
-
+    void RemoveGameObject(GameObject* pObject);
     void Update(float deltaTime);
     void Render();
     void DrawUI();
@@ -30,11 +27,12 @@ public:
     Scene& operator=(const Scene& other) = delete;
     Scene& operator=(Scene&& other) = delete;
 
+    [[nodiscard]] GameObject* GetRoot();
 private:
     friend class SceneManager;
-    explicit Scene() = default;
+    explicit Scene();
 
-    std::vector<std::unique_ptr<GameObject>> m_objects;
+    std::unique_ptr<GameObject> m_pRootObject;
     std::vector<RenderComponent*> m_renderComponents;
     std::vector<UIComponent*> m_uiComponents;
 };
