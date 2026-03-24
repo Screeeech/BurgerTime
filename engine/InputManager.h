@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include <print>
+#include <ranges>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -135,24 +136,33 @@ private:
     template<InputConcept T>
     bool HandleInputEvent(Input::Type inputType, T inputData)
     {
-        for(auto& [action, registeredInput] : m_registeredInputs)
+        bool executed{};
+
+        // clang-format off
+        auto pressedActions =
+            m_registeredInputs |
+            std::views::filter([&](const auto& entry)
+                {
+                    const auto& [action, registeredInput] = entry;
+                    return registeredInput.type != inputType and registeredInput.InputDataMatches(inputData);
+                }) |
+            std::views::keys;
+
+        if(pressedActions.empty())
+            return false;
+
+        for(auto& action : pressedActions)
         {
-            if(registeredInput.type != inputType)
-                continue;
-
-            if(not registeredInput.InputDataMatches(inputData))
-                continue;
-
-            bool executed{};
             auto range = m_commands.equal_range(action);
-            for(auto& [k, command] : std::ranges::subrange(range.first, range.second))
+            auto commands = std::ranges::subrange(range.first, range.second) | std::views::values;
+            for(auto& command : commands)
             {
                 command->Execute();
                 executed = true;
             }
-            return executed;
         }
-        return false;
+
+        return executed;
     }
 
     std::unordered_multimap<Action, Input, Action::Hash> m_registeredInputs;
