@@ -2,6 +2,9 @@
 // Created by lily-laptop on 18/03/2026.
 //
 
+#include <sdbm.hpp>
+using namespace sdbm;
+
 #include "ScoreComponent.h"
 
 #include "EventManager.h"
@@ -22,7 +25,7 @@ void ScoreComponent::ChangeScore(int change)
     m_score += change;
 
     if(m_score >= 500)
-        EventManager::Get().InvokeEvent(Event{sdbm("win")});
+        EventManager::Get().InvokeEvent("win"_h);
 
     // Future logic related to reaching score thresholds could go here
 }

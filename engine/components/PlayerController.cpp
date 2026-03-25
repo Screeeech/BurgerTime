@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <format>
+#include <sdbm.hpp>
+using namespace sdbm;
 
 #include "commands/CallbackCommand.h"
 #include "commands/MoveCommand.h"
@@ -16,7 +18,8 @@ namespace dae
 {
 class Font;
 
-PlayerController::PlayerController(GameObject* pPlayer, int playerIndex, TextComponent* healthDisplay, TextComponent* scoreDisplay)
+PlayerController::PlayerController(GameObject* pPlayer, int playerIndex, TextComponent* healthDisplay,
+                                   TextComponent* scoreDisplay)
     : Component(pPlayer)
     , m_playerIndex(playerIndex)
     , m_health(pPlayer->AddComponent<HealthComponent>())
@@ -26,20 +29,20 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex, TextCom
 
 {
     auto& input = InputManager::Get();
-    input.BindAction<MoveCommand>(sdbm("moveUp"), playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
-    input.BindAction<MoveCommand>(sdbm("moveLeft"), playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
-    input.BindAction<MoveCommand>(sdbm("moveDown"), playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
-    input.BindAction<MoveCommand>(sdbm("moveRight"), playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
+    input.BindAction<MoveCommand>("moveUp"_h, playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
+    input.BindAction<MoveCommand>("moveLeft"_h, playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
+    input.BindAction<MoveCommand>("moveDown"_h, playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
+    input.BindAction<MoveCommand>("moveRight"_h, playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
 
-    input.BindAction<CallbackCommand>(
-        sdbm("damage"), playerIndex, [playerIndex]() { EventManager::Get().InvokeEvent(HealthEvent{ sdbm("healthChange"), playerIndex, -1 }); });
-    input.BindAction<CallbackCommand>(
-        sdbm("attack"), playerIndex, [playerIndex]() { EventManager::Get().InvokeEvent(ScoreEvent{ sdbm("enemyKill"), playerIndex, 10 }); });
+    input.BindAction<CallbackCommand>("damage"_h, playerIndex, [playerIndex]()
+                                      { EventManager::Get().InvokeEvent(HealthEvent{ "healthChange"_h, playerIndex, -1 }); });
+    input.BindAction<CallbackCommand>("attack"_h, playerIndex, [playerIndex]()
+                                      { EventManager::Get().InvokeEvent(ScoreEvent{ "enemyKill"_h, playerIndex, 10 }); });
 
     auto& event = EventManager::Get();
-    event.BindEvent(sdbm("healthChange"), this, &PlayerController::OnHealthChange);
-    event.BindEvent(sdbm("enemyKill"), this, &PlayerController::OnEnemyKill);
-    event.BindEvent(sdbm("die"), this , &PlayerController::OnDeath);
+    event.BindEvent("healthChange"_h, this, &PlayerController::OnHealthChange);
+    event.BindEvent("enemyKill"_h, this, &PlayerController::OnEnemyKill);
+    event.BindEvent("die"_h, this, &PlayerController::OnDeath);
 
     m_healthDisplay->SetText(std::format("Lives: {}", m_health->GetHealth()));
     m_scoreDisplay->SetText(std::format("Score: {}", m_score->GetScore()));
@@ -48,17 +51,17 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex, TextCom
 PlayerController::~PlayerController() noexcept
 {
     auto& input = InputManager::Get();
-    input.UnbindAction(sdbm("moveUp"), m_playerIndex);
-    input.UnbindAction(sdbm("moveLeft"), m_playerIndex);
-    input.UnbindAction(sdbm("moveDown"), m_playerIndex);
-    input.UnbindAction(sdbm("moveRight"), m_playerIndex);
-    input.UnbindAction(sdbm("damage"), m_playerIndex);
-    input.UnbindAction(sdbm("attack"), m_playerIndex);
+    input.UnbindAction("moveUp"_h, m_playerIndex);
+    input.UnbindAction("moveLeft"_h, m_playerIndex);
+    input.UnbindAction("moveDown"_h, m_playerIndex);
+    input.UnbindAction("moveRight"_h, m_playerIndex);
+    input.UnbindAction("damage"_h, m_playerIndex);
+    input.UnbindAction("attack"_h, m_playerIndex);
 
     auto& event = EventManager::Get();
-    event.UnbindEvent(sdbm("healthChange"), this);
-    event.UnbindEvent(sdbm("enemyKill"), this);
-    event.UnbindEvent(sdbm("die"), this);
+    event.UnbindEvent("healthChange"_h, this);
+    event.UnbindEvent("enemyKill"_h, this);
+    event.UnbindEvent("die"_h, this);
 }
 
 void PlayerController::Update(float deltaTime)
@@ -89,7 +92,7 @@ void PlayerController::OnHealthChange(const Event& event)
 
     if(m_health->ChangeHealth(hpEvent.health))
     {
-        EventManager::Get().QueueEvent(PlayerEvent{sdbm("die"), m_playerIndex });
+        EventManager::Get().QueueEvent(PlayerEvent{ "die"_h, m_playerIndex });
     }
     if(m_healthDisplay)
         m_healthDisplay->SetText(std::format("Lives: {}", m_health->GetHealth()));
