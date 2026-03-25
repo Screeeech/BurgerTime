@@ -7,7 +7,7 @@
 #include "ResourceManager.h"
 
 dae::GameObject::GameObject(float x, float y, float z, std::string_view name)
-    : name(name)
+    : m_name(name)
     , m_transform(x, y, z, this)
 {
 }

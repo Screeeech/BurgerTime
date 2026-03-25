@@ -62,7 +62,7 @@ public:
     void SetDirty();
 
     // For testing purposes
-    std::string_view name;
+    std::string_view m_name;
 private:
     void AddChild(std::unique_ptr<GameObject> pChild);
     bool IsChild(GameObject* pChild);
