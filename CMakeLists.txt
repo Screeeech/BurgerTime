@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.26)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(engine)
+
+include(FetchContent)
 
 option(USE_ASAN "Enable AddressSanitizer" OFF)
 
@@ -57,7 +60,50 @@ add_executable(${TARGET_NAME} ${TARGET_PARAM} ${SOURCE_FILES})
 # enable c++23 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_23)
 
-include(FetchContent)
+# Add ImGui and ImPlot
+FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui
+    GIT_TAG v1.92.6
+    GIT_SHALLOW true
+    GIT_PROGRESS true
+)
+FetchContent_MakeAvailable(imgui)
+
+set(IMGUI_SOURCES
+    ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_tables.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    ${imgui_SOURCE_DIR}/imgui_demo.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+    ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
+)
+add_library(imgui STATIC ${IMGUI_SOURCES})
+target_include_directories(imgui PUBLIC
+    ${imgui_SOURCE_DIR}
+    ${imgui_SOURCE_DIR}/backends
+)
+target_link_libraries(imgui PUBLIC SDL3::SDL3)
+
+FetchContent_Declare(
+    implot
+    GIT_REPOSITORY https://github.com/epezent/implot
+    GIT_TAG v0.17
+    GIT_SHALLOW true
+    GIT_PROGRESS true
+)
+FetchContent_MakeAvailable(implot)
+
+set(IMPLOT_SOURCES
+    ${implot_SOURCE_DIR}/implot.cpp
+    ${implot_SOURCE_DIR}/implot_demo.cpp
+    ${implot_SOURCE_DIR}/implot_items.cpp
+)
+add_library(implot STATIC ${implot_SOURCE_DIR} ${IMPLOT_SOURCES})
+target_include_directories(implot PUBLIC ${implot_SOURCE_DIR})
+target_link_libraries(implot PUBLIC imgui)
+
 # add glm
 find_package(glm CONFIG QUIET)
 if (NOT glm_FOUND)
@@ -129,36 +175,6 @@ if (NOT SDL3_ttf_FOUND)
   endif ()
 endif ()
 
-# Add ImGui
-add_library(imgui STATIC
-    libs/imgui/imgui.cpp
-    libs/imgui/imgui_draw.cpp
-    libs/imgui/imgui_tables.cpp
-    libs/imgui/imgui_widgets.cpp
-    libs/imgui/imgui_demo.cpp
-    libs/imgui/backends/imgui_impl_sdl3.cpp
-    libs/imgui/backends/imgui_impl_sdlrenderer3.cpp
-)
-
-target_include_directories(imgui PUBLIC
-    libs/imgui
-    libs/imgui/backends
-)
-
-target_link_libraries(imgui PUBLIC SDL3::SDL3)
-
-# Add ImPlot
-add_library(implot STATIC
-    libs/implot/implot.cpp
-    libs/implot/implot_demo.cpp
-    libs/implot/implot_items.cpp
-)
-
-target_include_directories(implot PUBLIC
-    libs/implot
-)
-
-target_link_libraries(implot PUBLIC imgui)
 
 if (WIN32)
   # Add VLD (Visual Leak Detector) for memory leak detection on Windows
@@ -167,7 +183,7 @@ endif ()
 
 # Add steam if available
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/steam")
-find_package(Steamworks)
+find_package(Steamworks QUIET)
 
 target_include_directories("${TARGET_NAME}" PUBLIC
     ${CMAKE_SOURCE_DIR}/engine/
