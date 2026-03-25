@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <ranges>
 #include <vector>
 
 #include "Component.h"
@@ -9,7 +10,6 @@ namespace dae
 {
 class RenderComponent;
 class Texture2D;
-
 
 class GameObject final
 {
@@ -26,8 +26,6 @@ public:
     template<ComponentConcept T, typename... Args>
     T* AddComponent(Args&&... args) noexcept
     {
-        // NOTE: I still need to decide whether I want to have max one type of component
-        // Or maybe I should be able to have multiple types of components and refer to them with a name or ID
         m_components.push_back(std::make_unique<T>(this, std::forward<Args>(args)...));
         return dynamic_cast<T*>(m_components.back().get());
     }
@@ -35,18 +33,26 @@ public:
     template<ComponentConcept T>
     void RemoveComponent() noexcept
     {
-        for (auto& component : m_components)
-            if (auto* pComponent = dynamic_cast<T*>(component.get()))
+        for(auto& component : m_components)
+            if(auto* pComponent = dynamic_cast<T*>(component.get()))
                 m_components.erase(pComponent);
     }
 
     template<ComponentConcept T>
     T* GetComponent()
     {
-        for (auto& component : m_components)
-            if (auto* pComponent = dynamic_cast<T*>(component.get()))
+        for(auto& component : m_components)
+            if(auto* pComponent = dynamic_cast<T*>(component.get()))
                 return pComponent;
         return nullptr;
+    }
+
+    template<ComponentConcept T>
+    auto GetAllComponents()
+    {
+        return m_components |
+            std::views::transform([](const auto& comp) { return dynamic_cast<T*>(comp.get()); }) |
+            std::views::filter([](auto* comp) { return comp != nullptr; } );
     }
 
     Transform& GetTransform();
@@ -63,6 +69,7 @@ public:
 
     // For testing purposes
     std::string_view m_name;
+
 private:
     void AddChild(std::unique_ptr<GameObject> pChild);
     bool IsChild(GameObject* pChild);

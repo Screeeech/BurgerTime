@@ -32,7 +32,7 @@ void dae::RenderComponent::Update(float /*deltaTime*/)
 
 void dae::RenderComponent::Render() const
 {
-    if(not m_Texture)
+    if(not m_Texture or not m_Visible)
         return;
 
     const auto& pos{ m_pOwner->GetWorldPosition() };

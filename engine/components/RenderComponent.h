@@ -24,6 +24,7 @@ public:
 
     void SetZIndex(int zIndex);
     [[nodiscard]] int GetZIndex() const;
+    bool m_Visible{ true };
 private:
     std::shared_ptr<Texture2D> m_Texture;
     int m_zIndex;
