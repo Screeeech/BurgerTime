@@ -2,7 +2,6 @@
 #include <filesystem>
 #include <print>
 #include <sdbm.hpp>
-using namespace sdbm;
 
 #include "AchievementManager.h"
 #include "components/FpsComponent.h"

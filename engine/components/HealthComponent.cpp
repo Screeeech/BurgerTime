@@ -8,7 +8,6 @@
 #include "GameObject.h"
 #include "ResourceManager.h"
 #include "TextComponent.h"
-using namespace sdbm;
 
 namespace dae
 {

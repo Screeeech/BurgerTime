@@ -4,7 +4,6 @@
 
 #include <format>
 #include <sdbm.hpp>
-using namespace sdbm;
 
 #include "GameObject.h"
 #include "ResourceManager.h"

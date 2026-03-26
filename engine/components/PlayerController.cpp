@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <format>
 #include <sdbm.hpp>
-using namespace sdbm;
 
 #include "commands/CallbackCommand.h"
 #include "commands/MoveCommand.h"
