@@ -34,9 +34,9 @@ static void load()
     auto logoTexture = dae::ResourceManager::Get().LoadTexture("logo.png");
 
     auto& rm{ dae::ResourceManager::Get() };
-    auto font = rm.LoadFont("Lingua.otf", 36.f);
-    auto smallFont = rm.LoadFont("Lingua.otf", 21.f);
-    auto mediumFont = rm.LoadFont("Lingua.otf", 28.f);
+    auto font = rm.LoadFont("Lingua.otf", 36);
+    auto smallFont = rm.LoadFont("Lingua.otf", 21);
+    auto mediumFont = rm.LoadFont("Lingua.otf", 28);
 
     // Background
     auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Background");
