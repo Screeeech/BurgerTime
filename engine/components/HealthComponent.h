@@ -20,7 +20,7 @@ public:
 private:
     int m_health;
     int m_playerIndex;
-    TextComponent* m_pTextComponent;
+    TextComponent* m_pHealthDisplay;
 };
 }; // namespace dae
 

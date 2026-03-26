@@ -9,6 +9,7 @@ using namespace sdbm;
 #include "components/PlayerController.h"
 #include "components/RenderComponent.h"
 #include "components/TextComponent.h"
+#include "components/ScoreComponent.h"
 #include "EventManager.h"
 #include "Events.h"
 #include "InputManager.h"
@@ -71,7 +72,8 @@ static void load()
         auto* healthDisplay{ playerDisplay->CreateChild(0, 40, 0, "Health display p0") };
         healthDisplay->AddComponent<dae::HealthComponent>(0);
 
-        // auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p0") };
+        auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p0") };
+        scoreDisplay->AddComponent<dae::ScoreComponent>(0);
 
         player0->AddComponent<dae::RenderComponent>(playerTexture);
         player0->AddComponent<dae::PlayerController>(0);
@@ -96,7 +98,8 @@ static void load()
         auto* healthDisplay{ playerDisplay->CreateChild(0, 40, 0, "Health display p1") };
         healthDisplay->AddComponent<dae::HealthComponent>(1);
 
-        // auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p1") };
+        auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p1") };
+        scoreDisplay->AddComponent<dae::ScoreComponent>(1);
 
         player1->AddComponent<dae::RenderComponent>(enemyTexture);
         player1->AddComponent<dae::PlayerController>(1);

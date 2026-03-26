@@ -32,7 +32,7 @@ PlayerController::PlayerController(GameObject* pPlayer, int playerIndex)
     input.BindAction<CallbackCommand>("damage"_h, playerIndex, [playerIndex]()
                                       { EventManager::Get().InvokeEvent(HealthEvent{ "healthChange"_h, playerIndex, -1 }); });
     input.BindAction<CallbackCommand>("attack"_h, playerIndex, [playerIndex]()
-                                      { EventManager::Get().InvokeEvent(ScoreEvent{ "enemyKill"_h, playerIndex, 10 }); });
+                                      { EventManager::Get().InvokeEvent(ScoreEvent{ "scoreChange"_h, playerIndex, 10 }); });
 
     EventManager::Get().BindEvent("die"_h, this, &PlayerController::OnDeath);
 }

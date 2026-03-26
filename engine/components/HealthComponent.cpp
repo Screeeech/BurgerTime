@@ -16,8 +16,8 @@ HealthComponent::HealthComponent(GameObject* pOwner, int playerIndex, int starti
     : Component(pOwner)
     , m_health(startingHealth)
     , m_playerIndex(playerIndex)
-    , m_pTextComponent(pOwner->AddComponent<TextComponent>(std::format("Health: {}", startingHealth),
-                                                           ResourceManager::Get().LoadFont("Lingua.otf", 36.f)))
+    , m_pHealthDisplay(pOwner->AddComponent<TextComponent>(std::format("Health: {}", startingHealth),
+                                                           ResourceManager::Get().LoadFont("Lingua.otf", 21.f)))
 {
     EventManager::Get().BindEvent("healthChange"_h, this, &HealthComponent::OnHealthChange);
 }
@@ -36,7 +36,7 @@ void HealthComponent::OnHealthChange(const Event& event)
         return;
 
     m_health += healthEvent->healthChange;
-    m_pTextComponent->SetText(std::format("Health: {}", m_health));
+    m_pHealthDisplay->SetText(std::format("Health: {}", m_health));
 
     if(m_health <= 0)
         EventManager::Get().QueueEvent(PlayerEvent{ "die"_h, m_playerIndex });
