@@ -11,6 +11,7 @@ Checks: >
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-avoid-do-while,
   -cppcoreguidelines-non-private-member-variables-in-classes,
+  -cppcoreguidelines-pro-type-union-access,
   -readability-magic-numbers,
   -readability-braces-around-statements,
   -readability-implicit-bool-conversion,
