@@ -17,6 +17,11 @@ public:
         SceneManager::Get().GetActiveScene()->RegisterRenderComponent(this);
     }
 
+    ~Renderable() override
+    {
+        SceneManager::Get().UnregisterRenderComponent(this);
+    }
+
     virtual void Render() = 0;
 
     void SetZIndex(int zIndex)
@@ -29,6 +34,7 @@ public:
     {
         return m_zIndex;
     }
+
 private:
     int m_zIndex;
 };

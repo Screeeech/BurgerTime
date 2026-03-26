@@ -12,15 +12,12 @@ dae::RenderComponent::RenderComponent(GameObject* pOwner, std::shared_ptr<Textur
     , m_texture(std::move(texture))
     , m_sourceRect(0, 0, m_texture->GetSize().x, m_texture->GetSize().y)
 {
-    SceneManager::Get().RegisterRenderComponent(this);
 }
 
 dae::RenderComponent::RenderComponent(GameObject* pOwner, int zIndex)
     : Renderable(pOwner, zIndex)
     , m_sourceRect()
 {
-    auto& sm = SceneManager::Get();
-    sm.RegisterRenderComponent(this);
 }
 
 dae::RenderComponent::~RenderComponent() noexcept
