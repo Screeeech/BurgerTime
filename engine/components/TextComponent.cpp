@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "SDL3_ttf/SDL_ttf.h"
 #include "Texture2D.h"
+#include "RenderComponent.h"
 
 dae::TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, int zIndex, SDL_Color color)
     : Component(pOwner)

@@ -1,15 +1,15 @@
 #pragma once
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "components/UIComponent.h"
 #include "Scene.h"
 #include "Singleton.h"
 
 namespace dae
 {
+class UIComponent;
 class Scene;
+class Renderable;
 
 class SceneManager final : public Singleton<SceneManager>
 {
@@ -22,8 +22,8 @@ public:
 
     void LoadScene(Scene* scene);
     [[nodiscard]] Scene* GetActiveScene() const;
-    void RegisterRenderComponent(RenderComponent* component) const;
-    void UnregisterRenderComponent(RenderComponent* component) const;
+    void RegisterRenderComponent(Renderable* component) const;
+    void UnregisterRenderComponent(Renderable* component) const;
     void RegisterUIComponent(UIComponent* component) const;
     void UnregisterUIComponent(UIComponent* component) const;
 

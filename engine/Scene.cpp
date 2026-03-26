@@ -1,6 +1,10 @@
 #include "Scene.h"
 
 #include <algorithm>
+#include <cassert>
+
+#include "Renderable.h"
+#include "components/UIComponent.h"
 
 using namespace dae;
 
@@ -17,7 +21,7 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render()
 {
-    for(const auto* renderComponents : m_renderComponents)
+    for(auto* renderComponents : m_renderComponents)
     {
         renderComponents->Render();
     }
@@ -36,13 +40,13 @@ void Scene::Load()
     SceneManager::Get().LoadScene(this);
 }
 
-void Scene::RegisterRenderComponent(RenderComponent* renderComponent)
+void Scene::RegisterRenderComponent(Renderable* renderable)
 {
-    m_renderComponents.push_back(renderComponent);
+    m_renderComponents.push_back(renderable);
     SortCachedRenderComponents();
 }
 
-void Scene::UnregisterRenderComponent(RenderComponent* component)
+void Scene::UnregisterRenderComponent(Renderable* component)
 {
     if(not m_renderComponents.empty())
         std::erase(m_renderComponents, component);
@@ -61,7 +65,7 @@ void Scene::UnregisterUIComponent(UIComponent* component)
 void Scene::SortCachedRenderComponents()
 {
     std::ranges::sort(m_renderComponents,
-                      [](RenderComponent* pComp1, RenderComponent* pComp2) { return pComp1->GetZIndex() < pComp2->GetZIndex(); });
+                      [](Renderable* pComp1, Renderable* pComp2) { return pComp1->GetZIndex() < pComp2->GetZIndex(); });
 }
 
 GameObject* Scene::GetRoot()

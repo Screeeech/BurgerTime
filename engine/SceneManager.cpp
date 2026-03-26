@@ -1,8 +1,7 @@
 #include "SceneManager.h"
 
-#include <print>
-
 #include "Scene.h"
+#include "Renderable.h"
 
 void dae::SceneManager::Update(float deltaTime)
 {
@@ -50,7 +49,7 @@ dae::Scene& dae::SceneManager::CreateScene()
     return *m_scenes.back();
 }
 
-void dae::SceneManager::RegisterRenderComponent(RenderComponent* component) const
+void dae::SceneManager::RegisterRenderComponent(Renderable* component) const
 {
     if(not m_currentScene)
         return;
@@ -58,7 +57,7 @@ void dae::SceneManager::RegisterRenderComponent(RenderComponent* component) cons
     m_currentScene->RegisterRenderComponent(component);
 }
 
-void dae::SceneManager::UnregisterRenderComponent(RenderComponent* component) const
+void dae::SceneManager::UnregisterRenderComponent(Renderable* component) const
 {
     if(not m_currentScene)
         return;

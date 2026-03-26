@@ -2,11 +2,13 @@
 #include <memory>
 #include <vector>
 
-#include "components/RenderComponent.h"
 #include "GameObject.h"
 
 namespace dae
 {
+class UIComponent;
+class Renderable;
+
 class Scene final
 {
 public:
@@ -15,8 +17,8 @@ public:
     void Render();
     void DrawUI();
     void Load();
-    void RegisterRenderComponent(RenderComponent* renderComponent);
-    void UnregisterRenderComponent(RenderComponent* component);
+    void RegisterRenderComponent(Renderable* renderable);
+    void UnregisterRenderComponent(Renderable* component);
     void RegisterUIComponent(UIComponent* component);
     void UnregisterUIComponent(UIComponent* component);
     void SortCachedRenderComponents();
@@ -33,7 +35,7 @@ private:
     explicit Scene();
 
     std::unique_ptr<GameObject> m_pRootObject;
-    std::vector<RenderComponent*> m_renderComponents;
+    std::vector<Renderable*> m_renderComponents;
     std::vector<UIComponent*> m_uiComponents;
 };
 

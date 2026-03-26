@@ -11,6 +11,7 @@
 #include "Events.h"
 #include "GameObject.h"
 #include "InputManager.h"
+#include "SceneManager.h"
 #include "ScoreComponent.h"
 
 namespace dae

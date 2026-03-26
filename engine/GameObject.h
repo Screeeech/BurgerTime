@@ -1,13 +1,15 @@
 #pragma once
+#include <glm/fwd.hpp>
 #include <memory>
 #include <ranges>
 #include <vector>
 
 #include "Component.h"
-#include "SceneManager.h"
+#include "Transform.h"
 
 namespace dae
 {
+class Transform;
 class RenderComponent;
 class Texture2D;
 
