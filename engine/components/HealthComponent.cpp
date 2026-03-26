@@ -1,5 +1,6 @@
 #include "HealthComponent.h"
 
+#include <format>
 #include <sdbm.hpp>
 
 #include "EventManager.h"
