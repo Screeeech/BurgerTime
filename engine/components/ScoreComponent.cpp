@@ -22,7 +22,7 @@ ScoreComponent::ScoreComponent(GameObject* pOwner, int playerIndex, int initialS
     , m_score(initialScore)
     , m_playerIndex(playerIndex)
     , m_pScoreDisplay(pOwner->AddComponent<TextComponent>(std::format("Score: {}", initialScore),
-                                                           ResourceManager::Get().LoadFont("Lingua.otf", 21.f)))
+                                                           ResourceManager::Get().LoadFont("Lingua.otf", 21)))
 {
     EventManager::Get().BindEvent("scoreChange"_h, this, &ScoreComponent::OnScoreChange);
 }

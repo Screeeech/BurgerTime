@@ -18,7 +18,7 @@ HealthComponent::HealthComponent(GameObject* pOwner, int playerIndex, int starti
     , m_health(startingHealth)
     , m_playerIndex(playerIndex)
     , m_pHealthDisplay(pOwner->AddComponent<TextComponent>(std::format("Health: {}", startingHealth),
-                                                           ResourceManager::Get().LoadFont("Lingua.otf", 21.f)))
+                                                           ResourceManager::Get().LoadFont("Lingua.otf", 21)))
 {
     EventManager::Get().BindEvent("healthChange"_h, this, &HealthComponent::OnHealthChange);
 }
