@@ -28,6 +28,15 @@ public:
     }
 
     template <typename T>
+    void UnbindEvents(T* listener)
+    {
+        std::erase_if(m_listeners, [&](const auto& pair)
+        {
+            return pair.second.first == listener;
+        });
+    }
+
+    template <typename T>
     void UnbindEvent(EventID id, T* listener)
     {
         std::erase_if(m_listeners, [&](const auto& pair)

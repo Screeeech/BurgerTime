@@ -16,7 +16,7 @@ class Font;
 class PlayerController : public Component
 {
 public:
-    explicit PlayerController(GameObject* pPlayer, int playerIndex, TextComponent* healthDisplay, TextComponent* scoreDisplay);
+    explicit PlayerController(GameObject* pPlayer, int playerIndex);
     ~PlayerController() noexcept override;
 
     void Update(float deltaTime) override;
@@ -30,12 +30,6 @@ private:
 
     glm::vec3 m_direction{};
     float m_speed{ 100.f };
-
-    HealthComponent* m_health;
-    TextComponent* m_healthDisplay{};
-
-    ScoreComponent* m_score;
-    TextComponent* m_scoreDisplay{};
 };
 
 }  // namespace dae

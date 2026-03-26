@@ -32,9 +32,10 @@ static void load()
     auto backgroundTexture = dae::ResourceManager::Get().LoadTexture("background.png");
     auto logoTexture = dae::ResourceManager::Get().LoadTexture("logo.png");
 
-    auto font = std::make_shared<dae::Font>("Lingua.otf", 36.f);
-    auto smallFont = std::make_shared<dae::Font>("Lingua.otf", 21.f);
-    auto mediumFont = std::make_shared<dae::Font>("Lingua.otf", 28.f);
+    auto& rm{ dae::ResourceManager::Get() };
+    auto font = rm.LoadFont("Lingua.otf", 36.f);
+    auto smallFont = rm.LoadFont("Lingua.otf", 21.f);
+    auto mediumFont = rm.LoadFont("Lingua.otf", 28.f);
 
     // Background
     auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Background");
@@ -68,13 +69,12 @@ static void load()
 
         // NOTE: Ask about how to transfer ownership here
         auto* healthDisplay{ playerDisplay->CreateChild(0, 40, 0, "Health display p0") };
-        auto* healthDisplayComponent{ healthDisplay->AddComponent<dae::TextComponent>("Lives: ", smallFont, 1) };
+        healthDisplay->AddComponent<dae::HealthComponent>(0);
 
-        auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p0") };
-        auto* scoreDisplayComponent{ scoreDisplay->AddComponent<dae::TextComponent>("Score: ", smallFont, 1) };
+        // auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p0") };
 
         player0->AddComponent<dae::RenderComponent>(playerTexture);
-        player0->AddComponent<dae::PlayerController>(0, healthDisplayComponent, scoreDisplayComponent);
+        player0->AddComponent<dae::PlayerController>(0);
 
         input.RegisterInput(SDL_SCANCODE_W, dae::Input::Type::held, "moveUp"_h, 0);
         input.RegisterInput(SDL_SCANCODE_A, dae::Input::Type::held, "moveLeft"_h, 0);
@@ -94,13 +94,12 @@ static void load()
         playerDisplay->AddComponent<dae::TextComponent>("Player 1", mediumFont);
 
         auto* healthDisplay{ playerDisplay->CreateChild(0, 40, 0, "Health display p1") };
-        auto* healthDisplayComponent{ healthDisplay->AddComponent<dae::TextComponent>("Lives: ", smallFont) };
+        healthDisplay->AddComponent<dae::HealthComponent>(1);
 
-        auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p1") };
-        auto* scoreDisplayComponent{ scoreDisplay->AddComponent<dae::TextComponent>("Score: ", smallFont) };
+        // auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p1") };
 
         player1->AddComponent<dae::RenderComponent>(enemyTexture);
-        player1->AddComponent<dae::PlayerController>(1, healthDisplayComponent, scoreDisplayComponent);
+        player1->AddComponent<dae::PlayerController>(1);
 
         input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, dae::Input::Type::held, "moveUp"_h, 1);
         input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, dae::Input::Type::held, "moveLeft"_h, 1);
@@ -121,6 +120,7 @@ int main()
     fs::path data_location = "./resources/";
 #else
     const fs::path data_location = "./resources/";
+#endif
     try
     {
         constexpr int maxSteps{ 5 };
@@ -136,8 +136,8 @@ int main()
     {
         std::println("{}", e.what());
     }
-#endif
-    dae::Minigin engine(data_location);
+
+    dae::Minigin engine("");
     engine.Run(load);
     return 0;
 }

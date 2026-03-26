@@ -35,11 +35,11 @@ struct HealthEvent : PlayerEvent
 
     explicit HealthEvent(EventID id, int playerIndex, int healthChange)
         : PlayerEvent(id, playerIndex)
-        , health(healthChange)
+        , healthChange(healthChange)
     {
     }
 
-    int health;
+    int healthChange;
 };
 
 struct ScoreEvent : PlayerEvent
