@@ -18,12 +18,12 @@ void dae::ResourceManager::Init(const std::filesystem::path& dataPath)
 	}
 }
 
-std::shared_ptr<dae::Texture2D> dae::ResourceManager::LoadTexture(const std::string& file)
+std::shared_ptr<dae::Texture2D> dae::ResourceManager::LoadTexture(const std::string& file, SDL_ScaleMode scaleMode)
 {
 	// const auto fullPath = m_dataPath/file;
 	const auto filename = fs::path(file).filename().string();
 	if(not m_loadedTextures.contains(filename))
-		m_loadedTextures.insert(std::pair(filename,std::make_shared<Texture2D>(file)));
+		m_loadedTextures.insert(std::pair(filename,std::make_shared<Texture2D>(file, scaleMode)));
 	return m_loadedTextures.at(filename);
 }
 

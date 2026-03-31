@@ -52,7 +52,7 @@ static void load()
 
 
     auto& input{ dae::InputManager::Get() };
-    // auto& event{ dae::EventManager::GetInstance() };
+    // auto& event{ dae::EventManager::Get() };
 
     auto* infoTextP0{ scene.GetRoot()->CreateChild(10, 60) };
     infoTextP0->AddComponent<dae::TextComponent>("Movement: WASD, Kill enemy: E, Take Damage: Q", smallFont, 1);
@@ -75,7 +75,7 @@ static void load()
         auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p0") };
         scoreDisplay->AddComponent<dae::ScoreComponent>(0);
 
-        auto spriteSheetTexture{ dae::ResourceManager::Get().LoadTexture("spritesheet.png") };
+        auto spriteSheetTexture{ dae::ResourceManager::Get().LoadTexture("spritesheet.png", SDL_SCALEMODE_PIXELART) };
         const auto size{ spriteSheetTexture->GetSize() };
 
         player0->AddComponent<dae::PlayerController>(0);

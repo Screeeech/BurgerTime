@@ -24,7 +24,7 @@ SDL_Texture* dae::Texture2D::GetSDLTexture() const
     return m_texture;
 }
 
-dae::Texture2D::Texture2D(const std::string& fullPath)
+dae::Texture2D::Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode)
 {
     SDL_Surface* surface = SDL_LoadPNG(fullPath.c_str());
     if(!surface)
@@ -33,6 +33,7 @@ dae::Texture2D::Texture2D(const std::string& fullPath)
     }
 
     m_texture = SDL_CreateTextureFromSurface(Renderer::Get().GetSDLRenderer(), surface);
+    SDL_SetTextureScaleMode(m_texture, scaleMode);
 
     SDL_DestroySurface(surface);
 
@@ -42,8 +43,9 @@ dae::Texture2D::Texture2D(const std::string& fullPath)
     }
 }
 
-dae::Texture2D::Texture2D(SDL_Texture* texture)
+dae::Texture2D::Texture2D(SDL_Texture* texture, SDL_ScaleMode scaleMode)
     : m_texture{ texture }
 {
     assert(m_texture != nullptr);
+    SDL_SetTextureScaleMode(m_texture, scaleMode);
 }

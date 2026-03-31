@@ -28,8 +28,10 @@ void Animation::Render()
     const auto& frame = GetActiveFrame();
     const auto worldPos{ m_pOwner->GetWorldPosition() };
 
-    Renderer::Get().RenderTexture(*frame.spriteSheet.texture.get(), worldPos.x, worldPos.y, frame.srcRect.w, frame.srcRect.h,
+    Renderer::Get().RenderTexture(*frame.spriteSheet.texture.get(), worldPos.x, worldPos.y, 64.f, 64.f,
                                   frame.srcRect);
+    // Renderer::Get().RenderTexture(*frame.spriteSheet.texture.get(), worldPos.x, worldPos.y, frame.srcRect.w, frame.srcRect.h,
+    //                               frame.srcRect);
 }
 
 void Animation::SetPlaying(bool playing)
