@@ -11,12 +11,12 @@ namespace dae
 class Texture2D;
 class GameObject;
 
-class RenderComponent : public Renderable
+class Sprite : public Renderable
 {
 public:
-    explicit RenderComponent(GameObject* pOwner, std::shared_ptr<Texture2D> texture, int zIndex = 0);
-    explicit RenderComponent(GameObject* pOwner, int zIndex = 0);
-    ~RenderComponent() noexcept override;
+    explicit Sprite(GameObject* pOwner, std::shared_ptr<Texture2D> texture, int zIndex = 0);
+    explicit Sprite(GameObject* pOwner, int zIndex = 0);
+    ~Sprite() noexcept override;
 
     void Update(float deltaTime) override;
     void Render() override;

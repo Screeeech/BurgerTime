@@ -6,9 +6,9 @@
 #include "AchievementManager.h"
 #include "components/FpsComponent.h"
 #include "components/PlayerController.h"
-#include "components/RenderComponent.h"
-#include "components/TextComponent.h"
 #include "components/ScoreComponent.h"
+#include "components/Sprite.h"
+#include "components/TextComponent.h"
 #include "EventManager.h"
 #include "Events.h"
 #include "InputManager.h"
@@ -39,11 +39,11 @@ static void load()
 
     // Background
     auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Background");
-    go->AddComponent<dae::RenderComponent>(backgroundTexture, -2);
+    go->AddComponent<dae::Sprite>(backgroundTexture, -2);
 
     // Logo
     go = scene.GetRoot()->CreateChild(358, 150, 0, "Logo");
-    go->AddComponent<dae::RenderComponent>(logoTexture, -1);
+    go->AddComponent<dae::Sprite>(logoTexture, -1);
 
     // FPS display
     go = scene.GetRoot()->CreateChild(10, 10, 0, "FPS Counter");
@@ -74,7 +74,7 @@ static void load()
         auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p0") };
         scoreDisplay->AddComponent<dae::ScoreComponent>(0);
 
-        player0->AddComponent<dae::RenderComponent>(playerTexture);
+        player0->AddComponent<dae::Sprite>(playerTexture);
         player0->AddComponent<dae::PlayerController>(0);
 
         input.RegisterInput(SDL_SCANCODE_W, dae::Input::Type::held, "moveUp"_h, 0);
@@ -100,7 +100,7 @@ static void load()
         auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p1") };
         scoreDisplay->AddComponent<dae::ScoreComponent>(1);
 
-        player1->AddComponent<dae::RenderComponent>(enemyTexture);
+        player1->AddComponent<dae::Sprite>(enemyTexture);
         player1->AddComponent<dae::PlayerController>(1);
 
         input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, dae::Input::Type::held, "moveUp"_h, 1);

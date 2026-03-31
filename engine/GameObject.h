@@ -10,7 +10,7 @@
 namespace dae
 {
 class Transform;
-class RenderComponent;
+class Sprite;
 class Texture2D;
 
 class GameObject final

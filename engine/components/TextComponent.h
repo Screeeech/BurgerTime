@@ -10,7 +10,7 @@
 
 namespace dae
 {
-class RenderComponent;
+class Sprite;
 class Texture2D;
 
 class TextComponent : public Component
@@ -32,7 +32,7 @@ private:
 
     bool m_NeedsUpdate{ false };
 
-    RenderComponent* m_pRenderComponent{};
+    Sprite* m_pRenderComponent{};
 
     std::shared_ptr<Texture2D> UpdateTexture() const;
 };

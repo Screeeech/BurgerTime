@@ -45,7 +45,7 @@ set(SOURCE_FILES
     engine/commands/GameObjectCommand.cpp
     engine/commands/MoveCommand.cpp
     engine/components/TextComponent.cpp
-    engine/components/RenderComponent.cpp
+    engine/components/Sprite.cpp
     engine/components/FpsComponent.cpp
     engine/components/RotatorComponent.cpp
     engine/components/UIComponent.cpp
