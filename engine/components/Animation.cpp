@@ -28,10 +28,8 @@ void Animation::Render()
     const auto& frame = GetActiveFrame();
     const glm::vec3 worldPos{ m_pOwner->GetWorldPosition() };
     const glm::vec2 scale{ m_pOwner->GetTransform().GetWorldScale() };
-    const glm::vec2 dimensions{ frame.srcRect.w, frame.srcRect.h };
 
-    Renderer::Get().RenderTexture(*frame.spriteSheet.texture.get(), worldPos.x, worldPos.y, dimensions.x * scale.x,
-                                  dimensions.y * scale.y, frame.srcRect);
+    Renderer::Get().RenderTexture(*frame.spriteSheet.texture.get(), worldPos.x, worldPos.y, scale.x, scale.y, frame.srcRect);
 }
 
 void Animation::SetPlaying(bool playing)

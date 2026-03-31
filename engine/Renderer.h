@@ -22,9 +22,9 @@ public:
     void Destroy();
 
     void RenderTexture(const Texture2D& texture, float x, float y) const;
-    void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
+    void RenderTexture(const Texture2D& texture, float x, float y, float scaleX, float scaleY) const;
     void RenderTexture(const Texture2D& texture, float x, float y, SDL_FRect srcRect) const;
-    void RenderTexture(const Texture2D& texture, float x, float y, float width, float height, SDL_FRect srcRect) const;
+    void RenderTexture(const Texture2D& texture, float x, float y, float scaleX, float scaleY, SDL_FRect srcRect) const;
 
     [[nodiscard]] SDL_Renderer* GetSDLRenderer() const;
 
