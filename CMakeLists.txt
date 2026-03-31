@@ -53,6 +53,7 @@ set(SOURCE_FILES
     engine/components/PlayerController.cpp
     engine/components/HealthComponent.cpp
     engine/components/ScoreComponent.cpp
+    engine/components/Animation.cpp
 )
 
 add_executable(${TARGET_NAME} ${TARGET_PARAM} ${SOURCE_FILES})

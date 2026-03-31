@@ -1,8 +1,11 @@
 #ifndef ENGINE_ANIMATION_H
 #define ENGINE_ANIMATION_H
-#include <memory>
+#include <SDL3/SDL_rect.h>
 
-#include "Component.h"
+#include <memory>
+#include <unordered_map>
+
+#include "Renderable.h"
 #include "Texture2D.h"
 
 namespace dae
@@ -10,17 +13,44 @@ namespace dae
 
 struct SpriteSheet
 {
-    int rows;
+    std::shared_ptr<Texture2D> texture;
     int cols;
+    int rows;
 };
 
-class Animation : public Component
+struct Frame
+{
+    SpriteSheet& spriteSheet;
+    float duration;
+    SDL_FRect srcRect;
+};
+
+class Animation : public Renderable
 {
 public:
-    explicit Animation(GameObject* pOwner, std::shared_ptr<Texture2D> texture);
-    ~Animation() noexcept override;
+    explicit Animation(GameObject* pOwner, int zIndex = 0);
+    ~Animation() noexcept override = default;
 
     void Update(float deltaTime) override;
+    void Render() override;
+
+    void SetPlaying(bool playing);
+
+    SpriteSheet& AddSpriteSheet(const std::shared_ptr<Texture2D>& texture, int cols, int rows);
+    void AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet, std::initializer_list<std::tuple<int, int, float>> frameData);
+
+    void SetActiveAnimation(unsigned int animationID, bool startPlaying = false);
+private:
+    const Frame& GetActiveFrame() const;
+    void AdvanceFrame();
+
+    std::vector<SpriteSheet> m_spriteSheets;
+    std::unordered_map<unsigned int, std::vector<Frame>> m_animations;
+
+    float m_elapsedTime{};
+    unsigned int m_currentAnimation{};
+    size_t m_frameIndex{};
+    bool m_playing{};
 };
 
 }  // namespace dae

@@ -4,6 +4,7 @@
 #include <sdbm.hpp>
 
 #include "AchievementManager.h"
+#include "components/Animation.h"
 #include "components/FpsComponent.h"
 #include "components/PlayerController.h"
 #include "components/ScoreComponent.h"
@@ -74,8 +75,23 @@ static void load()
         auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p0") };
         scoreDisplay->AddComponent<dae::ScoreComponent>(0);
 
-        player0->AddComponent<dae::Sprite>(playerTexture);
+        auto spriteSheetTexture{ dae::ResourceManager::Get().LoadTexture("spritesheet.png") };
+        const auto size{ spriteSheetTexture->GetSize() };
+
         player0->AddComponent<dae::PlayerController>(0);
+        auto* animation{ player0->AddComponent<dae::Animation>(3) };
+
+        const auto cols{ static_cast<int>(size.x / 16.f) };
+        const auto rows{ static_cast<int>(size.y / 16.f) };
+        auto& spriteSheet{ animation->AddSpriteSheet(spriteSheetTexture, cols, rows) };
+
+        animation->AddAnimation("walk_down"_h, spriteSheet,
+                                {
+                                    { 0, 0, 0.25f },
+                                    { 1, 0, 0.25f },
+                                    { 2, 0, 0.25f },
+                                });
+        animation->SetActiveAnimation("walk_down"_h, true);
 
         input.RegisterInput(SDL_SCANCODE_W, dae::Input::Type::held, "moveUp"_h, 0);
         input.RegisterInput(SDL_SCANCODE_A, dae::Input::Type::held, "moveLeft"_h, 0);
@@ -100,7 +116,6 @@ static void load()
         auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p1") };
         scoreDisplay->AddComponent<dae::ScoreComponent>(1);
 
-        player1->AddComponent<dae::Sprite>(enemyTexture);
         player1->AddComponent<dae::PlayerController>(1);
 
         input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, dae::Input::Type::held, "moveUp"_h, 1);

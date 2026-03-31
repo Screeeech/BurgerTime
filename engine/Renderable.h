@@ -17,7 +17,7 @@ public:
         SceneManager::Get().GetActiveScene()->RegisterRenderComponent(this);
     }
 
-    ~Renderable() override
+    ~Renderable() noexcept override
     {
         SceneManager::Get().UnregisterRenderComponent(this);
     }
@@ -30,7 +30,7 @@ public:
         SceneManager::Get().SortCachedRenderComponents();
     }
 
-    int GetZIndex() const
+    [[nodiscard]] int GetZIndex() const
     {
         return m_zIndex;
     }
