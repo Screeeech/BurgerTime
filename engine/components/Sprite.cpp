@@ -37,7 +37,7 @@ void dae::Sprite::Render()
     const auto& pos{ m_pOwner->GetWorldPosition() };
     const auto& scale{ m_pOwner->GetTransform().GetWorldScale() };
 
-    Renderer::Get().RenderTexture(*m_texture, pos.x, pos.y, scale.x , scale.y);
+    Renderer::Get().RenderTextureScale(*m_texture, pos.x, pos.y, scale.x , scale.y);
 }
 
 void dae::Sprite::SetTexture(std::shared_ptr<Texture2D> texture)

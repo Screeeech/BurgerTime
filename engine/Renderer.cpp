@@ -78,44 +78,74 @@ void dae::Renderer::Destroy()
     }
 }
 
-void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
-{
-    SDL_FRect dst{};
-    dst.x = x;
-    dst.y = y;
-    SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
-    SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
-}
-
-void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, float scaleX, float scaleY) const
-{
-    SDL_FRect dst{};
-    dst.x = x;
-    dst.y = y;
-    SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
-    dst.w *= scaleX;
-    dst.h *= scaleY;
-    SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
-}
-
 void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
     dst.x = x;
     dst.y = y;
-    dst.w = srcRect.w;
-    dst.h = srcRect.h;
-    SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), &srcRect, &dst);
+    const SDL_FRect* pSrcRect{};
+    if(srcRect.w >= 0 and srcRect.h >= 0)
+    {
+        pSrcRect = &srcRect;
+        dst.w = srcRect.w;
+        dst.h = srcRect.h;
+    }
+    else
+    {
+        SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
+    }
+
+    SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst);
 }
 
-void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float scaleX, const float scaleY, SDL_FRect srcRect) const
+void dae::Renderer::RenderTextureScale(const Texture2D& texture, float x, float y, float scaleX, float scaleY,
+                                       SDL_FRect srcRect) const
+{
+    SDL_FRect dst{};
+    dst.x = x;
+    dst.y = y;
+
+    const SDL_FRect* pSrcRect{};
+    if(srcRect.w >= 0 and srcRect.h >= 0)
+    {
+        pSrcRect = &srcRect;
+        dst.w = srcRect.w;
+        dst.h = srcRect.w;
+    }
+    else
+    {
+        SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
+    }
+
+    dst.w *= scaleX;
+    dst.h *= scaleY;
+
+    SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst);
+}
+
+
+void dae::Renderer::RenderTextureScaleFlipped(const Texture2D& texture, float x, float y, float scaleX, float scaleY, bool flipX, bool flipY, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
     dst.x = x;
     dst.y = y;
     dst.w = srcRect.w * scaleX;
     dst.h = srcRect.w * scaleY;
-    SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), &srcRect, &dst);
+
+    const SDL_FRect* pSrcRect{};
+    if(srcRect.w >= 0 and srcRect.h >= 0)
+        pSrcRect = &srcRect;
+
+    constexpr SDL_FPoint origin = { 0.f, 0.f };
+
+    uint8_t flipBits{};
+    if(flipX)
+        flipBits |= SDL_FLIP_HORIZONTAL;
+    if(flipY)
+        flipBits |= SDL_FLIP_VERTICAL;
+    const auto flipMode{ static_cast<SDL_FlipMode>(flipBits) };
+
+    SDL_RenderTextureRotated(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst, 0, &origin, flipMode);
 }
 
 SDL_Renderer* dae::Renderer::GetSDLRenderer() const

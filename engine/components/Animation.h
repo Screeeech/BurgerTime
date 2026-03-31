@@ -23,6 +23,17 @@ struct Frame
     SpriteSheet& spriteSheet;
     float duration;
     SDL_FRect srcRect;
+    bool flipX{};
+    bool flipY{};
+};
+
+struct FrameData
+{
+    int colIdx;
+    int rowIdx;
+    float duration;
+    bool flipX{};
+    bool flipY{};
 };
 
 class Animation : public Renderable
@@ -37,11 +48,11 @@ public:
     void SetPlaying(bool playing);
 
     SpriteSheet& AddSpriteSheet(const std::shared_ptr<Texture2D>& texture, int cols, int rows);
-    void AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet, std::initializer_list<std::tuple<int, int, float>> frameData);
+    void AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet, std::initializer_list<FrameData> frameData);
 
     void SetActiveAnimation(unsigned int animationID, bool startPlaying = false);
 private:
-    const Frame& GetActiveFrame() const;
+    const Frame* GetActiveFrame() const;
     void AdvanceFrame();
 
     std::vector<SpriteSheet> m_spriteSheets;

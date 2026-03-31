@@ -87,13 +87,32 @@ static void load()
         const auto rows{ static_cast<int>(size.y / 16.f) };
         auto& spriteSheet{ animation->AddSpriteSheet(spriteSheetTexture, cols, rows) };
 
-        animation->AddAnimation("walk_down"_h, spriteSheet,
+        animation->AddAnimation("walkDown"_h, spriteSheet,
                                 {
-                                    { 0, 0, 0.25f },
-                                    { 1, 0, 0.25f },
-                                    { 2, 0, 0.25f },
+                                    { 0, 0, 0.1f },
+                                    { 1, 0, 0.1f },
+                                    { 2, 0, 0.1f },
                                 });
-        animation->SetActiveAnimation("walk_down"_h, true);
+        animation->AddAnimation("walkUp"_h, spriteSheet,
+                                {
+                                    { 6, 0, 0.1f },
+                                    { 7, 0, 0.1f },
+                                    { 8, 0, 0.1f },
+                                });
+        animation->AddAnimation("walkLeft"_h, spriteSheet,
+                                {
+                                    { 3, 0, 0.1f },
+                                    { 4, 0, 0.1f },
+                                    { 5, 0, 0.1f },
+                                });
+        animation->AddAnimation("walkRight"_h, spriteSheet,
+                                {
+                                    { 3, 0, 0.1f, true },
+                                    { 4, 0, 0.1f, true },
+                                    { 5, 0, 0.1f, true },
+                                });
+
+        animation->SetActiveAnimation("walkRight"_h, true);
 
         input.RegisterInput(SDL_SCANCODE_W, dae::Input::Type::held, "moveUp"_h, 0);
         input.RegisterInput(SDL_SCANCODE_A, dae::Input::Type::held, "moveLeft"_h, 0);

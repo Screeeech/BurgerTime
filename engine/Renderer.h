@@ -21,10 +21,11 @@ public:
     void Render() const;
     void Destroy();
 
-    void RenderTexture(const Texture2D& texture, float x, float y) const;
-    void RenderTexture(const Texture2D& texture, float x, float y, float scaleX, float scaleY) const;
-    void RenderTexture(const Texture2D& texture, float x, float y, SDL_FRect srcRect) const;
-    void RenderTexture(const Texture2D& texture, float x, float y, float scaleX, float scaleY, SDL_FRect srcRect) const;
+    void RenderTexture(const Texture2D& texture, float x, float y, SDL_FRect srcRect = { 0.f, 0.f, -1.f, -1.f }) const;
+    void RenderTextureScale(const Texture2D& texture, float x, float y, float scaleX, float scaleY,
+                            SDL_FRect srcRect = { 0.f, 0.f, -1.f, -1.f }) const;
+    void RenderTextureScaleFlipped(const Texture2D& texture, float x, float y, float scaleX, float scaleY, bool flipX, bool flipY,
+                                   SDL_FRect srcRect = { 0.f, 0.f, -1.f, -1.f }) const;
 
     [[nodiscard]] SDL_Renderer* GetSDLRenderer() const;
 
