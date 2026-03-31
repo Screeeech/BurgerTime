@@ -1,5 +1,5 @@
-#ifndef ENGINE_SPRITECOMPONENT_H
-#define ENGINE_SPRITECOMPONENT_H
+#ifndef ENGINE_SPRITE_H
+#define ENGINE_SPRITE_H
 #include <SDL3/SDL_rect.h>
 
 #include <memory>
@@ -37,4 +37,4 @@ private:
 
 }  // namespace dae
 
-#endif  // ENGINE_SPRITECOMPONENT_H
+#endif  // ENGINE_SPRITE_H
