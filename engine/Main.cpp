@@ -63,6 +63,8 @@ static void load()
     // Player 0
     {
         auto* player0{ scene.GetRoot()->CreateChild(100, 300, 0, "Player 0") };
+        player0->GetTransform().SetScale(4.f, 4.f);
+
         auto playerTexture{ dae::ResourceManager::Get().LoadTexture("player.png") };
 
         auto* playerDisplay{ scene.GetRoot()->CreateChild(10, 150, 0, "Player display p0") };

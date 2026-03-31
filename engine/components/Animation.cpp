@@ -26,12 +26,12 @@ void Animation::Update(float deltaTime)
 void Animation::Render()
 {
     const auto& frame = GetActiveFrame();
-    const auto worldPos{ m_pOwner->GetWorldPosition() };
+    const glm::vec3 worldPos{ m_pOwner->GetWorldPosition() };
+    const glm::vec2 scale{ m_pOwner->GetTransform().GetWorldScale() };
+    const glm::vec2 dimensions{ frame.srcRect.w, frame.srcRect.h };
 
-    Renderer::Get().RenderTexture(*frame.spriteSheet.texture.get(), worldPos.x, worldPos.y, 64.f, 64.f,
-                                  frame.srcRect);
-    // Renderer::Get().RenderTexture(*frame.spriteSheet.texture.get(), worldPos.x, worldPos.y, frame.srcRect.w, frame.srcRect.h,
-    //                               frame.srcRect);
+    Renderer::Get().RenderTexture(*frame.spriteSheet.texture.get(), worldPos.x, worldPos.y, dimensions.x * scale.x,
+                                  dimensions.y * scale.y, frame.srcRect);
 }
 
 void Animation::SetPlaying(bool playing)
