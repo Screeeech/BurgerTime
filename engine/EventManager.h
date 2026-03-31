@@ -24,7 +24,7 @@ public:
     template <typename T>
     void BindEvent(EventID id, T* listener, void(T::*callback)(const Event&))
     {
-        m_listeners.emplace( id, std::pair{ listener, std::bind(callback, listener, std::placeholders::_1) } );
+        m_listeners.emplace( id, std::pair{ listener, std::bind_front(callback, listener) } );
     }
 
     template <typename T>
