@@ -25,6 +25,9 @@ void Animation::Update(float deltaTime)
 
 void Animation::Render()
 {
+    if(m_animations.empty() or m_spriteSheets.empty())
+        return;
+
     const auto& frame = GetActiveFrame();
     const glm::vec3 worldPos{ m_pOwner->GetWorldPosition() };
     const glm::vec2 scale{ m_pOwner->GetTransform().GetWorldScale() };
