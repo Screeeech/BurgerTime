@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <print>
 
-#include "commands/CallbackCommand.h"
+#include "Commands/CallbackCommand.h"
 
 dae::InputManager::~InputManager() noexcept
 {

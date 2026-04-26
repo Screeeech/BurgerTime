@@ -3,7 +3,7 @@
 #include <print>
 
 #include "GameObject.h"
-#include "components/UIComponent.h"
+#include "Components/UIComponent.h"
 #include "imgui.h"
 #include "implot.h"
 

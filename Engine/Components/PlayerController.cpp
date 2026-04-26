@@ -4,9 +4,9 @@
 #include <format>
 #include <sdbm.hpp>
 
-#include "commands/CallbackCommand.h"
-#include "commands/MoveCommand.h"
-#include "components/TextComponent.h"
+#include "Commands/CallbackCommand.h"
+#include "Commands/MoveCommand.h"
+#include "Components/TextComponent.h"
 #include "EventManager.h"
 #include "Events.h"
 #include "GameObject.h"

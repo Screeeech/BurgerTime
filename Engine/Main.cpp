@@ -4,12 +4,12 @@
 #include <sdbm.hpp>
 
 #include "AchievementManager.h"
-#include "components/Animation.h"
-#include "components/FpsComponent.h"
-#include "components/PlayerController.h"
-#include "components/ScoreComponent.h"
-#include "components/Sprite.h"
-#include "components/TextComponent.h"
+#include "Components/Animation.h"
+#include "Components/FpsComponent.h"
+#include "Components/PlayerController.h"
+#include "Components/ScoreComponent.h"
+#include "Components/Sprite.h"
+#include "Components/TextComponent.h"
 #include "EventManager.h"
 #include "Events.h"
 #include "InputManager.h"

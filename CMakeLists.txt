@@ -28,32 +28,32 @@ endif ()
 
 # list source files here
 set(SOURCE_FILES
-    engine/Font.cpp
-    engine/GameObject.cpp
-    engine/InputManager.cpp
-    engine/Main.cpp
-    engine/Minigin.cpp
-    engine/Renderer.cpp
-    engine/ResourceManager.cpp
-    engine/Scene.cpp
-    engine/SceneManager.cpp
-    engine/Texture2D.cpp
-    engine/Transform.cpp
-    engine/EventManager.cpp
-    engine/AchievementManager.cpp
-    engine/commands/CallbackCommand.cpp
-    engine/commands/GameObjectCommand.cpp
-    engine/commands/MoveCommand.cpp
-    engine/components/TextComponent.cpp
-    engine/components/Sprite.cpp
-    engine/components/FpsComponent.cpp
-    engine/components/RotatorComponent.cpp
-    engine/components/UIComponent.cpp
-    engine/components/CacheComponent.cpp
-    engine/components/PlayerController.cpp
-    engine/components/HealthComponent.cpp
-    engine/components/ScoreComponent.cpp
-    engine/components/Animation.cpp
+    "Engine/Font.cpp"
+    "Engine/GameObject.cpp"
+    "Engine/InputManager.cpp"
+    "Engine/Main.cpp"
+    "Engine/Minigin.cpp"
+    "Engine/Renderer.cpp"
+    "Engine/ResourceManager.cpp"
+    "Engine/Scene.cpp"
+    "Engine/SceneManager.cpp"
+    "Engine/Texture2D.cpp"
+    "Engine/Transform.cpp"
+    "Engine/EventManager.cpp"
+    "Engine/AchievementManager.cpp"
+    "Engine/Commands/CallbackCommand.cpp"
+    "Engine/Commands/GameObjectCommand.cpp"
+    "Engine/Commands/MoveCommand.cpp"
+    "Engine/Components/TextComponent.cpp"
+    "Engine/Components/Sprite.cpp"
+    "Engine/Components/FpsComponent.cpp"
+    "Engine/Components/RotatorComponent.cpp"
+    "Engine/Components/UIComponent.cpp"
+    "Engine/Components/CacheComponent.cpp"
+    "Engine/Components/PlayerController.cpp"
+    "Engine/Components/HealthComponent.cpp"
+    "Engine/Components/ScoreComponent.cpp"
+    "Engine/Components/Animation.cpp"
 )
 
 add_executable(${TARGET_NAME} ${TARGET_PARAM} ${SOURCE_FILES})
@@ -72,18 +72,18 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(imgui)
 
 set(IMGUI_SOURCES
-    ${imgui_SOURCE_DIR}/imgui.cpp
-    ${imgui_SOURCE_DIR}/imgui_draw.cpp
-    ${imgui_SOURCE_DIR}/imgui_tables.cpp
-    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-    ${imgui_SOURCE_DIR}/imgui_demo.cpp
-    ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-    ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
+    "${imgui_SOURCE_DIR}/imgui.cpp"
+    "${imgui_SOURCE_DIR}/imgui_draw.cpp"
+    "${imgui_SOURCE_DIR}/imgui_tables.cpp"
+    "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
+    "${imgui_SOURCE_DIR}/imgui_demo.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp"
 )
 add_library(imgui STATIC ${IMGUI_SOURCES})
 target_include_directories(imgui PUBLIC
-    ${imgui_SOURCE_DIR}
-    ${imgui_SOURCE_DIR}/backends
+    "${imgui_SOURCE_DIR}"
+    "${imgui_SOURCE_DIR}/backends"
 )
 target_link_libraries(imgui PUBLIC SDL3::SDL3)
 
@@ -97,9 +97,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(implot)
 
 set(IMPLOT_SOURCES
-    ${implot_SOURCE_DIR}/implot.cpp
-    ${implot_SOURCE_DIR}/implot_demo.cpp
-    ${implot_SOURCE_DIR}/implot_items.cpp
+    "${implot_SOURCE_DIR}/implot.cpp"
+    "${implot_SOURCE_DIR}/implot_demo.cpp"
+    "${implot_SOURCE_DIR}/implot_items.cpp"
 )
 add_library(implot STATIC ${implot_SOURCE_DIR} ${IMPLOT_SOURCES})
 target_include_directories(implot PUBLIC ${implot_SOURCE_DIR})
@@ -187,13 +187,13 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/steam")
 find_package(Steamworks QUIET)
 
 target_include_directories("${TARGET_NAME}" PUBLIC
-    ${CMAKE_SOURCE_DIR}/engine/
-    ${glm_SOURCE_DIR}
-    ${sdl3_SOURCE_DIR}/include
-    ${sdl3_image_SOURCE_DIR}/include
-    ${sdl3_ttf_SOURCE_DIR}/include
-    ${imgui_SOURCE_DIR}
-    ${VLD_INCLUDE_DIR}
+    "${CMAKE_SOURCE_DIR}/Engine/"
+    "${glm_SOURCE_DIR}"
+    "${sdl3_SOURCE_DIR}/include"
+    "${sdl3_image_SOURCE_DIR}/include"
+    "${sdl3_ttf_SOURCE_DIR}/include"
+    "${imgui_SOURCE_DIR}"
+    "${VLD_INCLUDE_DIR}"
 )
 
 target_link_libraries("${TARGET_NAME}" PUBLIC
@@ -215,7 +215,7 @@ endif ()
 
 if (EMSCRIPTEN)
   set(EMSCRIPTEN_COMPILE_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -g")
-  set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1 -g -sALLOW_MEMORY_GROWTH --preload-file \"${CMAKE_SOURCE_DIR}/resources@/\"")
+  set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1 -g -sALLOW_MEMORY_GROWTH --preload-file \"${CMAKE_SOURCE_DIR}/Resources@/\"")
 
   # Use the Emscripten toolchain
   set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmscriptenToolchain.cmake)
@@ -267,7 +267,7 @@ elseif (WIN32)
   endif ()
 
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/resources" "$<TARGET_FILE_DIR:${TARGET_NAME}>/resources"
+      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Resources" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources"
   )
 elseif (APPLE)
   set_target_properties(${TARGET_NAME} PROPERTIES
@@ -295,9 +295,9 @@ elseif (APPLE)
     )
   endif ()
 
-  # Copy resources folder to output directory after build
+  # Copy Resources folder to output directory after build
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/resources" "$<TARGET_FILE_DIR:${TARGET_NAME}>/resources"
+      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Resources" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources"
   )
 else ()
   if (Steamworks_FOUND)
@@ -314,6 +314,6 @@ else ()
 
   # Copy resources folder to output directory after build
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/resources" "$<TARGET_FILE_DIR:${TARGET_NAME}>/resources"
+      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Resources" "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources"
   )
 endif ()

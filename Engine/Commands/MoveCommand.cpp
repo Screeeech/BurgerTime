@@ -2,7 +2,7 @@
 
 #include <print>
 
-#include "components/PlayerController.h"
+#include "Components/PlayerController.h"
 #include "GameObject.h"
 
 namespace dae

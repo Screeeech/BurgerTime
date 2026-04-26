@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <cassert>
 
+#include "Components/UIComponent.h"
 #include "Renderable.h"
-#include "components/UIComponent.h"
 
 using namespace dae;
 
