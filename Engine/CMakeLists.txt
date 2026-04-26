@@ -29,12 +29,6 @@ set(ENGINE_SOURCES
 
 add_library(${ENGINE_TARGET} STATIC ${ENGINE_SOURCES})
 
-target_link_libraries(${ENGINE_TARGET} PUBLIC
-    SDL3::SDL3
-    SDL3_ttf::SDL3_ttf
-    imgui
-    implot)
-
 target_include_directories(${ENGINE_TARGET} PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/Include"
 )
@@ -70,7 +64,6 @@ target_include_directories(imgui PUBLIC
 target_link_libraries(imgui PUBLIC
     SDL3::SDL3
     SDL3_ttf::SDL3_ttf
-    implot
 )
 
 FetchContent_Declare(
@@ -177,3 +170,10 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
     "${sdl3_ttf_SOURCE_DIR}/include"
     "${imgui_SOURCE_DIR}"
 )
+
+target_link_libraries(${ENGINE_TARGET} PUBLIC
+    SDL3::SDL3
+    SDL3_ttf::SDL3_ttf
+    imgui
+    implot)
+
