@@ -1,6 +1,6 @@
-#include "EventManager.h"
+#include "EventManager.hpp"
 
-#include "Events.h"
+#include "Events.hpp"
 
 namespace dae
 {

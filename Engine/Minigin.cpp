@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "EventManager.h"
+#include "EventManager.hpp"
 
 #if USE_STEAMWORKS
 #include <steam_api.h>
@@ -16,12 +16,12 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "Events.h"
-#include "InputManager.h"
-#include "Minigin.h"
-#include "Renderer.h"
-#include "ResourceManager.h"
-#include "SceneManager.h"
+#include "Events.hpp"
+#include "InputManager.hpp"
+#include "Minigin.hpp"
+#include "Renderer.hpp"
+#include "ResourceManager.hpp"
+#include "SceneManager.hpp"
 
 SDL_Window* g_window{};
 
@@ -37,7 +37,7 @@ void LogSDLVersion(const std::string& message, int major, int minor, int patch)
 }
 
 #ifdef __EMSCRIPTEN__
-#include "emscripten.h"
+#include "emscripten.hpp"
 
 void LoopCallback(void* arg)
 {

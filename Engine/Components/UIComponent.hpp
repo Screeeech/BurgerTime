@@ -2,7 +2,7 @@
 #define ENGINE_UICOMPONENT_H
 #include <functional>
 
-#include "Component.h"
+#include "Component.hpp"
 
 namespace dae
 {

@@ -1,9 +1,9 @@
-#include "MoveCommand.h"
+#include "MoveCommand.hpp"
 
 #include <print>
 
-#include "Components/PlayerController.h"
-#include "GameObject.h"
+#include "Components/PlayerController.hpp"
+#include "GameObject.hpp"
 
 namespace dae
 {

@@ -2,17 +2,16 @@
 // Created by lily-laptop on 18/03/2026.
 //
 
+#include "ScoreComponent.hpp"
+
 #include <format>
-#include <sdbm.hpp>
+#include <Utils.hpp>
 
-#include "GameObject.h"
-#include "ResourceManager.h"
-
-#include "ScoreComponent.h"
-#include "TextComponent.h"
-
-#include "EventManager.h"
-#include "Events.h"
+#include "EventManager.hpp"
+#include "Events.hpp"
+#include "GameObject.hpp"
+#include "ResourceManager.hpp"
+#include "TextComponent.hpp"
 
 namespace dae
 {

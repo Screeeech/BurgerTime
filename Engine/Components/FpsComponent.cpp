@@ -1,9 +1,9 @@
-#include "FpsComponent.h"
+#include "FpsComponent.hpp"
 
 #include <print>
 
-#include "GameObject.h"
-#include "TextComponent.h"
+#include "GameObject.hpp"
+#include "TextComponent.hpp"
 
 dae::FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color color)
     : Component(pOwner)

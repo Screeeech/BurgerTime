@@ -1,13 +1,13 @@
-#include "HealthComponent.h"
+#include "HealthComponent.hpp"
 
 #include <format>
-#include <sdbm.hpp>
+#include <Utils.hpp>
 
-#include "EventManager.h"
-#include "Events.h"
-#include "GameObject.h"
-#include "ResourceManager.h"
-#include "TextComponent.h"
+#include "EventManager.hpp"
+#include "Events.hpp"
+#include "GameObject.hpp"
+#include "ResourceManager.hpp"
+#include "TextComponent.hpp"
 
 namespace dae
 {

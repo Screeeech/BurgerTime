@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <chrono>
 
-#include "Component.h"
+#include "Component.hpp"
 
 namespace dae
 {

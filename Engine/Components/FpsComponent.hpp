@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "Component.h"
+#include "Component.hpp"
 
 namespace dae
 {

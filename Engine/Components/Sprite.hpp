@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "Renderable.h"
+#include "Renderable.hpp"
 
 namespace dae
 {

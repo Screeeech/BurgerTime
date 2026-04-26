@@ -1,10 +1,10 @@
-#include "Texture2D.h"
+#include "Texture2D.hpp"
 
 #include <SDL3/SDL.h>
 
 #include <stdexcept>
 
-#include "Renderer.h"
+#include "Renderer.hpp"
 
 dae::Texture2D::~Texture2D() noexcept
 {

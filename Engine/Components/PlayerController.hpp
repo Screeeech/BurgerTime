@@ -3,8 +3,8 @@
 
 #include <glm/vec3.hpp>
 
-#include "Component.h"
-#include "HealthComponent.h"
+#include "Component.hpp"
+#include "HealthComponent.hpp"
 
 namespace dae
 {

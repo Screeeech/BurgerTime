@@ -5,8 +5,8 @@
 
 #include <memory>
 
-#include "Component.h"
-#include "Font.h"
+#include "Component.hpp"
+#include "Font.hpp"
 
 namespace dae
 {

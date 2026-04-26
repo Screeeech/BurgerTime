@@ -1,10 +1,11 @@
+#include "Sprite.hpp"
+
 #include <utility>
 
-#include "GameObject.h"
-#include "Renderer.h"
-#include "Sprite.h"
-#include "Texture2D.h"
-#include "Transform.h"
+#include "GameObject.hpp"
+#include "Renderer.hpp"
+#include "Texture2D.hpp"
+#include "Transform.hpp"
 
 dae::Sprite::Sprite(GameObject* pOwner, std::shared_ptr<Texture2D> texture, int zIndex)
     : Renderable(pOwner, zIndex)

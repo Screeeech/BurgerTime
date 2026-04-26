@@ -1,0 +1,33 @@
+﻿#pragma once
+#include <SDL3/SDL_surface.h>
+
+#include <filesystem>
+#include <map>
+#include <memory>
+#include <string>
+
+#include "Singleton.hpp"
+
+namespace dae
+{
+class Texture2D;
+class Font;
+
+class ResourceManager final : public Singleton<ResourceManager>
+{
+public:
+    void Init(const std::filesystem::path& data);
+    std::shared_ptr<Texture2D> LoadTexture(const std::string& file, SDL_ScaleMode scaleMode = SDL_SCALEMODE_LINEAR);
+    std::shared_ptr<Font> LoadFont(const std::string& file, uint8_t size);
+
+private:
+    friend class Singleton<ResourceManager>;
+    ResourceManager() = default;
+    std::filesystem::path m_dataPath;
+
+    void UnloadUnusedResources();
+
+    std::map<std::string, std::shared_ptr<Texture2D>> m_loadedTextures;
+    std::map<std::pair<std::string, uint8_t>, std::shared_ptr<Font>> m_loadedFonts;
+};
+}  // namespace dae

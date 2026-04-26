@@ -1,22 +1,22 @@
 
 #include <filesystem>
 #include <print>
-#include <sdbm.hpp>
+#include <Utils.hpp>
 
-#include "AchievementManager.h"
-#include "Components/Animation.h"
-#include "Components/FpsComponent.h"
-#include "Components/PlayerController.h"
-#include "Components/ScoreComponent.h"
-#include "Components/Sprite.h"
-#include "Components/TextComponent.h"
-#include "EventManager.h"
-#include "Events.h"
-#include "InputManager.h"
-#include "Minigin.h"
-#include "ResourceManager.h"
-#include "Scene.h"
-#include "SceneManager.h"
+#include "AchievementManager.hpp"
+#include "Components/Animation.hpp"
+#include "Components/FpsComponent.hpp"
+#include "Components/PlayerController.hpp"
+#include "Components/ScoreComponent.hpp"
+#include "Components/Sprite.hpp"
+#include "Components/TextComponent.hpp"
+#include "EventManager.hpp"
+#include "Events.hpp"
+#include "InputManager.hpp"
+#include "Minigin.hpp"
+#include "ResourceManager.hpp"
+#include "Scene.hpp"
+#include "SceneManager.hpp"
 
 
 #if _DEBUG && __has_include(<vld.h>)

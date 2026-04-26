@@ -1,6 +1,6 @@
 #ifndef ENGINE_ROTATORCOMPONENT_H
 #define ENGINE_ROTATORCOMPONENT_H
-#include "Component.h"
+#include "Component.hpp"
 
 namespace dae
 {

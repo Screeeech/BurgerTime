@@ -1,15 +1,15 @@
-﻿#include "Renderer.h"
+﻿#include "Renderer.hpp"
 
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
+#include <implot.h>
 
 #include <iostream>
 #include <stdexcept>
 
-#include "implot.h"
-#include "SceneManager.h"
-#include "Texture2D.h"
+#include "SceneManager.hpp"
+#include "Texture2D.hpp"
 
 void dae::Renderer::Init(SDL_Window* window)
 {
@@ -123,8 +123,8 @@ void dae::Renderer::RenderTextureScale(const Texture2D& texture, float x, float 
     SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst);
 }
 
-
-void dae::Renderer::RenderTextureScaleFlipped(const Texture2D& texture, float x, float y, float scaleX, float scaleY, bool flipX, bool flipY, SDL_FRect srcRect) const
+void dae::Renderer::RenderTextureScaleFlipped(const Texture2D& texture, float x, float y, float scaleX, float scaleY, bool flipX,
+                                              bool flipY, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
     dst.x = x;

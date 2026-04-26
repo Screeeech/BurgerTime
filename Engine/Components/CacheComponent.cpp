@@ -1,11 +1,11 @@
-#include "CacheComponent.h"
+#include "CacheComponent.hpp"
 
 #include <print>
 
-#include "GameObject.h"
-#include "Components/UIComponent.h"
-#include "imgui.h"
-#include "implot.h"
+#include "Components/UIComponent.hpp"
+#include "GameObject.hpp"
+#include <imgui.h>
+#include <implot.h>
 
 dae::CacheComponent::CacheComponent(GameObject* pOwner, int bufferSize)
     : Component(pOwner)

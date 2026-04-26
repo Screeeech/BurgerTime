@@ -1,7 +1,7 @@
 #ifndef ENGINE_RENDERABLE_H
 #define ENGINE_RENDERABLE_H
-#include "Component.h"
-#include "SceneManager.h"
+#include "Component.hpp"
+#include "SceneManager.hpp"
 
 namespace dae
 {

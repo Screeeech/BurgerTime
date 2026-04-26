@@ -11,8 +11,8 @@
 #include <variant>
 #include <vector>
 
-#include "Command.h"
-#include "Singleton.h"
+#include "Command.hpp"
+#include "Singleton.hpp"
 
 namespace dae
 {

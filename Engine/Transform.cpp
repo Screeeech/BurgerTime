@@ -1,11 +1,11 @@
-#include "Transform.h"
+#include "Transform.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_decompose.hpp>
 
-#include "GameObject.h"
+#include "GameObject.hpp"
 
 dae::Transform::Transform(float x, float y, float z, GameObject* parent)
     : m_pOwner(parent)

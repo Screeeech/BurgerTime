@@ -1,7 +1,7 @@
 #ifndef ENGINE_SDBM_HPP
 #define ENGINE_SDBM_HPP
 
-namespace sdbm
+namespace Utils
 {
 
 consteval unsigned int sdbm_hash(const char* str, size_t len)
@@ -19,7 +19,7 @@ consteval unsigned int sdbm_hash(const char* str, size_t len)
 
 consteval unsigned int operator""_h(const char* str, size_t len)
 {
-    return sdbm::sdbm_hash(str, len);
+    return Utils::sdbm_hash(str, len);
 }
 
 #endif  // ENGINE_SDBM_HPP

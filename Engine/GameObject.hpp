@@ -4,8 +4,8 @@
 #include <ranges>
 #include <vector>
 
-#include "Component.h"
-#include "Transform.h"
+#include "Component.hpp"
+#include "Transform.hpp"
 
 namespace dae
 {

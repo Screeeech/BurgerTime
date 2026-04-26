@@ -1,6 +1,6 @@
 #ifndef ENGINE_MOVECOMMAND_H
 #define ENGINE_MOVECOMMAND_H
-#include "GameObjectCommand.h"
+#include "GameObjectCommand.hpp"
 
 namespace dae
 {

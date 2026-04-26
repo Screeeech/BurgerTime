@@ -2,7 +2,7 @@
 #define ENGINE_GAMEOBJECTCOMMAND_H
 #include <glm/vec3.hpp>
 
-#include "Command.h"
+#include "Command.hpp"
 
 namespace dae
 {

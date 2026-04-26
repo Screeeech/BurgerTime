@@ -3,7 +3,7 @@
 
 #include <functional>
 
-#include "Command.h"
+#include "Command.hpp"
 
 namespace dae
 {

@@ -1,6 +1,6 @@
-#include "Animation.h"
+#include "Animation.hpp"
 
-#include "Renderer.h"
+#include "Renderer.hpp"
 
 namespace dae
 {

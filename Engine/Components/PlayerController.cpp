@@ -1,18 +1,16 @@
-#include "PlayerController.h"
+#include "PlayerController.hpp"
 
 #include <algorithm>
 #include <format>
-#include <sdbm.hpp>
+#include <Utils.hpp>
 
-#include "Commands/CallbackCommand.h"
-#include "Commands/MoveCommand.h"
-#include "Components/TextComponent.h"
-#include "EventManager.h"
-#include "Events.h"
-#include "GameObject.h"
-#include "InputManager.h"
-#include "SceneManager.h"
-#include "ScoreComponent.h"
+#include "Commands/CallbackCommand.hpp"
+#include "Commands/MoveCommand.hpp"
+#include "EventManager.hpp"
+#include "Events.hpp"
+#include "GameObject.hpp"
+#include "InputManager.hpp"
+#include "SceneManager.hpp"
 
 namespace dae
 {

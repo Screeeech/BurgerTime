@@ -1,8 +1,8 @@
-#include "UIComponent.h"
+#include "UIComponent.hpp"
 
 #include <utility>
 
-#include "SceneManager.h"
+#include "SceneManager.hpp"
 
 dae::UIComponent::UIComponent(GameObject* pOwner, std::function<void(GameObject* pCaller)> drawFunc)
     : Component(pOwner)

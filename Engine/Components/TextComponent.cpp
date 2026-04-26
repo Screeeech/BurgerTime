@@ -1,13 +1,14 @@
-#include "TextComponent.h"
+#include "TextComponent.hpp"
+
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include <stdexcept>
 #include <utility>
 
-#include "GameObject.h"
-#include "Renderer.h"
-#include "SDL3_ttf/SDL_ttf.h"
-#include "Sprite.h"
-#include "Texture2D.h"
+#include "GameObject.hpp"
+#include "Renderer.hpp"
+#include "Sprite.hpp"
+#include "Texture2D.hpp"
 
 dae::TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, int zIndex, SDL_Color color)
     : Component(pOwner)

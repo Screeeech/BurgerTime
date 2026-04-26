@@ -5,8 +5,8 @@
 #include <memory>
 #include <unordered_map>
 
-#include "Renderable.h"
-#include "Texture2D.h"
+#include "Renderable.hpp"
+#include "Texture2D.hpp"
 
 namespace dae
 {

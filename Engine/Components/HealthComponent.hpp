@@ -1,6 +1,6 @@
 #ifndef ENGINE_HEALTHCOMPONENT_H
 #define ENGINE_HEALTHCOMPONENT_H
-#include "Component.h"
+#include "Component.hpp"
 
 namespace dae
 {

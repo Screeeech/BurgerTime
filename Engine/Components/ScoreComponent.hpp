@@ -4,7 +4,7 @@
 
 #ifndef ENGINE_SCORECOMPONENT_H
 #define ENGINE_SCORECOMPONENT_H
-#include "Component.h"
+#include "Component.hpp"
 
 namespace dae
 {

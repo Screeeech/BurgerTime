@@ -1,10 +1,10 @@
-#include "GameObject.h"
+#include "GameObject.hpp"
 
 #include <algorithm>
 #include <ranges>
 #include <utility>
 
-#include "ResourceManager.h"
+#include "ResourceManager.hpp"
 
 dae::GameObject::GameObject(float x, float y, float z, std::string_view name)
     : m_name(name)
