@@ -37,7 +37,7 @@ void LogSDLVersion(const std::string& message, int major, int minor, int patch)
 }
 
 #ifdef __EMSCRIPTEN__
-#include "emscripten.hpp"
+#include <emscripten.h>
 
 void LoopCallback(void* arg)
 {
