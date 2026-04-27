@@ -26,7 +26,7 @@ public:
     void Achieve(AchievementType achievement);
     void OnWin(const gla::Event& event);
 
-    std::set<AchievementType> m_Achievements{};
+    std::set<AchievementType> m_Achievements;
 };
 
 }  // namespace bt

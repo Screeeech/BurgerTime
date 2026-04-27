@@ -15,6 +15,11 @@ public:
     explicit PlayerController(gla::GameObject* pPlayer, int playerIndex);
     ~PlayerController() noexcept override;
 
+    PlayerController(PlayerController const&) = delete;
+    auto operator=(PlayerController const&) -> PlayerController& = delete;
+    PlayerController(PlayerController&&) = delete;
+    auto operator=(PlayerController&&) -> PlayerController& = delete;
+
     void Update(float deltaTime) override;
     void SetDirection(glm::vec3 direction);
 

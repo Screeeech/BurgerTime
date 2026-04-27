@@ -16,11 +16,17 @@ class HealthComponent : public gla::Component
 public:
     explicit HealthComponent(gla::GameObject* pOwner, int playerIndex, int startingHealth = 5);
     ~HealthComponent() noexcept override;
+
+    HealthComponent(HealthComponent const&) = delete;
+    auto operator=(HealthComponent const&) -> HealthComponent& = delete;
+    HealthComponent(HealthComponent&&) = delete;
+    auto operator=(HealthComponent&&) -> HealthComponent& = delete;
+
     void Update(float deltaTime) override;
 
     void OnHealthChange(const gla::Event& event);
     void SetHealth(int newHealth);
-    [[nodiscard]] int GetHealth() const;
+    [[nodiscard]] auto GetHealth() const -> int;
 
 private:
     int m_health;

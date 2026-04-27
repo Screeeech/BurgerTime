@@ -26,7 +26,9 @@
 
 namespace fs = std::filesystem;
 
-static void load()
+namespace
+{
+void load()
 {
     auto& scene = gla::SceneManager::Get().CreateScene();
     scene.Load();
@@ -34,7 +36,7 @@ static void load()
     auto backgroundTexture = gla::ResourceManager::Get().LoadTexture("background.png");
     auto logoTexture = gla::ResourceManager::Get().LoadTexture("logo.png");
 
-    auto& rm{ gla::ResourceManager::Get() };
+    auto& rm{gla::ResourceManager::Get()};
     auto font = rm.LoadFont("Lingua.otf", 36);
     auto smallFont = rm.LoadFont("Lingua.otf", 21);
     auto mediumFont = rm.LoadFont("Lingua.otf", 28);
@@ -52,66 +54,74 @@ static void load()
     go->AddComponent<gla::FpsComponent>(font);
 
 
-    auto& input{ gla::InputManager::Get() };
+    auto& input{gla::InputManager::Get()};
     // auto& event{ dae::EventManager::Get() };
 
-    auto* infoTextP0{ scene.GetRoot()->CreateChild(10, 60) };
+    auto* infoTextP0{scene.GetRoot()->CreateChild(10, 60)};
     infoTextP0->AddComponent<gla::TextComponent>("Movement: WASD, Kill enemy: E, Take Damage: Q", smallFont, 1);
 
-    auto* infoTextP1{ scene.GetRoot()->CreateChild(10, 90) };
+    auto* infoTextP1{scene.GetRoot()->CreateChild(10, 90)};
     infoTextP1->AddComponent<gla::TextComponent>("Movement: DPAD, Kill enemy: X, Take Damage: A", smallFont, 1);
 
     // Player 0
     {
-        auto* player0{ scene.GetRoot()->CreateChild(100, 300, 0, "Player 0") };
+        auto* player0{scene.GetRoot()->CreateChild(100, 300, 0, "Player 0")};
         player0->GetTransform().SetScale(4.f, 4.f);
 
-        auto playerTexture{ gla::ResourceManager::Get().LoadTexture("player.png") };
+        auto playerTexture{gla::ResourceManager::Get().LoadTexture("player.png")};
 
-        auto* playerDisplay{ scene.GetRoot()->CreateChild(10, 150, 0, "Player display p0") };
+        auto* playerDisplay{scene.GetRoot()->CreateChild(10, 150, 0, "Player display p0")};
         playerDisplay->AddComponent<gla::TextComponent>("Player 0", mediumFont);
 
         // NOTE: Ask about how to transfer ownership here
-        auto* healthDisplay{ playerDisplay->CreateChild(0, 40, 0, "Health display p0") };
+        auto* healthDisplay{playerDisplay->CreateChild(0, 40, 0, "Health display p0")};
         healthDisplay->AddComponent<bt::HealthComponent>(0);
 
-        auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p0") };
+        auto* scoreDisplay{healthDisplay->CreateChild(0, 30, 0, "Score display p0")};
         scoreDisplay->AddComponent<bt::ScoreComponent>(0);
 
-        auto spriteSheetTexture{ gla::ResourceManager::Get().LoadTexture("spritesheet.png", SDL_SCALEMODE_PIXELART) };
-        const auto size{ spriteSheetTexture->GetSize() };
+        auto spriteSheetTexture{gla::ResourceManager::Get().LoadTexture("spritesheet.png", SDL_SCALEMODE_PIXELART)};
+        auto const size{spriteSheetTexture->GetSize()};
 
         player0->AddComponent<bt::PlayerController>(0);
-        auto* animation{ player0->AddComponent<gla::Animation>(3) };
+        auto* animation{player0->AddComponent<gla::Animation>(3)};
 
-        const auto cols{ static_cast<int>(size.x / 16.f) };
-        const auto rows{ static_cast<int>(size.y / 16.f) };
-        auto& spriteSheet{ animation->AddSpriteSheet(spriteSheetTexture, cols, rows) };
+        auto const cols{static_cast<int>(size.x / 16.f)};
+        auto const rows{static_cast<int>(size.y / 16.f)};
+        auto& spriteSheet{animation->AddSpriteSheet(spriteSheetTexture, cols, rows)};
 
-        animation->AddAnimation("walkDown"_h, spriteSheet,
-                                {
-                                    { 0, 0, 0.1f },
-                                    { 1, 0, 0.1f },
-                                    { 2, 0, 0.1f },
-                                });
-        animation->AddAnimation("walkUp"_h, spriteSheet,
-                                {
-                                    { 6, 0, 0.1f },
-                                    { 7, 0, 0.1f },
-                                    { 8, 0, 0.1f },
-                                });
-        animation->AddAnimation("walkLeft"_h, spriteSheet,
-                                {
-                                    { 3, 0, 0.1f },
-                                    { 4, 0, 0.1f },
-                                    { 5, 0, 0.1f },
-                                });
-        animation->AddAnimation("walkRight"_h, spriteSheet,
-                                {
-                                    { 3, 0, 0.1f, true },
-                                    { 4, 0, 0.1f, true },
-                                    { 5, 0, 0.1f, true },
-                                });
+        animation->AddAnimation(
+            "walkDown"_h,
+            spriteSheet,
+            {
+                {.colIdx = 0, .rowIdx = 0, .duration = 0.1f},
+                {.colIdx = 1, .rowIdx = 0, .duration = 0.1f},
+                {.colIdx = 2, .rowIdx = 0, .duration = 0.1f},
+            });
+        animation->AddAnimation(
+            "walkUp"_h,
+            spriteSheet,
+            {
+                {.colIdx = 6, .rowIdx = 0, .duration = 0.1f},
+                {.colIdx = 7, .rowIdx = 0, .duration = 0.1f},
+                {.colIdx = 8, .rowIdx = 0, .duration = 0.1f},
+            });
+        animation->AddAnimation(
+            "walkLeft"_h,
+            spriteSheet,
+            {
+                {.colIdx = 3, .rowIdx = 0, .duration = 0.1f},
+                {.colIdx = 4, .rowIdx = 0, .duration = 0.1f},
+                {.colIdx = 5, .rowIdx = 0, .duration = 0.1f},
+            });
+        animation->AddAnimation(
+            "walkRight"_h,
+            spriteSheet,
+            {
+                {.colIdx = 3, .rowIdx = 0, .duration = 0.1f, .flipX = true},
+                {.colIdx = 4, .rowIdx = 0, .duration = 0.1f, .flipX = true},
+                {.colIdx = 5, .rowIdx = 0, .duration = 0.1f, .flipX = true},
+            });
 
         animation->SetActiveAnimation("walkRight"_h, true);
 
@@ -126,16 +136,16 @@ static void load()
 
     // Player 1
     {
-        auto* player1{ scene.GetRoot()->CreateChild(300, 300, 0, "Player 1") };
-        auto enemyTexture{ gla::ResourceManager::Get().LoadTexture("enemy.png") };
+        auto* player1{scene.GetRoot()->CreateChild(300, 300, 0, "Player 1")};
+        auto enemyTexture{gla::ResourceManager::Get().LoadTexture("enemy.png")};
 
-        auto* playerDisplay{ scene.GetRoot()->CreateChild(10, 280, 0, "Player display p1") };
+        auto* playerDisplay{scene.GetRoot()->CreateChild(10, 280, 0, "Player display p1")};
         playerDisplay->AddComponent<gla::TextComponent>("Player 1", mediumFont);
 
-        auto* healthDisplay{ playerDisplay->CreateChild(0, 40, 0, "Health display p1") };
+        auto* healthDisplay{playerDisplay->CreateChild(0, 40, 0, "Health display p1")};
         healthDisplay->AddComponent<bt::HealthComponent>(1);
 
-        auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p1") };
+        auto* scoreDisplay{healthDisplay->CreateChild(0, 30, 0, "Score display p1")};
         scoreDisplay->AddComponent<bt::ScoreComponent>(1);
 
         player1->AddComponent<bt::PlayerController>(1);
@@ -152,22 +162,23 @@ static void load()
     // Achievement Event
     gla::EventManager::Get().BindEvent("win"_h, &bt::AchievementManager::Get(), &bt::AchievementManager::OnWin);
 }
+}  // namespace
 
-int main()
+auto main() -> int
 {
-    const fs::path data_location = "./Resources/";
+    fs::path const data_location = "./Resources/";
     try
     {
-        constexpr int maxSteps{ 5 };
-        int counter{ 0 };
-        while(not fs::exists(data_location) and counter < maxSteps)
+        int constexpr maxSteps{5};
+        int counter{0};
+        while (not fs::exists(data_location) and counter < maxSteps)
         {
             fs::current_path("..");
             ++counter;
         }
         fs::current_path(data_location);
     }
-    catch(const fs::filesystem_error& e)
+    catch (fs::filesystem_error const& e)
     {
         std::println("{}", e.what());
     }

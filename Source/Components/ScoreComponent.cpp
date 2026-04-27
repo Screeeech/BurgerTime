@@ -46,9 +46,4 @@ void ScoreComponent::SetScore(int score)
     m_score = score;
 }
 
-int ScoreComponent::GetScore() const
-{
-    return m_score;
-}
-
 }  // namespace bt

@@ -5,7 +5,7 @@
 
 namespace bt
 {
-MoveCommand::MoveCommand(gla::GameObject* pCaller, const glm::vec3& velocity)
+MoveCommand::MoveCommand(gla::GameObject* pCaller, glm::vec3 const& velocity)
     : GameObjectCommand(pCaller)
     , m_direction(velocity)
 {

@@ -15,7 +15,7 @@ CacheComponent::CacheComponent(gla::GameObject* pOwner, int bufferSize)
     : Component(pOwner)
     , m_pUIComponent1(pOwner->AddComponent<gla::UIComponent>(
           [this](gla::GameObject*) mutable
-          {
+          -> void {
               static int sampleCount = 30;
 
               if(ImGui::Begin("Exercise 1"))
@@ -34,7 +34,7 @@ CacheComponent::CacheComponent(gla::GameObject* pOwner, int bufferSize)
           }))
     , m_pUIComponent2(pOwner->AddComponent<gla::UIComponent>(
           [this](gla::GameObject*) mutable
-          {
+          -> void {
               static int sampleCount = 30;
 
               if(ImGui::Begin("Exercise 2"))

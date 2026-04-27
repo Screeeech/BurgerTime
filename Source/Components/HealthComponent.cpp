@@ -47,7 +47,7 @@ void HealthComponent::SetHealth(int newHealth)
     m_health = newHealth;
 }
 
-int HealthComponent::GetHealth() const
+auto HealthComponent::GetHealth() const -> int
 {
     return m_health;
 }

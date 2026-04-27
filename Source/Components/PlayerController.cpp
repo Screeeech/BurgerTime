@@ -22,15 +22,19 @@ PlayerController::PlayerController(gla::GameObject* pPlayer, int playerIndex)
 
 {
     auto& input = gla::InputManager::Get();
-    input.BindAction<MoveCommand>("moveUp"_h, playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
-    input.BindAction<MoveCommand>("moveLeft"_h, playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
-    input.BindAction<MoveCommand>("moveDown"_h, playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
-    input.BindAction<MoveCommand>("moveRight"_h, playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
+    input.BindAction<MoveCommand>("moveUp"_h, playerIndex, m_pOwner, glm::vec3{0, -1, 0});
+    input.BindAction<MoveCommand>("moveLeft"_h, playerIndex, m_pOwner, glm::vec3{-1, 0, 0});
+    input.BindAction<MoveCommand>("moveDown"_h, playerIndex, m_pOwner, glm::vec3{0, 1, 0});
+    input.BindAction<MoveCommand>("moveRight"_h, playerIndex, m_pOwner, glm::vec3{1, 0, 0});
 
-    input.BindAction<gla::CallbackCommand>("damage"_h, playerIndex, [playerIndex]()
-                                      { gla::EventManager::Get().InvokeEvent(gla::HealthEvent{ "healthChange"_h, playerIndex, -1 }); });
-    input.BindAction<gla::CallbackCommand>("attack"_h, playerIndex, [playerIndex]()
-                                      { gla::EventManager::Get().InvokeEvent(gla::ScoreEvent{ "scoreChange"_h, playerIndex, 10 }); });
+    input.BindAction<gla::CallbackCommand>(
+        "damage"_h,
+        playerIndex,
+        [playerIndex]() -> void { gla::EventManager::Get().InvokeEvent(gla::HealthEvent{"healthChange"_h, playerIndex, -1}); });
+    input.BindAction<gla::CallbackCommand>(
+        "attack"_h,
+        playerIndex,
+        [playerIndex]() -> void { gla::EventManager::Get().InvokeEvent(gla::ScoreEvent{"scoreChange"_h, playerIndex, 10}); });
 
     gla::EventManager::Get().BindEvent("die"_h, this, &PlayerController::OnDeath);
 }
@@ -51,7 +55,7 @@ PlayerController::~PlayerController() noexcept
 void PlayerController::Update(float deltaTime)
 {
     // Check if the direction vector has significant length
-    if(glm::length(m_direction) > 0)
+    if (glm::length(m_direction) > 0)
     {
         const glm::vec3 direction = glm::normalize(m_direction);
         const glm::vec3 velocity = direction * deltaTime * m_speed;
@@ -69,9 +73,9 @@ void PlayerController::SetDirection(glm::vec3 direction)
 
 void PlayerController::OnDeath(const gla::Event& event)
 {
-    const auto& playerEvent{ dynamic_cast<const gla::PlayerEvent&>(event) };
+    const auto& playerEvent{dynamic_cast<const gla::PlayerEvent&>(event)};
 
-    if(playerEvent.playerIndex != m_playerIndex)
+    if (playerEvent.playerIndex != m_playerIndex)
         return;
 
     auto* scene = gla::SceneManager::Get().GetActiveScene();

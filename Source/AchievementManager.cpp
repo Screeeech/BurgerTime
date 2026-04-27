@@ -31,7 +31,7 @@ void AchievementManager::Achieve(AchievementType achievement)
 #endif
 }
 
-void AchievementManager::OnWin(const gla::Event&)
+void AchievementManager::OnWin(gla::Event const&)
 {
     Achieve(AchievementType::win);
 }

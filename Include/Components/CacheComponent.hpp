@@ -21,12 +21,17 @@ public:
     explicit CacheComponent(gla::GameObject* pOwner, int bufferSize = 10000);
     ~CacheComponent() noexcept override = default;
 
+    CacheComponent(CacheComponent const&) = delete;
+    auto operator=(CacheComponent const&) -> CacheComponent& = delete;
+    CacheComponent(CacheComponent&&) = delete;
+    auto operator=(CacheComponent&&) -> CacheComponent& = delete;
+
     void Update(float deltaTime) override;
 
 private:
     struct Transform
     {
-        float matrix[16] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+        std::array<float, 16> matrix = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
     };
 
     class GameObject3D
