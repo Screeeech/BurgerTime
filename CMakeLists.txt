@@ -53,12 +53,37 @@ if (WIN32)
       COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Resources" "$<TARGET_FILE_DIR:${GAME_TARGET}>/Resources"
   )
 elseif (EMSCRIPTEN)
+  set(EMSCRIPTEN_COMPILE_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -g")
+  set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1 -g -sALLOW_MEMORY_GROWTH --preload-file \"${CMAKE_SOURCE_DIR}/Resources@/\"")
+
+  # Use the Emscripten toolchain
+  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmscriptenToolchain.cmake)
+
+  # Additional settings for Emscripten build
+  set_target_properties(${ENGINE_TARGET} PROPERTIES
+      COMPILE_FLAGS "${EMSCRIPTEN_COMPILE_FLAGS}"
+      LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}"
+  )
+
+  add_custom_command(TARGET ${GAME_NAME} POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_directory
+      "../web"
+      "$<TARGET_FILE_DIR:${GAME_NAME}>/"
+  )
+
+  # Have emscripten generate a html page too.
+  set(CMAKE_EXECUTABLE_SUFFIX ".html")
+
   add_custom_command(TARGET ${GAME_TARGET} POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/web" "$<TARGET_FILE_DIR:${GAME_TARGET}>/"
+      COMMAND "${CMAKE_COMMAND}" -E copy_directory
+      "${CMAKE_CURRENT_SOURCE_DIR}/web"
+      "$<TARGET_FILE_DIR:${GAME_TARGET}>/"
   )
 else ()
   # Copy resources folder to output directory after build
   add_custom_command(TARGET ${GAME_TARGET} POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Resources" "$<TARGET_FILE_DIR:${GAME_TARGET}>/Resources"
+      COMMAND "${CMAKE_COMMAND}" -E copy_directory
+      "${CMAKE_CURRENT_SOURCE_DIR}/Resources"
+      "$<TARGET_FILE_DIR:${GAME_TARGET}>/Resources"
   )
 endif ()
