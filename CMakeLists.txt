@@ -22,7 +22,11 @@ set(SOURCE_FILES
 
 add_executable(${GAME_TARGET} ${SOURCE_FILES})
 
-target_link_libraries(${GAME_TARGET} PRIVATE BurgerTimeEngine)
+if (EMSCRIPTEN)
+  target_link_libraries(${GAME_TARGET} PRIVATE EngineWeb)
+else ()
+  target_link_libraries(${GAME_TARGET} PRIVATE Engine)
+endif ()
 
 target_include_directories(${GAME_TARGET} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/Include"
