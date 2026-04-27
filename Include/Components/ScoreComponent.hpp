@@ -1,29 +1,33 @@
-#ifndef ENGINE_SCORECOMPONENT_H
-#define ENGINE_SCORECOMPONENT_H
+#ifndef BURGERTIME_SCORECOMPONENT_H
+#define BURGERTIME_SCORECOMPONENT_H
 #include "Component.hpp"
 
-namespace dae
+namespace gla
 {
-struct Event;
 class TextComponent;
+struct Event;
+}  // namespace gla
 
-class ScoreComponent : public Component
+namespace bt
+{
+
+class ScoreComponent : public gla::Component
 {
 public:
-    explicit ScoreComponent(GameObject* pOwner, int playerIndex, int initialScore = 0);
+    explicit ScoreComponent(gla::GameObject* pOwner, int playerIndex, int initialScore = 0);
     ~ScoreComponent() noexcept override;
 
     void Update(float deltaTime) override;
-    void OnScoreChange(const Event& event);
+    void OnScoreChange(const gla::Event& event);
     void SetScore(int score);
     [[nodiscard]] int GetScore() const;
 
 private:
     int m_score;
     int m_playerIndex;
-    TextComponent* m_pScoreDisplay;
+    gla::TextComponent* m_pScoreDisplay;
 };
 
-}  // namespace dae
+}  // namespace bt
 
-#endif  // ENGINE_SCORECOMPONENT_H
+#endif  // BURGERTIME_SCORECOMPONENT_H

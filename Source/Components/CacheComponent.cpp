@@ -5,13 +5,16 @@
 
 #include <print>
 
-#include "GameObject.hpp"
 #include "Components/UIComponent.hpp"
+#include "GameObject.hpp"
 
-dae::CacheComponent::CacheComponent(GameObject* pOwner, int bufferSize)
+namespace bt
+{
+
+CacheComponent::CacheComponent(gla::GameObject* pOwner, int bufferSize)
     : Component(pOwner)
-    , m_pUIComponent1(pOwner->AddComponent<UIComponent>(
-          [this](GameObject*) mutable
+    , m_pUIComponent1(pOwner->AddComponent<gla::UIComponent>(
+          [this](gla::GameObject*) mutable
           {
               static int sampleCount = 30;
 
@@ -29,8 +32,8 @@ dae::CacheComponent::CacheComponent(GameObject* pOwner, int bufferSize)
 
               ImGui::End();
           }))
-    , m_pUIComponent2(pOwner->AddComponent<UIComponent>(
-          [this](GameObject*) mutable
+    , m_pUIComponent2(pOwner->AddComponent<gla::UIComponent>(
+          [this](gla::GameObject*) mutable
           {
               static int sampleCount = 30;
 
@@ -62,22 +65,23 @@ dae::CacheComponent::CacheComponent(GameObject* pOwner, int bufferSize)
     m_buffer3.resize(bufferSize);
 }
 
-void dae::CacheComponent::Update(float) {}
+void CacheComponent::Update(float) {}
 
-void dae::CacheComponent::RunExercise1(int sampleCount)
+void CacheComponent::RunExercise1(int sampleCount)
 {
     std::println("Running exercise 1 with {} samples", sampleCount);
     ThrashThatCache(sampleCount, m_buffer1, m_durations1);
 }
 
-void dae::CacheComponent::RunExercise2(int sampleCount)
+void CacheComponent::RunExercise2(int sampleCount)
 {
     std::println("Running exercise 2 with {} samples", sampleCount);
     ThrashThatCache(sampleCount, m_buffer2, m_durations2);
 }
 
-void dae::CacheComponent::RunExercise3(int sampleCount)
+void CacheComponent::RunExercise3(int sampleCount)
 {
     std::println("Running exercise 3 with {} samples", sampleCount);
     ThrashThatCache(sampleCount, m_buffer3, m_durations2);
 }
+}  // namespace bt

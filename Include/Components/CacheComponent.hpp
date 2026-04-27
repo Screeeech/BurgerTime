@@ -1,20 +1,24 @@
-#ifndef ENGINE_CACHECOMPONENT_H
-#define ENGINE_CACHECOMPONENT_H
-#include <cstdint>
-#include <vector>
+#ifndef BURGERTIME_CACHECOMPONENT_H
+#define BURGERTIME_CACHECOMPONENT_H
 #include <algorithm>
 #include <chrono>
+#include <cstdint>
+#include <vector>
 
 #include "Component.hpp"
 
-namespace dae
+namespace gla
 {
 class UIComponent;
+}
 
-class CacheComponent : public Component
+namespace bt
+{
+
+class CacheComponent : public gla::Component
 {
 public:
-    explicit CacheComponent(GameObject* pOwner, int bufferSize = 10000);
+    explicit CacheComponent(gla::GameObject* pOwner, int bufferSize = 10000);
     ~CacheComponent() noexcept override = default;
 
     void Update(float deltaTime) override;
@@ -53,7 +57,7 @@ private:
                 auto start = std::chrono::high_resolution_clock::now();
                 for(size_t i{}; i < buffer.size(); i += stepsize)
                 {
-                    if constexpr( requires{ T::ID; })
+                    if constexpr(requires { T::ID; })
                         buffer[i].ID *= stepsize + 1;
                     else
                         buffer[i] *= stepsize + 1;
@@ -66,14 +70,16 @@ private:
         }
 
         // Divide to get average
-        std::ranges::transform(durations, durations.begin(), [sampleCount](const auto& duration){ return duration / sampleCount; });
+        std::ranges::transform(durations, durations.begin(),
+                               [sampleCount](const auto& duration) { return duration / sampleCount; });
     }
+
     void RunExercise1(int sampleCount);
     void RunExercise2(int sampleCount);
     void RunExercise3(int sampleCount);
 
-    UIComponent* m_pUIComponent1{};
-    UIComponent* m_pUIComponent2{};
+    gla::UIComponent* m_pUIComponent1{};
+    gla::UIComponent* m_pUIComponent2{};
 
     std::vector<int> m_buffer1;
     std::vector<uint32_t> m_durations1;
@@ -83,5 +89,6 @@ private:
     std::vector<uint32_t> m_durations2;
 };
 
-}  // namespace dae
-#endif  // ENGINE_CACHECOMPONENT_H
+}  // namespace bt
+
+#endif  // BURGERTIME_CACHECOMPONENT_H

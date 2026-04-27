@@ -1,17 +1,17 @@
 #include "Commands/MoveCommand.hpp"
 
-#include "GameObject.hpp"
 #include "Components/PlayerController.hpp"
+#include "GameObject.hpp"
 
-namespace dae
+namespace bt
 {
-MoveCommand::MoveCommand(GameObject* pCaller, const glm::vec3& velocity)
+MoveCommand::MoveCommand(gla::GameObject* pCaller, const glm::vec3& velocity)
     : GameObjectCommand(pCaller)
     , m_direction(velocity)
 {
 }
 
-MoveCommand::MoveCommand(GameObject* pCaller, float x, float y, float z)
+MoveCommand::MoveCommand(gla::GameObject* pCaller, float x, float y, float z)
     : GameObjectCommand(pCaller)
     , m_direction(x, y, z)
 {
@@ -23,4 +23,4 @@ void MoveCommand::Execute()
     playerController->SetDirection(m_direction);
 }
 
-}  // namespace dae
+}  // namespace bt

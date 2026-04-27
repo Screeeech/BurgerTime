@@ -5,14 +5,15 @@
 #include "AchievementManager.hpp"
 #include "Components/Animation.hpp"
 #include "Components/FpsComponent.hpp"
+#include "Components/HealthComponent.hpp"
 #include "Components/PlayerController.hpp"
 #include "Components/ScoreComponent.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/TextComponent.hpp"
 #include "EventManager.hpp"
 #include "Events.hpp"
+#include "Galena.hpp"
 #include "InputManager.hpp"
-#include "Minigin.hpp"
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
 #include "SceneManager.hpp"
@@ -27,61 +28,61 @@ namespace fs = std::filesystem;
 
 static void load()
 {
-    auto& scene = dae::SceneManager::Get().CreateScene();
+    auto& scene = gla::SceneManager::Get().CreateScene();
     scene.Load();
 
-    auto backgroundTexture = dae::ResourceManager::Get().LoadTexture("background.png");
-    auto logoTexture = dae::ResourceManager::Get().LoadTexture("logo.png");
+    auto backgroundTexture = gla::ResourceManager::Get().LoadTexture("background.png");
+    auto logoTexture = gla::ResourceManager::Get().LoadTexture("logo.png");
 
-    auto& rm{ dae::ResourceManager::Get() };
+    auto& rm{ gla::ResourceManager::Get() };
     auto font = rm.LoadFont("Lingua.otf", 36);
     auto smallFont = rm.LoadFont("Lingua.otf", 21);
     auto mediumFont = rm.LoadFont("Lingua.otf", 28);
 
     // Background
     auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Background");
-    go->AddComponent<dae::Sprite>(backgroundTexture, -2);
+    go->AddComponent<gla::Sprite>(backgroundTexture, -2);
 
     // Logo
     go = scene.GetRoot()->CreateChild(358, 150, 0, "Logo");
-    go->AddComponent<dae::Sprite>(logoTexture, -1);
+    go->AddComponent<gla::Sprite>(logoTexture, -1);
 
     // FPS display
     go = scene.GetRoot()->CreateChild(10, 10, 0, "FPS Counter");
-    go->AddComponent<dae::FpsComponent>(font);
+    go->AddComponent<gla::FpsComponent>(font);
 
 
-    auto& input{ dae::InputManager::Get() };
+    auto& input{ gla::InputManager::Get() };
     // auto& event{ dae::EventManager::Get() };
 
     auto* infoTextP0{ scene.GetRoot()->CreateChild(10, 60) };
-    infoTextP0->AddComponent<dae::TextComponent>("Movement: WASD, Kill enemy: E, Take Damage: Q", smallFont, 1);
+    infoTextP0->AddComponent<gla::TextComponent>("Movement: WASD, Kill enemy: E, Take Damage: Q", smallFont, 1);
 
     auto* infoTextP1{ scene.GetRoot()->CreateChild(10, 90) };
-    infoTextP1->AddComponent<dae::TextComponent>("Movement: DPAD, Kill enemy: X, Take Damage: A", smallFont, 1);
+    infoTextP1->AddComponent<gla::TextComponent>("Movement: DPAD, Kill enemy: X, Take Damage: A", smallFont, 1);
 
     // Player 0
     {
         auto* player0{ scene.GetRoot()->CreateChild(100, 300, 0, "Player 0") };
         player0->GetTransform().SetScale(4.f, 4.f);
 
-        auto playerTexture{ dae::ResourceManager::Get().LoadTexture("player.png") };
+        auto playerTexture{ gla::ResourceManager::Get().LoadTexture("player.png") };
 
         auto* playerDisplay{ scene.GetRoot()->CreateChild(10, 150, 0, "Player display p0") };
-        playerDisplay->AddComponent<dae::TextComponent>("Player 0", mediumFont);
+        playerDisplay->AddComponent<gla::TextComponent>("Player 0", mediumFont);
 
         // NOTE: Ask about how to transfer ownership here
         auto* healthDisplay{ playerDisplay->CreateChild(0, 40, 0, "Health display p0") };
-        healthDisplay->AddComponent<dae::HealthComponent>(0);
+        healthDisplay->AddComponent<bt::HealthComponent>(0);
 
         auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p0") };
-        scoreDisplay->AddComponent<dae::ScoreComponent>(0);
+        scoreDisplay->AddComponent<bt::ScoreComponent>(0);
 
-        auto spriteSheetTexture{ dae::ResourceManager::Get().LoadTexture("spritesheet.png", SDL_SCALEMODE_PIXELART) };
+        auto spriteSheetTexture{ gla::ResourceManager::Get().LoadTexture("spritesheet.png", SDL_SCALEMODE_PIXELART) };
         const auto size{ spriteSheetTexture->GetSize() };
 
-        player0->AddComponent<dae::PlayerController>(0);
-        auto* animation{ player0->AddComponent<dae::Animation>(3) };
+        player0->AddComponent<bt::PlayerController>(0);
+        auto* animation{ player0->AddComponent<gla::Animation>(3) };
 
         const auto cols{ static_cast<int>(size.x / 16.f) };
         const auto rows{ static_cast<int>(size.y / 16.f) };
@@ -114,42 +115,42 @@ static void load()
 
         animation->SetActiveAnimation("walkRight"_h, true);
 
-        input.RegisterInput(SDL_SCANCODE_W, dae::Input::Type::held, "moveUp"_h, 0);
-        input.RegisterInput(SDL_SCANCODE_A, dae::Input::Type::held, "moveLeft"_h, 0);
-        input.RegisterInput(SDL_SCANCODE_S, dae::Input::Type::held, "moveDown"_h, 0);
-        input.RegisterInput(SDL_SCANCODE_D, dae::Input::Type::held, "moveRight"_h, 0);
+        input.RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, 0);
+        input.RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, 0);
+        input.RegisterInput(SDL_SCANCODE_S, gla::Input::Type::held, "moveDown"_h, 0);
+        input.RegisterInput(SDL_SCANCODE_D, gla::Input::Type::held, "moveRight"_h, 0);
 
-        input.RegisterInput(SDL_SCANCODE_Q, dae::Input::Type::released, "damage"_h, 0);
-        input.RegisterInput(SDL_SCANCODE_E, dae::Input::Type::released, "attack"_h, 0);
+        input.RegisterInput(SDL_SCANCODE_Q, gla::Input::Type::released, "damage"_h, 0);
+        input.RegisterInput(SDL_SCANCODE_E, gla::Input::Type::released, "attack"_h, 0);
     }
 
     // Player 1
     {
         auto* player1{ scene.GetRoot()->CreateChild(300, 300, 0, "Player 1") };
-        auto enemyTexture{ dae::ResourceManager::Get().LoadTexture("enemy.png") };
+        auto enemyTexture{ gla::ResourceManager::Get().LoadTexture("enemy.png") };
 
         auto* playerDisplay{ scene.GetRoot()->CreateChild(10, 280, 0, "Player display p1") };
-        playerDisplay->AddComponent<dae::TextComponent>("Player 1", mediumFont);
+        playerDisplay->AddComponent<gla::TextComponent>("Player 1", mediumFont);
 
         auto* healthDisplay{ playerDisplay->CreateChild(0, 40, 0, "Health display p1") };
-        healthDisplay->AddComponent<dae::HealthComponent>(1);
+        healthDisplay->AddComponent<bt::HealthComponent>(1);
 
         auto* scoreDisplay{ healthDisplay->CreateChild(0, 30, 0, "Score display p1") };
-        scoreDisplay->AddComponent<dae::ScoreComponent>(1);
+        scoreDisplay->AddComponent<bt::ScoreComponent>(1);
 
-        player1->AddComponent<dae::PlayerController>(1);
+        player1->AddComponent<bt::PlayerController>(1);
 
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, dae::Input::Type::held, "moveUp"_h, 1);
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, dae::Input::Type::held, "moveLeft"_h, 1);
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, dae::Input::Type::held, "moveDown"_h, 1);
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, dae::Input::Type::held, "moveRight"_h, 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, gla::Input::Type::held, "moveUp"_h, 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, gla::Input::Type::held, "moveLeft"_h, 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, gla::Input::Type::held, "moveDown"_h, 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, gla::Input::Type::held, "moveRight"_h, 1);
 
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_SOUTH, dae::Input::Type::released, "damage"_h, 1);
-        input.RegisterInput(SDL_GAMEPAD_BUTTON_WEST, dae::Input::Type::released, "attack"_h, 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_SOUTH, gla::Input::Type::released, "damage"_h, 1);
+        input.RegisterInput(SDL_GAMEPAD_BUTTON_WEST, gla::Input::Type::released, "attack"_h, 1);
     }
 
     // Achievement Event
-    dae::EventManager::Get().BindEvent("win"_h, &dae::AchievementManager::Get(), &dae::AchievementManager::OnWin);
+    gla::EventManager::Get().BindEvent("win"_h, &bt::AchievementManager::Get(), &bt::AchievementManager::OnWin);
 }
 
 int main()
@@ -171,7 +172,7 @@ int main()
         std::println("{}", e.what());
     }
 
-    dae::Minigin engine("");
+    gla::Galena engine("");
     engine.Run(load);
     return 0;
 }

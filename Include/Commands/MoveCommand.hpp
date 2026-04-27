@@ -1,15 +1,15 @@
-#ifndef ENGINE_MOVECOMMAND_H
-#define ENGINE_MOVECOMMAND_H
+#ifndef BURGERTIME_MOVECOMMAND_H
+#define BURGERTIME_MOVECOMMAND_H
 #include "Commands/GameObjectCommand.hpp"
 
-namespace dae
+namespace bt
 {
 
-class MoveCommand : public GameObjectCommand
+class MoveCommand : public gla::GameObjectCommand
 {
 public:
-    explicit MoveCommand(GameObject* pCaller, const glm::vec3& velocity);
-    explicit MoveCommand(GameObject* pCaller, float x, float y, float z = 0);
+    explicit MoveCommand(gla::GameObject* pCaller, const glm::vec3& velocity);
+    explicit MoveCommand(gla::GameObject* pCaller, float x, float y, float z = 0);
     ~MoveCommand() noexcept override = default;
     void Execute() override;
 
@@ -17,6 +17,6 @@ private:
     glm::vec3 m_direction;
 };
 
-}  // namespace dae
+}  // namespace bt
 
-#endif  // ENGINE_MOVECOMMAND_H
+#endif  // BURGERTIME_MOVECOMMAND_H

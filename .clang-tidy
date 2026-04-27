@@ -4,7 +4,6 @@ Checks: >
   -google-*,
   -zircon-*,
   -abseil-*,
-  -modernize-use-trailing-return-type,
   -misc-definitions-in-headers,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-owning-memory,

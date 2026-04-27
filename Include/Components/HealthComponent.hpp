@@ -1,27 +1,33 @@
-#ifndef ENGINE_HEALTHCOMPONENT_H
-#define ENGINE_HEALTHCOMPONENT_H
+#ifndef BURGERTIME_HEALTHCOMPONENT_H
+#define BURGERTIME_HEALTHCOMPONENT_H
 #include "Component.hpp"
 
-namespace dae
+namespace gla
 {
 class TextComponent;
 struct Event;
+}  // namespace gla
 
-class HealthComponent : public Component
+namespace bt
+{
+
+class HealthComponent : public gla::Component
 {
 public:
-    explicit HealthComponent(GameObject* pOwner, int playerIndex, int startingHealth = 5);
+    explicit HealthComponent(gla::GameObject* pOwner, int playerIndex, int startingHealth = 5);
     ~HealthComponent() noexcept override;
     void Update(float deltaTime) override;
 
-    void OnHealthChange(const Event& event);
+    void OnHealthChange(const gla::Event& event);
     void SetHealth(int newHealth);
     [[nodiscard]] int GetHealth() const;
+
 private:
     int m_health;
     int m_playerIndex;
-    TextComponent* m_pHealthDisplay;
+    gla::TextComponent* m_pHealthDisplay;
 };
-}; // namespace dae
 
-#endif  // ENGINE_HEALTHCOMPONENT_H
+}  // namespace bt
+
+#endif  // BURGERTIME_HEALTHCOMPONENT_H

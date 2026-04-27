@@ -1,30 +1,34 @@
-#ifndef ENGINE_ACHIEVEMENTMANAGER_H
-#define ENGINE_ACHIEVEMENTMANAGER_H
+#ifndef BURGERTIME_ACHIEVEMENTMANAGER_H
+#define BURGERTIME_ACHIEVEMENTMANAGER_H
 
 #include <cstdint>
 #include <set>
 
 #include "Singleton.hpp"
 
-namespace dae
+namespace gla
 {
 struct Event;
+}
+
+namespace bt
+{
 
 enum class AchievementType : uint8_t
 {
     win
 };
 
-class AchievementManager : public Singleton<AchievementManager>
+class AchievementManager : public gla::Singleton<AchievementManager>
 {
 
 public:
     void Achieve(AchievementType achievement);
-    void OnWin(const Event& event);
+    void OnWin(const gla::Event& event);
 
     std::set<AchievementType> m_Achievements{};
 };
 
-}  // namespace dae
+}  // namespace bt
 
-#endif  // ENGINE_ACHIEVEMENTMANAGER_H
+#endif  // BURGERTIME_ACHIEVEMENTMANAGER_H

@@ -1,28 +1,25 @@
-#ifndef ENGINE_PLAYERCONTROLLER_H
-#define ENGINE_PLAYERCONTROLLER_H
+#ifndef BURGERTIME_PLAYERCONTROLLER_H
+#define BURGERTIME_PLAYERCONTROLLER_H
 
 #include <glm/vec3.hpp>
 
 #include "Component.hpp"
 #include "HealthComponent.hpp"
 
-namespace dae
+namespace bt
 {
-class ScoreComponent;
-class TextComponent;
-struct Event;
-class Font;
 
-class PlayerController : public Component
+class PlayerController : public gla::Component
 {
 public:
-    explicit PlayerController(GameObject* pPlayer, int playerIndex);
+    explicit PlayerController(gla::GameObject* pPlayer, int playerIndex);
     ~PlayerController() noexcept override;
 
     void Update(float deltaTime) override;
     void SetDirection(glm::vec3 direction);
 
-    void OnDeath(const Event& event);
+    void OnDeath(const gla::Event& event);
+
 private:
     int m_playerIndex;
 
@@ -30,6 +27,6 @@ private:
     float m_speed{ 100.f };
 };
 
-}  // namespace dae
+}  // namespace bt
 
-#endif  // ENGINE_PLAYERCONTROLLER_H
+#endif  // BURGERTIME_PLAYERCONTROLLER_H

@@ -6,9 +6,8 @@
 #include <steam_api.h>
 #endif
 
-namespace dae
+namespace bt
 {
-
 
 void AchievementManager::Achieve(AchievementType achievement)
 {
@@ -20,7 +19,7 @@ void AchievementManager::Achieve(AchievementType achievement)
 
 #if USE_STEAMWORKS
     std::string name{};
-    switch (achievement)
+    switch(achievement)
     {
         case AchievementType::win:
             name = "ACH_WIN_ONE_GAME";
@@ -32,9 +31,9 @@ void AchievementManager::Achieve(AchievementType achievement)
 #endif
 }
 
-void AchievementManager::OnWin(const Event&)
+void AchievementManager::OnWin(const gla::Event&)
 {
     Achieve(AchievementType::win);
 }
 
-}  // namespace dae
+}  // namespace bt
