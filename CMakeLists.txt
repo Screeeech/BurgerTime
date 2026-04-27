@@ -70,7 +70,7 @@ elseif (EMSCRIPTEN)
 
   add_custom_command(TARGET ${GAME_TARGET} POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E copy_directory
-      "${CMAKE_CURRENT_SOURCE_DIR}/web"
+      "${CMAKE_CURRENT_SOURCE_DIR}/Web"
       "$<TARGET_FILE_DIR:${GAME_TARGET}>/"
   )
 else ()
