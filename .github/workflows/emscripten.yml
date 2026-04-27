@@ -56,7 +56,7 @@ jobs:
         run: |
           mkdir -p dist
           cp build-web/minigin_web.* dist/
-          cp web/*.html dist/
+          cp Web/*.html dist/
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
