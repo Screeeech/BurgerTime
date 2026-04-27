@@ -177,3 +177,81 @@ target_link_libraries(${ENGINE_TARGET} PUBLIC
     imgui
     implot)
 
+
+# ==================== PLATFORM SPECIFIC ====================
+
+if (EMSCRIPTEN)
+  set(EMSCRIPTEN_COMPILE_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -g")
+  set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1 -g -sALLOW_MEMORY_GROWTH --preload-file \"${CMAKE_SOURCE_DIR}/Resources@/\"")
+
+  # Use the Emscripten toolchain
+  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmscriptenToolchain.cmake)
+
+  # Additional settings for Emscripten build
+  set_target_properties(${ENGINE_TARGET} PROPERTIES
+      COMPILE_FLAGS "${EMSCRIPTEN_COMPILE_FLAGS}"
+      LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}"
+  )
+  # Have emscripten generate a html page too.
+  set(CMAKE_EXECUTABLE_SUFFIX ".html")
+
+elseif (WIN32)
+  # Set minigin as the default startup project
+  set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${ENGINE_TARGET})
+  # Set working directory to output folder
+  set_target_properties(${ENGINE_TARGET} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${ENGINE_TARGET}>")
+
+  # Copy SDL dlls to output folder
+  set(SDL_RUNTIME_DLLS
+      SDL3::SDL3
+      SDL3_ttf::SDL3_ttf
+  )
+
+  foreach (dllTarget IN LISTS SDL_RUNTIME_DLLS)
+    add_custom_command(
+        TARGET ${ENGINE_TARGET}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:${dllTarget}>"
+        "${CMAKE_BINARY_DIR}"
+        VERBATIM
+    )
+  endforeach ()
+
+  if (Steamworks_FOUND)
+    target_link_libraries("${ENGINE_TARGET}" PUBLIC Steamworks::Steamworks)
+    target_compile_definitions(${ENGINE_TARGET} PRIVATE USE_STEAMWORKS)
+    add_custom_command(
+        TARGET ${ENGINE_TARGET}
+        POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy
+        "${Steamworks_RUNTIME_DLL}"
+        "${CMAKE_BINARY_DIR}"
+        COMMENT "Copying Steamworks DLL")
+    add_custom_command(
+        TARGET ${ENGINE_TARGET}
+        POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E echo "480" > "$<TARGET_FILE_DIR:${ENGINE_TARGET}>/steam_appid.txt"
+        COMMENT "Generating steam_appid.txt"
+    )
+  endif ()
+else ()
+  if (Steamworks_FOUND)
+    target_link_libraries("${ENGINE_TARGET}" PUBLIC Steamworks::Steamworks)
+    target_compile_definitions(${ENGINE_TARGET} PRIVATE USE_STEAMWORKS)
+    add_custom_command(
+        TARGET ${ENGINE_TARGET}
+        POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "${Steamworks_LIBRARIES}"
+        "${CMAKE_BINARY_DIR}"
+        COMMENT "Copying Steamworks DLL"
+    )
+    add_custom_command(
+        TARGET ${ENGINE_TARGET}
+        POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E echo "480" > "$<TARGET_FILE_DIR:${ENGINE_TARGET}>/steam_appid.txt"
+        COMMENT "Generating steam_appid.txt"
+    )
+  endif ()
+endif ()

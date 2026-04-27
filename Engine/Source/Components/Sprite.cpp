@@ -1,5 +1,6 @@
 #include "../../Include/Components/Sprite.hpp"
 
+#include <stdexcept>
 #include <utility>
 
 #include "../../Include/GameObject.hpp"

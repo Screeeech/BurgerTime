@@ -1,5 +1,7 @@
 #include "../../Include/Components/Animation.hpp"
 
+#include <stdexcept>
+
 #include "../../Include/Renderer.hpp"
 
 namespace dae
