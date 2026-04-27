@@ -1,4 +1,4 @@
-﻿#include "../Include/Renderer.hpp"
+﻿#include "Renderer.hpp"
 
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
@@ -8,8 +8,8 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "../Include/SceneManager.hpp"
-#include "../Include/Texture2D.hpp"
+#include "SceneManager.hpp"
+#include "Texture2D.hpp"
 
 void dae::Renderer::Init(SDL_Window* window)
 {

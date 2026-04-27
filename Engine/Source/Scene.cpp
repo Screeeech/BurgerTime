@@ -1,10 +1,10 @@
-#include "../Include/Scene.hpp"
+#include "Scene.hpp"
 
 #include <algorithm>
 #include <cassert>
 
-#include "../Include/Components/UIComponent.hpp"
-#include "../Include/Renderable.hpp"
+#include "Components/UIComponent.hpp"
+#include "Renderable.hpp"
 
 using namespace dae;
 

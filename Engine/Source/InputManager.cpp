@@ -1,4 +1,4 @@
-#include "../Include/InputManager.hpp"
+#include "InputManager.hpp"
 
 #include <imgui_impl_sdl3.h>
 #include <SDL3/SDL.h>
@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <print>
 
-#include "../Include/Commands/CallbackCommand.hpp"
+#include "Commands/CallbackCommand.hpp"
 
 dae::InputManager::~InputManager() noexcept
 {

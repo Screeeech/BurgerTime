@@ -3,10 +3,10 @@
 #include <algorithm>
 #include <format>
 
+#include "../../Engine/Include/EventManager.hpp"
+#include "../../Engine/Include/Events.hpp"
 #include "Commands/CallbackCommand.hpp"
 #include "Commands/MoveCommand.hpp"
-#include "EventManager.hpp"
-#include "Events.hpp"
 #include "GameObject.hpp"
 #include "InputManager.hpp"
 #include "SceneManager.hpp"

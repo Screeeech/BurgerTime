@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "../../Include/EventManager.hpp"
+#include "EventManager.hpp"
 
 #if USE_STEAMWORKS
 #include <steam_api.h>
@@ -16,12 +16,12 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "../Include/Events.hpp"
-#include "../Include/InputManager.hpp"
-#include "../Include/Minigin.hpp"
-#include "../Include/Renderer.hpp"
-#include "../Include/ResourceManager.hpp"
-#include "../Include/SceneManager.hpp"
+#include "Events.hpp"
+#include "InputManager.hpp"
+#include "Minigin.hpp"
+#include "Renderer.hpp"
+#include "ResourceManager.hpp"
+#include "SceneManager.hpp"
 
 SDL_Window* g_window{};
 

@@ -15,6 +15,7 @@ set(ENGINE_SOURCES
     "Source/Components/Sprite.cpp"
     "Source/Components/TextComponent.cpp"
     "Source/Components/UIComponent.cpp"
+    "Source/EventManager.cpp"
     "Source/Font.cpp"
     "Source/GameObject.cpp"
     "Source/InputManager.cpp"

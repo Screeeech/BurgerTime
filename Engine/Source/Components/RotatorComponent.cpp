@@ -1,9 +1,9 @@
-#include "../../Include/Components/RotatorComponent.hpp"
+#include "Components/RotatorComponent.hpp"
 
 #include <glm/ext/scalar_constants.hpp>
 #include <print>
 
-#include "../../Include/GameObject.hpp"
+#include "GameObject.hpp"
 
 namespace dae
 {

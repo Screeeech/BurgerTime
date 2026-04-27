@@ -1,13 +1,13 @@
 #include "Components/ScoreComponent.hpp"
 
-#include "Utils.hpp"
 #include <format>
 
+#include "../../Engine/Include/EventManager.hpp"
+#include "../../Engine/Include/Events.hpp"
 #include "Components/TextComponent.hpp"
-#include "Events.hpp"
 #include "GameObject.hpp"
 #include "ResourceManager.hpp"
-#include "EventManager.hpp"
+#include "Utils.hpp"
 
 namespace dae
 {

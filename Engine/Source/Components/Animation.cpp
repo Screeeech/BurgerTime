@@ -1,8 +1,8 @@
-#include "../../Include/Components/Animation.hpp"
+#include "Components/Animation.hpp"
 
 #include <stdexcept>
 
-#include "../../Include/Renderer.hpp"
+#include "Renderer.hpp"
 
 namespace dae
 {

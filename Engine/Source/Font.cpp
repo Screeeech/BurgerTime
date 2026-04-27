@@ -1,4 +1,4 @@
-#include "../Include/Font.hpp"
+#include "Font.hpp"
 
 #include <SDL3_ttf/SDL_ttf.h>
 

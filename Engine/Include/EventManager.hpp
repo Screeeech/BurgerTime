@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "../Engine/Include/Singleton.hpp"
+#include "Singleton.hpp"
 
 namespace dae
 {

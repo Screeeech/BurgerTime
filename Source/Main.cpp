@@ -2,6 +2,8 @@
 #include <filesystem>
 #include <print>
 
+#include "../Engine/Include/EventManager.hpp"
+#include "../Engine/Include/Events.hpp"
 #include "AchievementManager.hpp"
 #include "Components/Animation.hpp"
 #include "Components/FpsComponent.hpp"
@@ -9,8 +11,6 @@
 #include "Components/ScoreComponent.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/TextComponent.hpp"
-#include "EventManager.hpp"
-#include "Events.hpp"
 #include "InputManager.hpp"
 #include "Minigin.hpp"
 #include "ResourceManager.hpp"

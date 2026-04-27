@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <set>
 
-#include "../Engine/Include/Singleton.hpp"
+#include "Singleton.hpp"
 
 namespace dae
 {

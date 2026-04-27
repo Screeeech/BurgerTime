@@ -1,7 +1,6 @@
-#include "../Include/SceneManager.hpp"
+#include "SceneManager.hpp"
 
-#include "../Include/Renderable.hpp"
-#include "../Include/Scene.hpp"
+#include "Scene.hpp"
 
 void dae::SceneManager::Update(float deltaTime)
 {

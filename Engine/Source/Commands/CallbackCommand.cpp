@@ -1,4 +1,4 @@
-#include "../../Include/Commands/CallbackCommand.hpp"
+#include "Commands/CallbackCommand.hpp"
 
 #include <utility>
 

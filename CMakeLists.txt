@@ -18,16 +18,15 @@ set(SOURCE_FILES
     "Source/Components/PlayerController.cpp"
     "Source/Components/ScoreComponent.cpp"
     "Source/AchievementManager.cpp"
-    "Source/EventManager.cpp"
 )
 
 add_executable(${GAME_TARGET} ${SOURCE_FILES})
 
-target_include_directories("${GAME_TARGET}" PRIVATE
-    "${CMAKE_SOURCE_DIR}/Include/"
-)
-
 target_link_libraries(${GAME_TARGET} PRIVATE BurgerTimeEngine)
+
+target_include_directories(${GAME_TARGET} PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/Include"
+)
 
 target_compile_features(${GAME_TARGET} PRIVATE cxx_std_23)
 
@@ -38,14 +37,6 @@ else ()
   #  target_compile_options(${GAME_TARGET} PRIVATE -Wall -Wextra)
   target_compile_options(${GAME_TARGET} PRIVATE -Wall -Wextra -Werror)
 endif ()
-
-
-# ==================== LIBRARIES ====================
-
-# Add steam if available
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/steam")
-find_package(Steamworks QUIET)
-
 
 # ==================== Sanitizers ====================
 option(USE_ASAN "Enable AddressSanitizer" OFF)

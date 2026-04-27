@@ -2,9 +2,9 @@
 
 #include <format>
 
+#include "../../Engine/Include/EventManager.hpp"
+#include "../../Engine/Include/Events.hpp"
 #include "Components/TextComponent.hpp"
-#include "EventManager.hpp"
-#include "Events.hpp"
 #include "GameObject.hpp"
 #include "ResourceManager.hpp"
 #include "Utils.hpp"

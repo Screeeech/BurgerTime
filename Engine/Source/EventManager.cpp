@@ -1,6 +1,6 @@
-#include "EventManager.hpp"
+#include "../Include/EventManager.hpp"
 
-#include "Events.hpp"
+#include "../Include/Events.hpp"
 
 namespace dae
 {
