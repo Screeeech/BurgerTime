@@ -2,8 +2,6 @@
 #include <filesystem>
 #include <print>
 
-#include "../Engine/Include/EventManager.hpp"
-#include "../Engine/Include/Events.hpp"
 #include "AchievementManager.hpp"
 #include "Components/Animation.hpp"
 #include "Components/FpsComponent.hpp"
@@ -11,6 +9,8 @@
 #include "Components/ScoreComponent.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/TextComponent.hpp"
+#include "EventManager.hpp"
+#include "Events.hpp"
 #include "InputManager.hpp"
 #include "Minigin.hpp"
 #include "ResourceManager.hpp"
@@ -154,11 +154,7 @@ static void load()
 
 int main()
 {
-#if __EMSCRIPTEN__
-    fs::path data_location = "./resources/";
-#else
-    const fs::path data_location = "./resources/";
-#endif
+    const fs::path data_location = "./Resources/";
     try
     {
         constexpr int maxSteps{ 5 };

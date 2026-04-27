@@ -6,7 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(BurgerTime)
 
-add_subdirectory(Engine)
+add_subdirectory(Galena)
 
 set(GAME_TARGET ${PROJECT_NAME})
 
@@ -23,9 +23,9 @@ set(SOURCE_FILES
 add_executable(${GAME_TARGET} ${SOURCE_FILES})
 
 if (EMSCRIPTEN)
-  target_link_libraries(${GAME_TARGET} PRIVATE EngineWeb)
+  target_link_libraries(${GAME_TARGET} PRIVATE GalenaWeb)
 else ()
-  target_link_libraries(${GAME_TARGET} PRIVATE Engine)
+  target_link_libraries(${GAME_TARGET} PRIVATE Galena)
 endif ()
 
 target_include_directories(${GAME_TARGET} PRIVATE
