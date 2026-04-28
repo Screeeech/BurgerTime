@@ -1,3 +1,3 @@
 [submodule "Galena"]
 	path = Galena
-	url = git@github.com:Screeeech/GalenaEngine.git
+	url = https://github.com/Screeeech/GalenaEngine.git

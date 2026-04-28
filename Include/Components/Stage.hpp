@@ -1,6 +1,7 @@
 #ifndef BURGERTIME_STAGE_HPP
 #define BURGERTIME_STAGE_HPP
 #include <SDL3/SDL_pixels.h>
+#include <string>
 
 #include "Component.hpp"
 #include "Renderable.hpp"
@@ -20,9 +21,9 @@ enum class TileType : std::uint8_t
 class Stage : public gla::Renderable
 {
     static constexpr int zIndex{ 1 };
-    static constexpr size_t stageWidth{ 9 };
-    static constexpr size_t stageHeight{ 10 };
-    static constexpr size_t stageSize{ stageWidth * stageHeight };
+    static constexpr uint32_t stageWidth{ 9 };
+    static constexpr uint32_t stageHeight{ 10 };
+    static constexpr uint32_t stageSize{ stageWidth * stageHeight };
 
 
 public:
