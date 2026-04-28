@@ -11,7 +11,7 @@ SortIncludes: CaseInsensitive
 SeparateDefinitionBlocks: Leave
 CompactNamespaces: false
 PackConstructorInitializers: Never
-Cpp11BracedListStyle: true
+Cpp11BracedListStyle: false
 DerivePointerAlignment: false
 FixNamespaceComments: true
 IndentCaseLabels: true

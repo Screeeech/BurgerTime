@@ -16,7 +16,7 @@ ScoreComponent::ScoreComponent(gla::GameObject* pOwner, int playerIndex, int ini
     , m_score(initialScore)
     , m_playerIndex(playerIndex)
     , m_pScoreDisplay(pOwner->AddComponent<gla::TextComponent>(std::format("Score: {}", initialScore),
-                                                          gla::ResourceManager::Get().LoadFont("Lingua.otf", 21)))
+                                                          gla::ResourceManager::Get().LoadFont("Fonts/nes.ttf", 8)))
 {
     gla::EventManager::Get().BindEvent("scoreChange"_h, this, &ScoreComponent::OnScoreChange);
 }

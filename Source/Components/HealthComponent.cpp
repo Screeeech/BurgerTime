@@ -17,7 +17,7 @@ HealthComponent::HealthComponent(gla::GameObject* pOwner, int playerIndex, int s
     , m_health(startingHealth)
     , m_playerIndex(playerIndex)
     , m_pHealthDisplay(pOwner->AddComponent<gla::TextComponent>(std::format("Health: {}", startingHealth),
-                                                                gla::ResourceManager::Get().LoadFont("Lingua.otf", 21)))
+                                                                gla::ResourceManager::Get().LoadFont("Fonts/nes.ttf", 8)))
 {
     gla::EventManager::Get().BindEvent("healthChange"_h, this, &HealthComponent::OnHealthChange);
 }
