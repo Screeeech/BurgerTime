@@ -5,11 +5,12 @@
 
 #include "Commands/CallbackCommand.hpp"
 #include "Commands/MoveCommand.hpp"
-#include "EventManager.hpp"
 #include "Events.hpp"
 #include "GameObject.hpp"
-#include "InputManager.hpp"
 #include "SceneManager.hpp"
+#include "ServiceLocator.hpp"
+#include "Services/EventManager.hpp"
+#include "Services/InputManager.hpp"
 #include "Utils.hpp"
 
 namespace bt
@@ -21,35 +22,49 @@ PlayerController::PlayerController(gla::GameObject* pPlayer, int playerIndex)
     , m_playerIndex(playerIndex)
 
 {
-    auto& input = gla::InputManager::Get();
-    input.BindAction<MoveCommand>("moveUp"_h, playerIndex, m_pOwner, glm::vec3{0, -1, 0});
-    input.BindAction<MoveCommand>("moveLeft"_h, playerIndex, m_pOwner, glm::vec3{-1, 0, 0});
-    input.BindAction<MoveCommand>("moveDown"_h, playerIndex, m_pOwner, glm::vec3{0, 1, 0});
-    input.BindAction<MoveCommand>("moveRight"_h, playerIndex, m_pOwner, glm::vec3{1, 0, 0});
+    if (auto* inputManager = gla::ServiceLocator::Request<gla::InputManager>().value_or(nullptr))
+    {
+    inputManager->BindAction<MoveCommand>("moveUp"_h, playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
+    inputManager->BindAction<MoveCommand>("moveLeft"_h, playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
+    inputManager->BindAction<MoveCommand>("moveDown"_h, playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
+    inputManager->BindAction<MoveCommand>("moveRight"_h, playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
 
-    input.BindAction<gla::CallbackCommand>(
+    inputManager->BindAction<gla::CallbackCommand>(
         "damage"_h,
         playerIndex,
-        [playerIndex]() -> void { gla::EventManager::Get().InvokeEvent(gla::HealthEvent{"healthChange"_h, playerIndex, -1}); });
-    input.BindAction<gla::CallbackCommand>(
+        [playerIndex]() -> void
+        {
+            if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
+                eventManager->InvokeEvent(gla::HealthEvent{ "healthChange"_h, playerIndex, -1 });
+        });
+    inputManager->BindAction<gla::CallbackCommand>(
         "attack"_h,
         playerIndex,
-        [playerIndex]() -> void { gla::EventManager::Get().InvokeEvent(gla::ScoreEvent{"scoreChange"_h, playerIndex, 10}); });
+        [playerIndex]() -> void
+        {
+            if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
+                eventManager->InvokeEvent(gla::ScoreEvent{ "scoreChange"_h, playerIndex, 10 });
+        });
+    }
 
-    gla::EventManager::Get().BindEvent("die"_h, this, &PlayerController::OnDeath);
+    if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
+        eventManager->BindEvent("die"_h, this, &PlayerController::OnDeath);
 }
 
 PlayerController::~PlayerController() noexcept
 {
-    auto& input = gla::InputManager::Get();
-    input.UnbindAction("moveUp"_h, m_playerIndex);
-    input.UnbindAction("moveLeft"_h, m_playerIndex);
-    input.UnbindAction("moveDown"_h, m_playerIndex);
-    input.UnbindAction("moveRight"_h, m_playerIndex);
-    input.UnbindAction("damage"_h, m_playerIndex);
-    input.UnbindAction("attack"_h, m_playerIndex);
+    if (auto* inputManager = gla::ServiceLocator::Request<gla::InputManager>().value_or(nullptr))
+    {
+        inputManager->UnbindAction("moveUp"_h, m_playerIndex);
+        inputManager->UnbindAction("moveLeft"_h, m_playerIndex);
+        inputManager->UnbindAction("moveDown"_h, m_playerIndex);
+        inputManager->UnbindAction("moveRight"_h, m_playerIndex);
+        inputManager->UnbindAction("damage"_h, m_playerIndex);
+        inputManager->UnbindAction("attack"_h, m_playerIndex);
+    }
 
-    gla::EventManager::Get().UnbindEvents(this);
+    if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
+        eventManager->UnbindEvents(this);
 }
 
 void PlayerController::Update(float deltaTime)
@@ -73,7 +88,7 @@ void PlayerController::SetDirection(glm::vec3 direction)
 
 void PlayerController::OnDeath(const gla::Event& event)
 {
-    const auto& playerEvent{dynamic_cast<const gla::PlayerEvent&>(event)};
+    const auto& playerEvent{ dynamic_cast<const gla::PlayerEvent&>(event) };
 
     if (playerEvent.playerIndex != m_playerIndex)
         return;

@@ -4,6 +4,7 @@
 
 #include "Component.hpp"
 #include "Renderable.hpp"
+#include "Services/Renderer.hpp"
 
 namespace bt
 {
@@ -42,8 +43,8 @@ private:
 
     [[nodiscard]] auto GetTileType(uint32_t xIdx, uint32_t yIdx) const -> TileType;
 
-    static void DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight);
-    static void DrawLadder(glm::vec2 cursor);
+    static void DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const* renderer);
+    static void DrawLadder(glm::vec2 cursor, gla::Renderer const* renderer);
 };
 
 }  // namespace bt

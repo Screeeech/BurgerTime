@@ -6,20 +6,19 @@
 #include "AchievementManager.hpp"
 #include "Components/Animation.hpp"
 #include "Components/FpsComponent.hpp"
-#include "Components/HealthComponent.hpp"
 #include "Components/PlayerController.hpp"
-#include "Components/ScoreComponent.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
 #include "Components/TextComponent.hpp"
-#include "EventManager.hpp"
 #include "Events.hpp"
 #include "Galena.hpp"
-#include "InputManager.hpp"
-#include "Renderer.hpp"
-#include "ResourceManager.hpp"
 #include "Scene.hpp"
 #include "SceneManager.hpp"
+#include "ServiceLocator.hpp"
+#include "Services/EventManager.hpp"
+#include "Services/InputManager.hpp"
+#include "Services/Renderer.hpp"
+#include "Services/ResourceManager.hpp"
 #include "Utils.hpp"
 
 
@@ -34,20 +33,23 @@ namespace
 {
 void load()
 {
-    auto& resourceManager = gla::ResourceManager::Get();
-    auto& input = gla::InputManager::Get();
+    // Getting value without checking for nullopt cause if there's no service here I want the program to fail
+    auto* resourceManager{ gla::ServiceLocator::Request<gla::ResourceManager>().value() };
+    auto* inputManager{ gla::ServiceLocator::Request<gla::InputManager>().value() };
+    auto* eventManager{ gla::ServiceLocator::Request<gla::EventManager>().value() };
+    auto* renderer{ gla::ServiceLocator::Request<gla::Renderer>().value() };
 
     auto& scene = gla::SceneManager::Get().CreateScene();
     scene.Load();
 
     // Set logical resolution to be NES size
-    gla::Renderer::Get().SetLogicalResolution(256, 240);
+    renderer->SetLogicalResolution(256, 240);
 
     auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Stage");
     go->AddComponent<bt::Stage>("Stages/stage1.json");
 
-    auto const spriteSheetTexture{ gla::ResourceManager::Get().LoadTexture("spritesheet.png") };
-    auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
+    auto const spriteSheetTexture{ resourceManager->LoadTexture("spritesheet.png") };
+    auto const font = resourceManager->LoadFont("Fonts/nes.ttf", 8);
 
     // FPS display
     go = scene.GetRoot()->CreateChild(10, 10, 0, "FPS Counter");
@@ -102,13 +104,13 @@ void load()
 
         animation->SetActiveAnimation("walkRight"_h, true);
 
-        input.RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, 0);
-        input.RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, 0);
-        input.RegisterInput(SDL_SCANCODE_S, gla::Input::Type::held, "moveDown"_h, 0);
-        input.RegisterInput(SDL_SCANCODE_D, gla::Input::Type::held, "moveRight"_h, 0);
+        inputManager->RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, 0);
+        inputManager->RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, 0);
+        inputManager->RegisterInput(SDL_SCANCODE_S, gla::Input::Type::held, "moveDown"_h, 0);
+        inputManager->RegisterInput(SDL_SCANCODE_D, gla::Input::Type::held, "moveRight"_h, 0);
 
-        input.RegisterInput(SDL_SCANCODE_Q, gla::Input::Type::released, "damage"_h, 0);
-        input.RegisterInput(SDL_SCANCODE_E, gla::Input::Type::released, "attack"_h, 0);
+        inputManager->RegisterInput(SDL_SCANCODE_Q, gla::Input::Type::released, "damage"_h, 0);
+        inputManager->RegisterInput(SDL_SCANCODE_E, gla::Input::Type::released, "attack"_h, 0);
     }
 
     // Mr Hotdog
@@ -154,7 +156,7 @@ void load()
     }
 
     // Achievement Event
-    gla::EventManager::Get().BindEvent("win"_h, &bt::AchievementManager::Get(), &bt::AchievementManager::OnWin);
+    eventManager->BindEvent("win"_h, &bt::AchievementManager::Get(), &bt::AchievementManager::OnWin);
 }
 }  // namespace
 

@@ -4,8 +4,11 @@
 #include <glm/vec3.hpp>
 
 #include "Component.hpp"
-#include "HealthComponent.hpp"
 
+namespace gla
+{
+struct Event;
+}
 namespace bt
 {
 

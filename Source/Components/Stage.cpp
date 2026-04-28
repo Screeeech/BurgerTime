@@ -5,7 +5,8 @@
 #include <nlohmann/json.hpp>
 
 #include "Colors.hpp"
-#include "Renderer.hpp"
+#include "ServiceLocator.hpp"
+#include "Services/Renderer.hpp"
 
 using nlohmann::json;
 
@@ -41,7 +42,12 @@ void Stage::Update(float /*deltaTime*/) {}
 
 void Stage::Render()
 {
-    auto const& renderer = gla::Renderer::Get();
+    auto const* renderer{ gla::ServiceLocator::Request<gla::Renderer>().value_or(nullptr) };
+    if (not renderer)
+    {
+        std::println("Careful! No renderer was found, proceeding without rendering stage");
+        return;
+    }
 
     for (auto const [idx, tile] : m_tileArray | vw::enumerate)
     {
@@ -62,18 +68,18 @@ void Stage::Render()
         {
             case TileType::Platform:
             {
-                DrawPlatform(cursor, connectLeft, connectRight);
+                DrawPlatform(cursor, connectLeft, connectRight, renderer);
             }
             break;
             case TileType::LadderPlatform:
             {
-                DrawPlatform(cursor, connectLeft, connectRight);
+                DrawPlatform(cursor, connectLeft, connectRight, renderer);
                 [[fallthrough]];
             }
             case TileType::Ladder:
             {
-                renderer.SetColor(xIdx % 2 != 0 ? colors::GreenLadderColor : colors::BlueLadderColor);
-                DrawLadder(cursor);
+                renderer->SetColor(xIdx % 2 != 0 ? colors::GreenLadderColor : colors::BlueLadderColor);
+                DrawLadder(cursor, renderer);
             }
             break;
             case TileType::Null:
@@ -94,10 +100,8 @@ auto Stage::GetTileType(uint32_t xIdx, uint32_t yIdx) const -> TileType
     return m_tileArray.at(idx);
 }
 
-void Stage::DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight)
+void Stage::DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const* renderer)
 {
-    auto const& renderer = gla::Renderer::Get();
-
     cursor.y += 14.f;
 
     float width{ 16.f };
@@ -111,15 +115,13 @@ void Stage::DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight)
         width += 8.f;
     }
 
-    renderer.SetColor(colors::PlatformColor);
-    renderer.DrawRect({ .x = cursor.x, .y = cursor.y, .w = width, .h = 2.f });
+    renderer->SetColor(colors::PlatformColor);
+    renderer->DrawRect({ .x = cursor.x, .y = cursor.y, .w = width, .h = 2.f });
 }
 
-void Stage::DrawLadder(glm::vec2 cursor)
+void Stage::DrawLadder(glm::vec2 cursor, gla::Renderer const* renderer)
 {
-    auto const& renderer = gla::Renderer::Get();
-
-    renderer.DrawLines(
+    renderer->DrawLines(
         {
             {
                 cursor + glm::vec2{ 2.f, 0.f },

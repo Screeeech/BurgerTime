@@ -15,9 +15,7 @@ set(SOURCE_FILES
     "Source/Main.cpp"
     "Source/Commands/MoveCommand.cpp"
     "Source/Components/CacheComponent.cpp"
-    "Source/Components/HealthComponent.cpp"
     "Source/Components/PlayerController.cpp"
-    "Source/Components/ScoreComponent.cpp"
     "Source/Components/Stage.cpp"
     "Source/AchievementManager.cpp"
 )
