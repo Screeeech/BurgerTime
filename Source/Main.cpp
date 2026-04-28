@@ -46,23 +46,21 @@ void load()
     auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Stage");
     go->AddComponent<bt::Stage>("Stages/stage1.json");
 
-    auto font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
+    auto const spriteSheetTexture{ gla::ResourceManager::Get().LoadTexture("spritesheet.png") };
+    auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
+
     // FPS display
     go = scene.GetRoot()->CreateChild(10, 10, 0, "FPS Counter");
     go->AddComponent<gla::FpsComponent>(font);
 
     // Player 0
     {
-        // Resources
-        auto playerTexture{ gla::ResourceManager::Get().LoadTexture("player.png") };
-        auto spriteSheetTexture{ gla::ResourceManager::Get().LoadTexture("spritesheet.png") };
-
         // GameObject
         auto* player0{ scene.GetRoot()->CreateChild(100, 100, 0, "Player 0") };
 
         // Animations
         player0->AddComponent<bt::PlayerController>(0);
-        auto* animation{ player0->AddComponent<gla::Animation>(3) };
+        auto* animation{ player0->AddComponent<gla::Animation>(2) };
 
         auto const size{ spriteSheetTexture->GetSize() };
         auto const cols{ static_cast<int>(size.x / 16.f) };
@@ -111,6 +109,48 @@ void load()
 
         input.RegisterInput(SDL_SCANCODE_Q, gla::Input::Type::released, "damage"_h, 0);
         input.RegisterInput(SDL_SCANCODE_E, gla::Input::Type::released, "attack"_h, 0);
+    }
+
+    // Mr Hotdog
+    {
+        auto* enemy = scene.GetRoot()->CreateChild(30, 30, 0, "Mr. Hotdog");
+
+        auto* animation = enemy->AddComponent<gla::Animation>(2);
+        auto const size{ spriteSheetTexture->GetSize() };
+        auto const cols{ static_cast<int>(size.x / 16.f) };
+        auto const rows{ static_cast<int>(size.y / 16.f) };
+        auto& spriteSheet = animation->AddSpriteSheet(spriteSheetTexture, cols, rows);
+
+        animation->AddAnimation(
+            "walkUp"_h,
+            spriteSheet,
+            {
+                { .colIdx = 4, .rowIdx = 2, .duration = 0.1f },
+                { .colIdx = 5, .rowIdx = 2, .duration = 0.1f },
+            });
+        animation->AddAnimation(
+            "walkDown"_h,
+            spriteSheet,
+            {
+                { .colIdx = 0, .rowIdx = 2, .duration = 0.1f },
+                { .colIdx = 1, .rowIdx = 2, .duration = 0.1f },
+            });
+        animation->AddAnimation(
+            "walkLeft"_h,
+            spriteSheet,
+            {
+                { .colIdx = 2, .rowIdx = 2, .duration = 0.1f },
+                { .colIdx = 3, .rowIdx = 2, .duration = 0.1f },
+            });
+        animation->AddAnimation(
+            "walkRight"_h,
+            spriteSheet,
+            {
+                { .colIdx = 2, .rowIdx = 2, .duration = 0.1f, .flipX = true },
+                { .colIdx = 3, .rowIdx = 2, .duration = 0.1f, .flipX = true },
+            });
+
+        animation->SetActiveAnimation("walkLeft"_h, true);
     }
 
     // Achievement Event
