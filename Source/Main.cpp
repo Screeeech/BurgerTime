@@ -1,4 +1,5 @@
 
+#include <cstddef>
 #include <filesystem>
 #include <print>
 
@@ -9,6 +10,7 @@
 #include "Components/PlayerController.hpp"
 #include "Components/ScoreComponent.hpp"
 #include "Components/Sprite.hpp"
+#include "Components/Stage.hpp"
 #include "Components/TextComponent.hpp"
 #include "EventManager.hpp"
 #include "Events.hpp"
@@ -26,6 +28,7 @@
 #endif
 
 namespace fs = std::filesystem;
+namespace vw = std::ranges::views;
 
 namespace
 {
@@ -40,33 +43,28 @@ void load()
     // Set logical resolution to be NES size
     gla::Renderer::Get().SetLogicalResolution(256, 240);
 
+    auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Stage");
+    go->AddComponent<bt::Stage>("Stages/stage1.json");
+
     auto font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
-
     // FPS display
-    auto* go = scene.GetRoot()->CreateChild(10, 10, 0, "FPS Counter");
+    go = scene.GetRoot()->CreateChild(10, 10, 0, "FPS Counter");
     go->AddComponent<gla::FpsComponent>(font);
-
-    auto* infoTextP0{ scene.GetRoot()->CreateChild(10, 30) };
-    infoTextP0->AddComponent<gla::TextComponent>("MOVE: WASD, KILL ENEMY: E, TAKE DAMAGE: Q", font, 1);
-
-    auto* infoTextP1{ scene.GetRoot()->CreateChild(10, 42) };
-    infoTextP1->AddComponent<gla::TextComponent>("MOVE: DPAD, KILL ENEMY: X, TAKE DAMAGE: A", font, 1);
 
     // Player 0
     {
+        // Resources
+        auto playerTexture{ gla::ResourceManager::Get().LoadTexture("player.png") };
+        auto spriteSheetTexture{ gla::ResourceManager::Get().LoadTexture("spritesheet.png") };
+
+        // GameObject
         auto* player0{ scene.GetRoot()->CreateChild(100, 100, 0, "Player 0") };
 
-        auto playerTexture{ gla::ResourceManager::Get().LoadTexture("player.png") };
-
-        auto* playerDisplay{ scene.GetRoot()->CreateChild(10, 150, 0, "Player display p0") };
-        playerDisplay->AddComponent<gla::TextComponent>("PLAYER 0", font);
-
-        auto spriteSheetTexture{ gla::ResourceManager::Get().LoadTexture("spritesheet.png") };
-        auto const size{ spriteSheetTexture->GetSize() };
-
+        // Animations
         player0->AddComponent<bt::PlayerController>(0);
         auto* animation{ player0->AddComponent<gla::Animation>(3) };
 
+        auto const size{ spriteSheetTexture->GetSize() };
         auto const cols{ static_cast<int>(size.x / 16.f) };
         auto const rows{ static_cast<int>(size.y / 16.f) };
         auto& spriteSheet{ animation->AddSpriteSheet(spriteSheetTexture, cols, rows) };

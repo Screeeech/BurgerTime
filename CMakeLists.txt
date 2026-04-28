@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.26)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(BurgerTime)
 
@@ -17,6 +18,7 @@ set(SOURCE_FILES
     "Source/Components/HealthComponent.cpp"
     "Source/Components/PlayerController.cpp"
     "Source/Components/ScoreComponent.cpp"
+    "Source/Components/Stage.cpp"
     "Source/AchievementManager.cpp"
 )
 
@@ -50,8 +52,17 @@ if (USE_ASAN)
   add_link_options(-fsanitize=address)
 endif ()
 
-# ==================== PLATFORM SPECIFIC ====================
 
+# ==================== PLATFORM SPECIFIC ====================
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.12.0
+)
+FetchContent_MakeAvailable(json)
+target_link_libraries(${GAME_TARGET} PRIVATE nlohmann_json::nlohmann_json)
+
+# ==================== PLATFORM SPECIFIC ====================
 if (WIN32)
   add_custom_command(TARGET ${GAME_TARGET} POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Resources" "$<TARGET_FILE_DIR:${GAME_TARGET}>/Resources"
