@@ -19,6 +19,7 @@
 #include "Services/InputManager.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/ResourceManager.hpp"
+#include "Services/SoundService.hpp"
 #include "Utils.hpp"
 
 
@@ -38,6 +39,27 @@ void load()
     auto* inputManager{ gla::ServiceLocator::Request<gla::InputManager>().value() };
     auto* eventManager{ gla::ServiceLocator::Request<gla::EventManager>().value() };
     auto* renderer{ gla::ServiceLocator::Request<gla::Renderer>().value() };
+
+    if (auto* sound{ gla::ServiceLocator::Request<gla::SoundService>().value_or(nullptr) })
+    {
+        sound->LoadAudio("Sounds/bonus_appear.wav", "bonus_appear"_h);
+        sound->LoadAudio("Sounds/bonus_obtained.wav", "bonus_obtained"_h);
+        sound->LoadAudio("Sounds/burger_fall.wav", "burger_fall"_h);
+        sound->LoadAudio("Sounds/burger_land.wav", "burger_land"_h);
+        sound->LoadAudio("Sounds/burger_step.wav", "burger_step"_h);
+        sound->LoadAudio("Sounds/coin.wav", "coin"_h);
+        sound->LoadAudio("Sounds/death.wav", "death"_h);
+        sound->LoadAudio("Sounds/enemy_fall.wav", "enemy_fall.wav"_h);
+        sound->LoadAudio("Sounds/enemy_sprayed.wav", "enemy_sprayed.wav"_h);
+        sound->LoadAudio("Sounds/enemy_squashed.wav", "enemy_squashed.wav"_h);
+        sound->LoadAudio("Sounds/game_start.wav", "game_start"_h);
+        sound->LoadAudio("Sounds/pepper_shake.wav", "pepper_shake"_h);
+        sound->LoadAudio("Sounds/round_clear.wav", "round_clear"_h);
+        sound->LoadAudio("Sounds/system_sound.wav", "system_sound"_h);
+
+        sound->LoadPersistentAudioTrack("Sounds/bgm.wav", "background");
+    }
+
 
     auto& scene = gla::SceneManager::Get().CreateScene();
     scene.Load();

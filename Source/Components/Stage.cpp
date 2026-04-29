@@ -3,13 +3,15 @@
 #include <array>
 #include <cstdint>
 #include <fstream>
+#include <nlohmann/json.hpp>
 #include <print>
 #include <ranges>
-#include <nlohmann/json.hpp>
 
+#include "Utils.hpp"
 #include "Colors.hpp"
 #include "ServiceLocator.hpp"
 #include "Services/Renderer.hpp"
+#include "Services/SoundService.hpp"
 
 using nlohmann::json;
 
@@ -39,9 +41,15 @@ Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
     {
         m_tileArray.at(idx) = tile;
     }
+
+    if (auto* sound{ gla::ServiceLocator::Request<gla::SoundService>().value_or(nullptr) })
+        sound->PlayAudio("game_start"_h);
 }
 
-void Stage::Update(float /*deltaTime*/) {}
+void Stage::Update(float /*deltaTime*/)
+{
+
+}
 
 void Stage::Render()
 {

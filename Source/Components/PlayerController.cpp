@@ -11,6 +11,7 @@
 #include "ServiceLocator.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
+#include "Services/SoundService.hpp"
 #include "Utils.hpp"
 
 namespace bt
@@ -24,27 +25,27 @@ PlayerController::PlayerController(gla::GameObject* pPlayer, int playerIndex)
 {
     if (auto* inputManager = gla::ServiceLocator::Request<gla::InputManager>().value_or(nullptr))
     {
-    inputManager->BindAction<MoveCommand>("moveUp"_h, playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
-    inputManager->BindAction<MoveCommand>("moveLeft"_h, playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
-    inputManager->BindAction<MoveCommand>("moveDown"_h, playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
-    inputManager->BindAction<MoveCommand>("moveRight"_h, playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
+        inputManager->BindAction<MoveCommand>("moveUp"_h, playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
+        inputManager->BindAction<MoveCommand>("moveLeft"_h, playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
+        inputManager->BindAction<MoveCommand>("moveDown"_h, playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
+        inputManager->BindAction<MoveCommand>("moveRight"_h, playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
 
-    inputManager->BindAction<gla::CallbackCommand>(
-        "damage"_h,
-        playerIndex,
-        [playerIndex]() -> void
-        {
-            if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
-                eventManager->InvokeEvent(gla::HealthEvent{ "healthChange"_h, playerIndex, -1 });
-        });
-    inputManager->BindAction<gla::CallbackCommand>(
-        "attack"_h,
-        playerIndex,
-        [playerIndex]() -> void
-        {
-            if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
-                eventManager->InvokeEvent(gla::ScoreEvent{ "scoreChange"_h, playerIndex, 10 });
-        });
+        inputManager->BindAction<gla::CallbackCommand>(
+            "damage"_h,
+            playerIndex,
+            [playerIndex]() -> void
+            {
+                if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
+                    eventManager->InvokeEvent(gla::PlayerEvent{ "die"_h, playerIndex });
+            });
+        inputManager->BindAction<gla::CallbackCommand>(
+            "attack"_h,
+            playerIndex,
+            [playerIndex]() -> void
+            {
+                if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
+                    eventManager->InvokeEvent(gla::ScoreEvent{ "scoreChange"_h, playerIndex, 10 });
+            });
     }
 
     if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
@@ -93,8 +94,11 @@ void PlayerController::OnDeath(const gla::Event& event)
     if (playerEvent.playerIndex != m_playerIndex)
         return;
 
-    auto* scene = gla::SceneManager::Get().GetActiveScene();
-    scene->RemoveGameObject(m_pOwner);
+    if (auto* sound{ gla::ServiceLocator::Request<gla::SoundService>().value_or(nullptr) })
+        sound->PlayAudio("death"_h);
+
+    //auto* scene = gla::SceneManager::Get().GetActiveScene();
+    //scene->RemoveGameObject(m_pOwner);
 }
 
 
