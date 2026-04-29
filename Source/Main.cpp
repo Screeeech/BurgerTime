@@ -19,7 +19,7 @@
 #include "Services/InputManager.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/ResourceManager.hpp"
-#include "Services/SoundService.hpp"
+#include "Services/Sound.hpp"
 #include "Utils.hpp"
 
 
@@ -40,7 +40,7 @@ void load()
     auto* eventManager{ gla::ServiceLocator::Request<gla::EventManager>().value() };
     auto* renderer{ gla::ServiceLocator::Request<gla::Renderer>().value() };
 
-    if (auto* sound{ gla::ServiceLocator::Request<gla::SoundService>().value_or(nullptr) })
+    if (auto* sound{ gla::ServiceLocator::Request<gla::Sound>().value_or(nullptr) })
     {
         sound->LoadAudio("Sounds/bonus_appear.wav", "bonus_appear"_h);
         sound->LoadAudio("Sounds/bonus_obtained.wav", "bonus_obtained"_h);
