@@ -7,11 +7,11 @@
 #include <print>
 #include <ranges>
 
-#include "Utils.hpp"
 #include "Colors.hpp"
 #include "ServiceLocator.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/SoundService.hpp"
+#include "Utils.hpp"
 
 using nlohmann::json;
 
@@ -62,8 +62,8 @@ void Stage::Render()
 
     for (auto const [idx, tile] : m_tileArray | vw::enumerate)
     {
-        auto const xIdx{ idx % stageWidth };
-        auto const yIdx{ idx / stageWidth };
+        uint32_t const xIdx{ static_cast<uint32_t>(idx) % stageWidth };
+        uint32_t const yIdx{ static_cast<uint32_t>(idx) / stageWidth };
         glm::vec2 const cursor{ static_cast<float>(xIdx * 24) + 32.f, static_cast<float>(yIdx * 16) + 32.f };
 
         bool connectLeft{};
