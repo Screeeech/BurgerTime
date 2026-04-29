@@ -54,14 +54,14 @@ void Stage::Render()
 
     for (auto const [idx, tile] : m_tileArray | vw::enumerate)
     {
-        uint32_t const xIdx{ static_cast<uint32_t>(idx % stageWidth) };
-        uint32_t const yIdx{ static_cast<uint32_t>(idx / stageWidth) };
+        auto const xIdx{ idx % stageWidth };
+        auto const yIdx{ idx / stageWidth };
         glm::vec2 const cursor{ static_cast<float>(xIdx * 24) + 32.f, static_cast<float>(yIdx * 16) + 32.f };
 
         bool connectLeft{};
         bool connectRight{};
-        TileType const leftTile{ GetTileType(xIdx - 1, yIdx) };
-        TileType const rightTile{ GetTileType(xIdx + 1, yIdx) };
+        auto const leftTile{ GetTileType(xIdx - 1, yIdx) };
+        auto const rightTile{ GetTileType(xIdx + 1, yIdx) };
         if (leftTile == TileType::Platform or leftTile == TileType::LadderPlatform)
             connectLeft = true;
         if (rightTile == TileType::Platform or rightTile == TileType::LadderPlatform)
@@ -77,8 +77,8 @@ void Stage::Render()
             case TileType::LadderPlatform:
             {
                 DrawPlatform(cursor, connectLeft, connectRight, renderer);
+                [[fallthrough]];
             }
-            [[fallthrough]];
             case TileType::Ladder:
             {
                 renderer->SetColor(xIdx % 2 != 0 ? colors::GreenLadderColor : colors::BlueLadderColor);
