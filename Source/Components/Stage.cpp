@@ -9,8 +9,8 @@
 
 #include "Colors.hpp"
 #include "ServiceLocator.hpp"
+#include "Services/ISound.hpp"
 #include "Services/Renderer.hpp"
-#include "Services/Sound.hpp"
 #include "Utils.hpp"
 
 using nlohmann::json;
@@ -46,7 +46,7 @@ Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
         ++i;
     }
 
-    if (auto* sound{ gla::ServiceLocator::Request<gla::Sound>().value_or(nullptr) })
+    if (auto* sound{ gla::ServiceLocator::Request<gla::ISound>().value_or(nullptr) })
         sound->PlayAudio("game_start"_h);
 }
 

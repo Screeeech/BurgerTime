@@ -11,7 +11,7 @@
 #include "ServiceLocator.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
-#include "Services/Sound.hpp"
+#include "Services/ISound.hpp"
 #include "Utils.hpp"
 
 namespace bt
@@ -94,7 +94,7 @@ void PlayerController::OnDeath(const gla::Event& event)
     if (playerEvent.playerIndex != m_playerIndex)
         return;
 
-    if (auto* sound{ gla::ServiceLocator::Request<gla::Sound>().value_or(nullptr) })
+    if (auto* sound{ gla::ServiceLocator::Request<gla::ISound>().value_or(nullptr) })
         sound->PlayAudio("death"_h);
 
     //auto* scene = gla::SceneManager::Get().GetActiveScene();
