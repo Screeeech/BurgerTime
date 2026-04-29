@@ -4,6 +4,7 @@
 #include <print>
 
 #include "AchievementManager.hpp"
+#include "Commands/VolumeCommand.hpp"
 #include "Components/Animation.hpp"
 #include "Components/FpsComponent.hpp"
 #include "Components/PlayerController.hpp"
@@ -34,6 +35,9 @@ namespace
 {
 void load()
 {
+    auto& scene = gla::SceneManager::Get().CreateScene();
+    scene.Load();
+
     // Getting value without checking for nullopt cause if there's no service here I want the program to fail
     auto* resourceManager{ gla::ServiceLocator::Request<gla::ResourceManager>().value() };
     auto* inputManager{ gla::ServiceLocator::Request<gla::InputManager>().value() };
@@ -60,9 +64,12 @@ void load()
         sound->LoadPersistentAudioTrack("Sounds/bgm.wav", "background");
     }
 
+    // Bind commands for global volume control
+    inputManager->RegisterInput(SDL_SCANCODE_UP, gla::Input::Type::released, "volumeUp"_h, 0);
+    inputManager->RegisterInput(SDL_SCANCODE_DOWN, gla::Input::Type::released, "volumeDown"_h, 0);
+    inputManager->BindAction<gla::VolumeCommand>("volumeUp"_h, 0, 0.1f);
+    inputManager->BindAction<gla::VolumeCommand>("volumeDown"_h, 0, -0.1f);
 
-    auto& scene = gla::SceneManager::Get().CreateScene();
-    scene.Load();
 
     // Set logical resolution to be NES size
     renderer->SetLogicalResolution(256, 240);
@@ -72,10 +79,18 @@ void load()
 
     auto const spriteSheetTexture{ resourceManager->LoadTexture("spritesheet.png") };
     auto const font = resourceManager->LoadFont("Fonts/nes.ttf", 8);
+    auto const smallFont = resourceManager->LoadFont("Fonts/nes.ttf", 8);
 
     // FPS display
     go = scene.GetRoot()->CreateChild(10, 10, 0, "FPS Counter");
     go->AddComponent<gla::FpsComponent>(font);
+
+    // Control display
+    go = scene.GetRoot()->CreateChild(10, 205);
+    go->AddComponent<gla::TextComponent>("PLAY SOUND: Q", smallFont, 3);
+
+    go = scene.GetRoot()->CreateChild(10, 215);
+    go->AddComponent<gla::TextComponent>("VOLUME: UP DOWN", smallFont, 3);
 
     // Player 0
     {
