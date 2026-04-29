@@ -37,9 +37,13 @@ Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
         stageData.at("tiles").at(0).size() != stageWidth)
         throw std::runtime_error{ "Invalid stage data file" };
 
-    for (auto const& [idx, tile] : stageData.at("tiles") | vw::join | vw::enumerate)
+
+    // I wish I could use views::enumerate here, but emscripten's version of LLVM doesn't support it yet :(
+    size_t i{};
+    for (auto const& tile : stageData.at("tiles") | vw::join)
     {
-        m_tileArray.at(idx) = tile;
+        m_tileArray.at(i) = tile;
+        ++i;
     }
 
     if (auto* sound{ gla::ServiceLocator::Request<gla::SoundService>().value_or(nullptr) })
@@ -60,10 +64,11 @@ void Stage::Render()
         return;
     }
 
-    for (auto const [idx, tile] : m_tileArray | vw::enumerate)
+    for (size_t i{}; i < m_tileArray.size(); ++i)
     {
-        uint32_t const xIdx{ static_cast<uint32_t>(idx) % stageWidth };
-        uint32_t const yIdx{ static_cast<uint32_t>(idx) / stageWidth };
+        auto const& tile = m_tileArray[i];
+        uint32_t const xIdx{ static_cast<uint32_t>(i) % stageWidth };
+        uint32_t const yIdx{ static_cast<uint32_t>(i) / stageWidth };
         glm::vec2 const cursor{ static_cast<float>(xIdx * 24) + 32.f, static_cast<float>(yIdx * 16) + 32.f };
 
         bool connectLeft{};
@@ -75,26 +80,20 @@ void Stage::Render()
         if (rightTile == TileType::Platform or rightTile == TileType::LadderPlatform)
             connectRight = true;
 
-        switch (tile)
+        if (tile == TileType::Platform)
         {
-            case TileType::Platform:
-            {
-                DrawPlatform(cursor, connectLeft, connectRight, renderer);
-            }
-            break;
-            case TileType::LadderPlatform:
-            {
-                DrawPlatform(cursor, connectLeft, connectRight, renderer);
-                [[fallthrough]];
-            }
-            case TileType::Ladder:
-            {
-                renderer->SetColor(xIdx % 2 != 0 ? colors::GreenLadderColor : colors::BlueLadderColor);
-                DrawLadder(cursor, renderer);
-            }
-            break;
-            case TileType::Null:
-                break;
+            DrawPlatform(cursor, connectLeft, connectRight, renderer);
+        }
+        else if (tile == TileType::LadderPlatform)
+        {
+            DrawPlatform(cursor, connectLeft, connectRight, renderer);
+            renderer->SetColor(xIdx % 2 != 0 ? colors::GreenLadderColor : colors::BlueLadderColor);
+            DrawLadder(cursor, renderer);
+        }
+        else if (tile == TileType::Ladder)
+        {
+            renderer->SetColor(xIdx % 2 != 0 ? colors::GreenLadderColor : colors::BlueLadderColor);
+            DrawLadder(cursor, renderer);
         }
     }
 }
