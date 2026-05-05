@@ -18,6 +18,7 @@ set(SOURCE_FILES
     "Source/Components/PlayerController.cpp"
     "Source/Components/Stage.cpp"
     "Source/AchievementManager.cpp"
+    "Source/States/PlayerStates.cpp"
 )
 
 add_executable(${GAME_TARGET} ${SOURCE_FILES})

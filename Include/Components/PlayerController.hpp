@@ -4,6 +4,8 @@
 #include <glm/vec3.hpp>
 
 #include "Component.hpp"
+#include "StateMachine.hpp"
+#include "States/PlayerStates.hpp"
 
 namespace gla
 {
@@ -29,6 +31,8 @@ public:
     void OnDeath(const gla::Event& event);
 
 private:
+    playerstates::PlayerStateMachine m_finiteStateMachine;
+
     int m_playerIndex;
 
     glm::vec3 m_direction{};
