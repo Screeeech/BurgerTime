@@ -20,7 +20,6 @@ class Font;
 
 PlayerController::PlayerController(gla::GameObject* pPlayer, int playerIndex)
     : Component(pPlayer)
-    , m_finiteStateMachine(playerstates::Idle{})
     , m_playerIndex(playerIndex)
 {
     if (auto* inputManager = gla::ServiceLocator::Request<gla::InputManager>().value_or(nullptr))
@@ -70,7 +69,7 @@ PlayerController::~PlayerController() noexcept
 
 void PlayerController::Update(float deltaTime)
 {
-    m_finiteStateMachine.Update();
+    m_finiteStateMachine.Update(playerstates::Context{ .deltaTime = deltaTime, .direction = m_direction });
 
     // Check if the direction vector has significant length
     if (glm::length(m_direction) > 0)
@@ -99,8 +98,8 @@ void PlayerController::OnDeath(const gla::Event& event)
     if (auto* sound{ gla::ServiceLocator::Request<gla::ISound>().value_or(nullptr) })
         sound->PlayAudio("death"_h);
 
-    //auto* scene = gla::SceneManager::Get().GetActiveScene();
-    //scene->RemoveGameObject(m_pOwner);
+    // auto* scene = gla::SceneManager::Get().GetActiveScene();
+    // scene->RemoveGameObject(m_pOwner);
 }
 
 

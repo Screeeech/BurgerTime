@@ -20,11 +20,9 @@ struct PackIsUnique<T, Rest...> : std::bool_constant<(not std::is_same_v<T, Rest
 {
 };
 
-// Not sure if this is_trivially_copyable will stay but for now I think it makes sense
-// And we need to make sure that the state has an Update() function
-template<typename State, typename StateMachine>
-concept IsValidState = requires(State state, StateMachine& machine) {
-    { state.Update(machine) } -> std::same_as<void>;
+template<typename State, typename StateMachine, typename Context>
+concept IsValidState = requires(State state, StateMachine& machine, Context&& context) {
+    { state.Update(machine, std::forward<Context>(context)) } -> std::same_as<void>;
 };
 
 template<typename T>
@@ -37,18 +35,18 @@ concept HasOnExit = requires(T state) {
     { state.OnExit() } -> std::same_as<void>;
 };
 
-template<typename... States>
+template<typename InitialState, typename Context, typename... States>
 class StateMachine final
 {
-    static_assert((IsValidState<States, StateMachine> && ...), "Every state should have a valid Update function");
+    static_assert((IsValidState<States, StateMachine, Context> && ...), "Every state should have a valid Update function");
     static_assert(PackIsUnique<States...>::value, "Duplicate states are not allowed");
+    static_assert(IsInPack<InitialState, States...>, "Initial state must be a listed possible state");
 
 public:
-    template<typename State>
-        requires IsValidState<State, StateMachine>
-    explicit StateMachine(State initialState)
-        : m_currentState(initialState)
+    explicit StateMachine()
+        : m_currentState(InitialState{})
     {
+        CallOnEnter();
     }
     ~StateMachine() noexcept = default;
 
@@ -57,26 +55,50 @@ public:
     StateMachine(StateMachine&&) = delete;
     auto operator=(StateMachine&&) -> StateMachine& = delete;
 
-    void Update()
+    template<typename... Args>
+    void Update(Args&&... args)
     {
-        std::visit([this](auto& state) -> void { state.Update(*this); }, m_currentState);
+        std::visit([&](auto& state) -> void { state.Update(*this, std::forward<Args>(args)...); }, m_currentState);
     }
 
     template<typename NewState>
     void TransitionTo()
     {
         // Find a way to model all valid states at compile time
-        if constexpr (HasOnEnter<NewState>)
-            std::visit([&](auto& state) -> void { state.OnExit(); }, m_currentState);
 
+        CallOnExit();
         m_currentState.template emplace<NewState>();
-
-        if constexpr (HasOnExit<NewState>)
-            std::visit([&](auto& state) -> void { state.OnEnter(); }, m_currentState);
+        CallOnEnter();
     }
 
 private:
     std::variant<States...> m_currentState;
+
+    // I could use this tuple in the future if I needed my states to be stored instead of just constructed
+    // For now my states don't need to hold any state (haha) so this is not necessary
+    // std::tuple<States...> m_allStates;
+
+    void CallOnEnter()
+    {
+        std::visit(
+            [&]<typename T>(T& state) -> void
+            {
+                if constexpr (HasOnEnter<std::decay_t<T>>)
+                    state.OnEnter();
+            },
+            m_currentState);
+    }
+
+    void CallOnExit()
+    {
+        std::visit(
+            [&]<typename T>(T& state) -> void
+            {
+                if constexpr (HasOnExit<std::decay_t<T>>)
+                    state.OnExit();
+            },
+            m_currentState);
+    }
 };
 
 }  // namespace bt
