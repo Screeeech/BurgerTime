@@ -7,9 +7,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(BurgerTime)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
 add_subdirectory(Galena)
 
 set(GAME_TARGET ${PROJECT_NAME})
+set(RESOURCE_DIR "Resources")
 
 set(SOURCE_FILES
     "Source/Main.cpp"
@@ -51,7 +55,6 @@ if (USE_ASAN)
   add_link_options(-fsanitize=address)
 endif ()
 
-
 # ==================== PLATFORM SPECIFIC ====================
 FetchContent_Declare(
     json
@@ -64,11 +67,11 @@ target_link_libraries(${GAME_TARGET} PRIVATE nlohmann_json::nlohmann_json)
 # ==================== PLATFORM SPECIFIC ====================
 if (WIN32)
   add_custom_command(TARGET ${GAME_TARGET} POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/Resources" "$<TARGET_FILE_DIR:${GAME_TARGET}>/Resources"
+      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCE_DIR}" "$<TARGET_FILE_DIR:${GAME_TARGET}>/Resources"
   )
 elseif (EMSCRIPTEN)
   set(EMSCRIPTEN_COMPILE_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -g")
-  set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1 -g -sALLOW_MEMORY_GROWTH --preload-file \"${CMAKE_SOURCE_DIR}/Resources@/\"")
+  set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1 -g -sALLOW_MEMORY_GROWTH --preload-file \"${CMAKE_SOURCE_DIR}/${RESOURCE_DIR}@/\"")
 
   # Use the Emscripten toolchain
   set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmscriptenToolchain.cmake)
@@ -91,7 +94,7 @@ else ()
   # Copy resources folder to output directory after build
   add_custom_command(TARGET ${GAME_TARGET} POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E copy_directory
-      "${CMAKE_CURRENT_SOURCE_DIR}/Resources"
-      "$<TARGET_FILE_DIR:${GAME_TARGET}>/Resources"
+      "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCE_DIR}"
+      "$<TARGET_FILE_DIR:${GAME_TARGET}>/${RESOURCE_DIR}"
   )
 endif ()
