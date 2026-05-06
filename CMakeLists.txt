@@ -16,10 +16,12 @@ endif()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
+set(RESOURCE_DIR "Resources")
+
 add_subdirectory(Galena)
 
 set(GAME_TARGET ${PROJECT_NAME})
-set(RESOURCE_DIR "Resources")
+
 
 set(SOURCE_FILES
     "Source/Main.cpp"
@@ -69,7 +71,7 @@ target_link_libraries(${GAME_TARGET} PRIVATE nlohmann_json::nlohmann_json)
 # ==================== PLATFORM SPECIFIC ====================
 if (WIN32)
   add_custom_command(TARGET ${GAME_TARGET} POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCE_DIR}" "$<TARGET_FILE_DIR:${GAME_TARGET}>/Resources"
+      COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCE_DIR}" "$<TARGET_FILE_DIR:${GAME_TARGET}>/${RESOURCE_DIR}"
   )
 
   # Set Game as the default startup project
