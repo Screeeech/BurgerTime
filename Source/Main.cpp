@@ -74,7 +74,7 @@ void load()
 
     // Set logical resolution to be NES size
     renderer->SetLogicalResolution(256, 240, SDL_LOGICAL_PRESENTATION_LETTERBOX);
-    renderer->SetBackgroundColor(bt::colors::Grey);
+    renderer->SetBackgroundColor(bt::colors::Black);
 
     auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Stage");
     go->AddComponent<bt::Stage>("Stages/stage1.json");
