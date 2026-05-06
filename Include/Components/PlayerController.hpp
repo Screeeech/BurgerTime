@@ -14,10 +14,10 @@ struct Event;
 namespace bt
 {
 
-class PlayerController : public gla::Component
+class PlayerController : public gla::Renderable
 {
 public:
-    explicit PlayerController(gla::GameObject* pPlayer, int playerIndex);
+    explicit PlayerController(gla::GameObject* pPlayer, Stage* stage, int playerIndex);
     ~PlayerController() noexcept override;
 
     PlayerController(PlayerController const&) = delete;
@@ -28,15 +28,18 @@ public:
     void Update(float deltaTime) override;
     void SetDirection(glm::vec3 direction);
 
-    void OnDeath(const gla::Event& event);
+    void Move(glm::vec3 displacement) const;
+    void OnDeath(const gla::Event& event) const;
+    void Render() override;
 
 private:
     playerstates::PlayerStateMachine m_finiteStateMachine;
 
     int m_playerIndex;
+    Stage* m_stage;
 
     glm::vec3 m_direction{};
-    float m_speed{ 100.f };
+    static float constexpr m_speed{ 30.f };
 };
 
 }  // namespace bt

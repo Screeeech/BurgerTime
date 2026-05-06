@@ -22,8 +22,8 @@ struct PackIsUnique<T, Rest...> : std::bool_constant<(not std::is_same_v<T, Rest
 };
 
 template<typename State, typename StateMachine, typename Context>
-concept IsValidState = requires(State state, StateMachine& machine, Context&& context) {
-    { state.Update(machine, std::forward<Context>(context)) } -> std::same_as<void>;
+concept IsValidState = requires(State state, StateMachine& machine, Context& context) {
+    { state.Update(machine, context) } -> std::same_as<void>;
 };
 
 template<typename T, typename Context>

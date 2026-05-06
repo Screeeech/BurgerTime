@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <format>
 
+#include "Colors.hpp"
 #include "Commands/CallbackCommand.hpp"
 #include "Commands/MoveCommand.hpp"
 #include "Events.hpp"
@@ -12,16 +13,18 @@
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/ISound.hpp"
+#include "Services/Renderer.hpp"
 #include "Utils.hpp"
 
 namespace bt
 {
 class Font;
 
-PlayerController::PlayerController(gla::GameObject* pPlayer, int playerIndex)
-    : Component(pPlayer)
-    , m_finiteStateMachine({.animation = pPlayer->GetComponent<gla::Animation>()})
+PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, int playerIndex)
+    : Renderable(pPlayer, 10)
+    , m_finiteStateMachine({ .animation = pPlayer->GetComponent<gla::Animation>() })
     , m_playerIndex(playerIndex)
+    , m_stage(stage)
 {
     if (auto* inputManager = gla::ServiceLocator::Request<gla::InputManager>().value_or(nullptr))
     {
@@ -29,27 +32,7 @@ PlayerController::PlayerController(gla::GameObject* pPlayer, int playerIndex)
         inputManager->BindAction<MoveCommand>("moveLeft"_h, playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
         inputManager->BindAction<MoveCommand>("moveDown"_h, playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
         inputManager->BindAction<MoveCommand>("moveRight"_h, playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
-
-        inputManager->BindAction<gla::CallbackCommand>(
-            "damage"_h,
-            playerIndex,
-            [playerIndex]() -> void
-            {
-                if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
-                    eventManager->InvokeEvent(gla::PlayerEvent{ "die"_h, playerIndex });
-            });
-        inputManager->BindAction<gla::CallbackCommand>(
-            "attack"_h,
-            playerIndex,
-            [playerIndex]() -> void
-            {
-                if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
-                    eventManager->InvokeEvent(gla::ScoreEvent{ "scoreChange"_h, playerIndex, 10 });
-            });
     }
-
-    if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
-        eventManager->BindEvent("die"_h, this, &PlayerController::OnDeath);
 }
 
 PlayerController::~PlayerController() noexcept
@@ -70,20 +53,25 @@ PlayerController::~PlayerController() noexcept
 
 void PlayerController::Update(float deltaTime)
 {
-    m_finiteStateMachine.Update(
-        playerstates::Context{
-            .deltaTime = deltaTime,
-            .direction = m_direction,
-            .animation = m_pOwner->GetComponent<gla::Animation>()
-        });
-
-    // Check if the direction vector has significant length
     if (glm::length(m_direction) > 0)
     {
-        const glm::vec3 direction = glm::normalize(m_direction);
-        const glm::vec3 velocity = direction * deltaTime * m_speed;
-        m_pOwner->GetTransform().ChangeLocalPosition(velocity);
+        m_direction = glm::normalize(m_direction);
+        m_direction *= deltaTime * m_speed;
     }
+
+    glm::vec3 constexpr spriteFeetOffset{ 0.f, 16.f, 0.f };
+    glm::vec3 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
+    glm::vec3 const pos = worldPos + spriteFeetOffset;
+
+    playerstates::Context context{
+        .direction = m_direction,
+        .position = pos,
+        .animation = m_pOwner->GetComponent<gla::Animation>(),
+        .stage = m_stage,
+        .playerController = this,
+    };
+    m_finiteStateMachine.Update(context);
+
     // Reset direction for the next frame
     m_direction = glm::vec3(0.0f);
 }
@@ -94,7 +82,12 @@ void PlayerController::SetDirection(glm::vec3 direction)
     m_direction.y = std::clamp(m_direction.y + direction.y, -1.f, 1.f);
 }
 
-void PlayerController::OnDeath(const gla::Event& event)
+void PlayerController::Move(glm::vec3 displacement) const
+{
+    m_pOwner->GetTransform().ChangeLocalPosition(displacement);
+}
+
+void PlayerController::OnDeath(const gla::Event& event) const
 {
     const auto& playerEvent{ dynamic_cast<const gla::PlayerEvent&>(event) };
 
@@ -106,6 +99,17 @@ void PlayerController::OnDeath(const gla::Event& event)
 
     // auto* scene = gla::SceneManager::Get().GetActiveScene();
     // scene->RemoveGameObject(m_pOwner);
+}
+
+void PlayerController::Render()
+{
+    glm::vec3 constexpr spriteFeetOffset{ 0.f, 16.f, 0.f };
+    glm::vec3 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
+    glm::vec3 const pos = worldPos + spriteFeetOffset;
+
+    auto const* renderer = gla::ServiceLocator::Request<gla::Renderer>().value();
+    renderer->SetColor(colors::Red);
+    renderer->DrawRect({ pos.x, pos.y, 1.f, 1.f });
 }
 
 

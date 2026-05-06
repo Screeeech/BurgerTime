@@ -66,15 +66,15 @@ void Stage::Render()
 
     for (size_t i{}; i < m_tileArray.size(); ++i)
     {
-        auto const& tile = m_tileArray[i];
+        auto const& tile = m_tileArray.at(i);
         uint32_t const xIdx{ static_cast<uint32_t>(i) % stageWidth };
         uint32_t const yIdx{ static_cast<uint32_t>(i) / stageWidth };
-        glm::vec2 const cursor{ static_cast<float>(xIdx * 24) + 32.f, static_cast<float>(yIdx * 16) + 32.f };
+        glm::vec2 const cursor{ (static_cast<float>(xIdx) * tileWidth) + stageOffset, (static_cast<float>(yIdx) * tileHeight) + stageOffset };
 
         bool connectLeft{};
         bool connectRight{};
-        auto const leftTile{ GetTileType(xIdx - 1, yIdx) };
-        auto const rightTile{ GetTileType(xIdx + 1, yIdx) };
+        TileType const leftTile{ GetTileAtIndex(xIdx - 1, yIdx) };
+        TileType const rightTile{ GetTileAtIndex(xIdx + 1, yIdx) };
         if (leftTile == TileType::Platform or leftTile == TileType::LadderPlatform)
             connectLeft = true;
         if (rightTile == TileType::Platform or rightTile == TileType::LadderPlatform)
@@ -98,7 +98,72 @@ void Stage::Render()
     }
 }
 
-auto Stage::GetTileType(uint32_t xIdx, uint32_t yIdx) const -> TileType
+auto Stage::IsOnGround(glm::vec3 position) const -> bool
+{
+    int const mod = static_cast<int>(position.y + stageOffset) % static_cast<int>(tileHeight);
+    if (mod > 4 and mod < 20)
+        return false;
+
+    auto const tile = GetTileAtPosition(position);
+    switch (tile)
+    {
+        case TileType::Platform:
+            return true;
+        case TileType::LadderPlatform:
+            return true;
+        default:
+            return false;
+    }
+}
+
+auto Stage::CanClimbUp(glm::vec3 position) const-> bool
+{
+    int const mod = static_cast<int>(position.x - stageOffset) % static_cast<int>(tileWidth);
+    if (mod > 4 and mod < 20)
+        return false;
+
+    auto const tile = GetTileAtPosition(position);
+    switch (tile)
+    {
+        case TileType::Ladder:
+            return true;
+        case TileType::LadderPlatform:
+            return true;
+        default:
+            return false;
+    }
+}
+
+auto Stage::CanClimbDown(glm::vec3 position) const-> bool
+{
+    int const mod = static_cast<int>(position.x - stageOffset) % static_cast<int>(tileWidth);
+    if (mod > 4 and mod < 20)
+        return false;
+
+    auto const tile = GetTileAtPosition(position);
+    switch (tile)
+    {
+        case TileType::Ladder:
+            return true;
+        case TileType::LadderPlatform:
+            return true;
+        default:
+            return false;
+    }
+}
+
+auto Stage::GetTileAtPosition(glm::vec3 position) const-> TileType
+{
+    position.x -= stageOffset;
+    position.y -= stageOffset;
+
+    auto const xIdx{ static_cast<uint32_t>(position.x / tileWidth) };
+    auto const yIdx{ static_cast<uint32_t>(position.y / tileHeight) };
+
+    return GetTileAtIndex(xIdx, yIdx);
+}
+
+auto Stage::GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType
 {
     if (xIdx >= stageWidth or yIdx >= stageHeight)
         return TileType::Null;

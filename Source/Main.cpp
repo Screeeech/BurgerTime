@@ -77,7 +77,7 @@ void load()
     renderer->SetBackgroundColor(bt::colors::Black);
 
     auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Stage");
-    go->AddComponent<bt::Stage>("Stages/stage1.json");
+    auto* stage = go->AddComponent<bt::Stage>("Stages/stage1.json");
 
     auto const spriteSheetTexture{ resourceManager->LoadTexture("Textures/spritesheet.png") };
     auto const font = resourceManager->LoadFont("Fonts/nes.ttf", 8);
@@ -148,7 +148,7 @@ void load()
 
         animation->SetActiveAnimation("walkRight"_h, true);
 
-        player0->AddComponent<bt::PlayerController>(0);
+        player0->AddComponent<bt::PlayerController>(stage, 0);
 
         inputManager->RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, 0);
         inputManager->RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, 0);
