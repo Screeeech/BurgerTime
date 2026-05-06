@@ -20,6 +20,7 @@ class Font;
 
 PlayerController::PlayerController(gla::GameObject* pPlayer, int playerIndex)
     : Component(pPlayer)
+    , m_finiteStateMachine({.animation = pPlayer->GetComponent<gla::Animation>()})
     , m_playerIndex(playerIndex)
 {
     if (auto* inputManager = gla::ServiceLocator::Request<gla::InputManager>().value_or(nullptr))
@@ -69,7 +70,12 @@ PlayerController::~PlayerController() noexcept
 
 void PlayerController::Update(float deltaTime)
 {
-    m_finiteStateMachine.Update(playerstates::Context{ .deltaTime = deltaTime, .direction = m_direction });
+    m_finiteStateMachine.Update(
+        playerstates::Context{
+            .deltaTime = deltaTime,
+            .direction = m_direction,
+            .animation = m_pOwner->GetComponent<gla::Animation>()
+        });
 
     // Check if the direction vector has significant length
     if (glm::length(m_direction) > 0)

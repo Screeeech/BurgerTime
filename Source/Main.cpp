@@ -98,7 +98,6 @@ void load()
         auto* player0{ scene.GetRoot()->CreateChild(100, 100, 0, "Player 0") };
 
         // Animations
-        player0->AddComponent<bt::PlayerController>(0);
         auto* animation{ player0->AddComponent<gla::Animation>(2) };
 
         auto const size{ spriteSheetTexture->GetSize() };
@@ -106,6 +105,12 @@ void load()
         auto const rows{ static_cast<int>(size.y / 16.f) };
         auto& spriteSheet{ animation->AddSpriteSheet(spriteSheetTexture, cols, rows) };
 
+        animation->AddAnimation(
+            "idle"_h,
+            spriteSheet,
+            {
+                { .colIdx = 1, .rowIdx = 0 },
+            });
         animation->AddAnimation(
             "walkDown"_h,
             spriteSheet,
@@ -140,6 +145,8 @@ void load()
             });
 
         animation->SetActiveAnimation("walkRight"_h, true);
+
+        player0->AddComponent<bt::PlayerController>(0);
 
         inputManager->RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, 0);
         inputManager->RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, 0);

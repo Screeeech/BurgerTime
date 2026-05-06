@@ -1,6 +1,7 @@
 #ifndef BURGERTIME_STATEMACHINE_HPP
 #define BURGERTIME_STATEMACHINE_HPP
 
+#include <optional>
 #include <variant>
 
 namespace bt
@@ -25,9 +26,9 @@ concept IsValidState = requires(State state, StateMachine& machine, Context&& co
     { state.Update(machine, std::forward<Context>(context)) } -> std::same_as<void>;
 };
 
-template<typename T>
-concept HasOnEnter = requires(T state) {
-    { state.OnEnter() } -> std::same_as<void>;
+template<typename T, typename Context>
+concept HasOnEnter = requires(T state, Context context) {
+    { state.OnEnter(context) } -> std::same_as<void>;
 };
 
 template<typename T>
@@ -43,10 +44,10 @@ class StateMachine final
     static_assert(IsInPack<InitialState, States...>, "Initial state must be a listed possible state");
 
 public:
-    explicit StateMachine()
+    explicit StateMachine(Context const& context = {})
         : m_currentState(InitialState{})
     {
-        CallOnEnter();
+        CallOnEnter(context);
     }
     ~StateMachine() noexcept = default;
 
@@ -62,13 +63,14 @@ public:
     }
 
     template<typename NewState>
-    void TransitionTo()
+    void TransitionTo(Context context = {})
     {
         // Find a way to model all valid states at compile time
 
-        CallOnExit();
+        CallOnExit(context);
+        // What is this syntax C++??
         m_currentState.template emplace<NewState>();
-        CallOnEnter();
+        CallOnEnter(context);
     }
 
 private:
@@ -78,24 +80,24 @@ private:
     // For now my states don't need to hold any state (haha) so this is not necessary
     // std::tuple<States...> m_allStates;
 
-    void CallOnEnter()
+    void CallOnEnter(Context context = {})
     {
         std::visit(
             [&]<typename T>(T& state) -> void
             {
-                if constexpr (HasOnEnter<std::decay_t<T>>)
-                    state.OnEnter();
+                if constexpr (HasOnEnter<std::decay_t<T>, Context>)
+                    state.OnEnter(context);
             },
             m_currentState);
     }
 
-    void CallOnExit()
+    void CallOnExit(Context context = {})
     {
         std::visit(
             [&]<typename T>(T& state) -> void
             {
                 if constexpr (HasOnExit<std::decay_t<T>>)
-                    state.OnExit();
+                    state.OnExit(context);
             },
             m_currentState);
     }
