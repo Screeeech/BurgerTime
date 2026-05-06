@@ -9,8 +9,6 @@ project(BurgerTime)
 
 if(EMSCRIPTEN)
   message("Using emscripten!")
-  add_compile_options(-pthread)
-  add_link_options(-pthread)
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
@@ -80,20 +78,9 @@ if (WIN32)
   set_target_properties(${GAME_TARGET} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${GAME_TARGET}>")
 
 elseif (EMSCRIPTEN)
-  target_compile_options(${GAME_TARGET} PRIVATE
-      -pthread
-      -sUSE_PTHREADS
-      -fexperimental-library
-#      -sEXCEPTION_DEBUG
-  )
-
   target_link_options(${GAME_TARGET} PRIVATE
-      -pthread
-      -sUSE_PTHREADS
-      -sPTHREAD_POOL_SIZE=4
       -sEXCEPTION_DEBUG
       -sNO_DISABLE_EXCEPTION_CATCHING
-      -fexperimental-library
       -sALLOW_MEMORY_GROWTH
       --preload-file "${CMAKE_SOURCE_DIR}/${RESOURCE_DIR}@/"
   )
