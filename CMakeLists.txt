@@ -88,8 +88,6 @@ elseif (EMSCRIPTEN)
       -pthread
       -sUSE_PTHREADS
       -fexperimental-library
-      -sUSE_FREETYPE=1
-      -sUSE_HARFBUZZ=1
       -sALLOW_MEMORY_GROWTH
       --preload-file "${CMAKE_SOURCE_DIR}/${RESOURCE_DIR}@/"
   )
