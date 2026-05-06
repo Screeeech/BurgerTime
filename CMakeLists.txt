@@ -27,11 +27,7 @@ set(SOURCE_FILES
 
 add_executable(${GAME_TARGET} ${SOURCE_FILES})
 
-if (EMSCRIPTEN)
-  target_link_libraries(${GAME_TARGET} PRIVATE GalenaWeb)
-else ()
-  target_link_libraries(${GAME_TARGET} PRIVATE Galena)
-endif ()
+target_link_libraries(${GAME_TARGET} PRIVATE Galena)
 
 target_include_directories(${GAME_TARGET} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/Include"
