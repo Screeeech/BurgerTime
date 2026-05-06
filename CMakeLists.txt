@@ -77,7 +77,7 @@ if (WIN32)
   # Set Game as the default startup project
   set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${GAME_TARGET})
   # Set working directory to output folder
-  set_target_properties(${GAME_TARGET} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${ENGINE_TARGET}>")
+  set_target_properties(${GAME_TARGET} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${GAME_TARGET}>")
 
 elseif (EMSCRIPTEN)
   target_compile_options(${GAME_TARGET} PRIVATE
