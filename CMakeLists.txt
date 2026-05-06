@@ -84,11 +84,15 @@ elseif (EMSCRIPTEN)
       -pthread
       -sUSE_PTHREADS
       -fexperimental-library
+#      -sEXCEPTION_DEBUG
   )
 
   target_link_options(${GAME_TARGET} PRIVATE
       -pthread
       -sUSE_PTHREADS
+      -sPTHREAD_POOL_SIZE=4
+      -sEXCEPTION_DEBUG
+      -sNO_DISABLE_EXCEPTION_CATCHING
       -fexperimental-library
       -sALLOW_MEMORY_GROWTH
       --preload-file "${CMAKE_SOURCE_DIR}/${RESOURCE_DIR}@/"

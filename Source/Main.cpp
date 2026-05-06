@@ -77,7 +77,7 @@ void load()
     auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Stage");
     go->AddComponent<bt::Stage>("Stages/stage1.json");
 
-    auto const spriteSheetTexture{ resourceManager->LoadTexture("spritesheet.png") };
+    auto const spriteSheetTexture{ resourceManager->LoadTexture("Textures/spritesheet.png") };
     auto const font = resourceManager->LoadFont("Fonts/nes.ttf", 8);
     auto const smallFont = resourceManager->LoadFont("Fonts/nes.ttf", 8);
 
@@ -202,7 +202,21 @@ void load()
     // Achievement Event
     eventManager->BindEvent("win"_h, &bt::AchievementManager::Get(), &bt::AchievementManager::OnWin);
 }
+
+//void listFiles(const fs::path& path = fs::current_path(), size_t depth = 0)
+//{
+//    for (auto const& entry : fs::directory_iterator(path))
+//    {
+//        std::println("{}{:5} {}", std::string(depth * 2, ' '), entry.is_directory() ? "[DIR]" : "[FILE]", entry.path().filename().string());
+//
+//        if (entry.is_directory())
+//        {
+//            listFiles(entry.path(), depth + 1);
+//        }
+//    }
+//}
 }  // namespace
+
 
 auto main() -> int
 {
@@ -213,6 +227,7 @@ auto main() -> int
 #endif
     try
     {
+        //listFiles();
         int constexpr maxSteps{ 5 };
         int counter{ 0 };
         while (not fs::exists(data_location) and counter < maxSteps)
