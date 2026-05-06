@@ -4,6 +4,7 @@
 #include <print>
 
 #include "AchievementManager.hpp"
+#include "Colors.hpp"
 #include "Commands/VolumeCommand.hpp"
 #include "Components/Animation.hpp"
 #include "Components/FpsComponent.hpp"
@@ -73,6 +74,7 @@ void load()
 
     // Set logical resolution to be NES size
     renderer->SetLogicalResolution(256, 240, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    renderer->SetBackgroundColor(bt::colors::Grey);
 
     auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Stage");
     go->AddComponent<bt::Stage>("Stages/stage1.json");
