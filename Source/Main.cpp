@@ -206,7 +206,11 @@ void load()
 
 auto main() -> int
 {
+#ifndef __EMSCRIPTEN__
     fs::path const data_location = "./Resources/";
+#else
+    fs::path const data_location = "./";
+#endif
     try
     {
         int constexpr maxSteps{ 5 };
@@ -217,13 +221,13 @@ auto main() -> int
             ++counter;
         }
         fs::current_path(data_location);
+        gla::Galena engine{ "Burger Time - Galena Engine" };
+        engine.Run(load);
     }
     catch (fs::filesystem_error const& e)
     {
         std::println("{}", e.what());
     }
 
-    gla::Galena engine{ "Burger Time - Galena Engine" };
-    engine.Run(load);
     return 0;
 }

@@ -7,6 +7,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(BurgerTime)
 
+if(EMSCRIPTEN)
+  message("Using emscripten!")
+  add_compile_options(-pthread)
+  add_link_options(-pthread)
+endif()
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
@@ -72,20 +78,22 @@ if (WIN32)
   set_target_properties(${GAME_TARGET} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${ENGINE_TARGET}>")
 
 elseif (EMSCRIPTEN)
-  set(EMSCRIPTEN_COMPILE_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -g")
-  set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1 -g -sALLOW_MEMORY_GROWTH --preload-file \"${CMAKE_SOURCE_DIR}/${RESOURCE_DIR}@/\"")
-
-  # Use the Emscripten toolchain
-  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmscriptenToolchain.cmake)
-
-  # Additional settings for Emscripten build
-  set_target_properties(${GAME_TARGET} PROPERTIES
-      COMPILE_FLAGS "${EMSCRIPTEN_COMPILE_FLAGS}"
-      LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}"
+  target_compile_options(${GAME_TARGET} PRIVATE
+      -pthread
+      -sUSE_PTHREADS
+      -fexperimental-library
   )
 
-  # Have emscripten generate a html page too.
-  set(CMAKE_EXECUTABLE_SUFFIX ".html")
+  target_link_options(${GAME_TARGET} PRIVATE
+      -pthread
+      -sUSE_PTHREADS
+      -fexperimental-library
+      -sUSE_FREETYPE=1
+      -sUSE_HARFBUZZ=1
+      -sALLOW_MEMORY_GROWTH
+      --preload-file "${CMAKE_SOURCE_DIR}/${RESOURCE_DIR}@/"
+  )
+  set_target_properties(${GAME_TARGET} PROPERTIES SUFFIX ".html")
 
   add_custom_command(TARGET ${GAME_TARGET} POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E copy_directory
@@ -93,7 +101,6 @@ elseif (EMSCRIPTEN)
       "$<TARGET_FILE_DIR:${GAME_TARGET}>/"
   )
 else ()
-  # Copy resources folder to output directory after build
   add_custom_command(TARGET ${GAME_TARGET} POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E copy_directory
       "${CMAKE_CURRENT_SOURCE_DIR}/${RESOURCE_DIR}"
