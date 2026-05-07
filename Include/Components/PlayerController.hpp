@@ -25,7 +25,9 @@ public:
     PlayerController(PlayerController&&) = delete;
     auto operator=(PlayerController&&) -> PlayerController& = delete;
 
-    void Update(float deltaTime) override;
+    void Update(float /*deltaTime*/) override{};
+    void FixedUpdate(float deltaTime) override;
+
     void SetDirection(glm::vec3 direction);
 
     void Move(glm::vec3 displacement) const;
@@ -39,7 +41,7 @@ private:
     Stage* m_stage;
 
     glm::vec3 m_direction{};
-    static float constexpr m_speed{ 30.f };
+    //static float constexpr m_speed{ 1.f };
 };
 
 }  // namespace bt

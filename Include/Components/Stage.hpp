@@ -41,6 +41,7 @@ public:
     auto operator=(Stage&&) -> Stage& = delete;
 
     void Update(float deltaTime) override;
+    void FixedUpdate(float /*deltaTime*/) override {};
     void Render() override;
 
     [[nodiscard]] auto IsOnGround(glm::vec3 position) const -> bool;

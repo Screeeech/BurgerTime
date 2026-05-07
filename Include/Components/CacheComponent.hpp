@@ -28,6 +28,7 @@ public:
     auto operator=(CacheComponent&&) -> CacheComponent& = delete;
 
     void Update(float deltaTime) override;
+    void FixedUpdate(float /*deltaTime*/) override {};
 
 private:
     struct Transform

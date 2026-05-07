@@ -16,6 +16,7 @@ public:
     auto operator=(Enemy&&) -> Enemy& = delete;
 
     void Update(float deltaTime) override;
+    void FixedUpdate(float /*deltaTime*/) override {};
 };
 
 }  // namespace bt
