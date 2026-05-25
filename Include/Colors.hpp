@@ -10,6 +10,8 @@ inline constexpr SDL_Color BlueLadderColor{ .r = 52, .g = 173, .b = 232, .a = 25
 inline constexpr SDL_Color GreenLadderColor{ .r = 67, .g = 202, .b = 67, .a = 255 };
 
 inline constexpr SDL_Color Red{ .r = 255, .g = 0, .b = 0, .a = 255 };
+inline constexpr SDL_Color Green{ .r = 0, .g = 255, .b = 0, .a = 255 };
+inline constexpr SDL_Color Blue{ .r = 0, .g = 0, .b = 255, .a = 255 };
 inline constexpr SDL_Color Black{ .r = 0, .g = 0, .b = 0, .a = 255 };
 inline constexpr SDL_Color Grey{ .r = 50, .g = 50, .b = 50, .a = 255 };
 

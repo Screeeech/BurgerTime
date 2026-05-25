@@ -44,13 +44,17 @@ public:
     void FixedUpdate(float /*deltaTime*/) override {};
     void Render() override;
 
+    void PrintTileType(glm::vec3 position) const;
+
     [[nodiscard]] auto IsOnGround(glm::vec3 position) const -> bool;
     [[nodiscard]] auto CanClimbUp(glm::vec3 position) const -> bool;
     [[nodiscard]] auto CanClimbDown(glm::vec3 position) const -> bool;
+    [[nodiscard]] auto CanWalk(glm::vec3 position, glm::vec3 direction) const -> bool;
+
+    [[nodiscard]] auto GetTileAtPosition(glm::vec3 position) const -> TileType;
 private:
     std::array<TileType, stageSize> m_tileArray;
 
-    [[nodiscard]] auto GetTileAtPosition(glm::vec3 position) const -> TileType;
     [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType;
 
     static void DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const* renderer);

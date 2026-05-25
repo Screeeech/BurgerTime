@@ -14,13 +14,13 @@ namespace bt::playerstates
 {
 
 // ==================== IDLE ====================
-void Idle::Update(PlayerStateMachine& machine, Context& context)
+void Idle::Update(PlayerStateMachine& machine, Context const& context)
 {
-    if (context.direction != glm::zero<glm::vec3>())
-        machine.TransitionTo<Walking>({
-            .direction = context.direction,
-            .animation = context.animation,
-        });
+    auto const& [direction, position, animation, stage, player] = context;
+    assert(stage != nullptr and "Stage cannot be null!");
+
+    if (direction != glm::zero<glm::vec3>() and stage->CanWalk(position, direction))
+        machine.TransitionTo<Walking>({ .direction = direction, .animation = animation });
 }
 
 void Idle::OnEnter(Context const& context)
@@ -37,19 +37,21 @@ void Walking::Update(PlayerStateMachine& machine, Context& context)
     auto& [direction, position, animation, stage, player] = context;
     assert(animation != nullptr and "Animation cannot be null!");
 
-    if (direction == glm::zero<glm::vec3>())
+    if (direction == glm::zero<glm::vec3>() or not stage->CanWalk(position, direction))
     {
         machine.TransitionTo<Idle>({ .animation = context.animation });
         return;
     }
-    //if ((direction.y < 0.f and stage->CanClimbUp(position)) or (direction.y > 0.f and stage->CanClimbDown(position)))
-    //{
-    //    machine.TransitionTo<Climbing>({ .animation = context.animation });
-    //    return;
-    //}
+    if ((direction.y < 0.f and stage->CanClimbUp(position)) /* or (direction.y > 0.f and stage->CanClimbDown(position))*/)
+    {
+        machine.TransitionTo<Climbing>({ .animation = context.animation });
+        return;
+    }
 
-    //direction.y = 0.f;
+    direction.y = 0.f;
     player->Move(direction);
+
+    stage->PrintTileType(position);
 
     ChangeAnimation(context);
 }
@@ -71,16 +73,16 @@ void Walking::ChangeAnimation(Context const& context)
         animation->SetActiveAnimation("walkRight"_h, true);
     else if (direction.x < 0.f)
         animation->SetActiveAnimation("walkLeft"_h, true);
-    else if (direction.y < 0.f)
-        animation->SetActiveAnimation("walkUp"_h, true);
-    else if (direction.y > 0.f)
-        animation->SetActiveAnimation("walkDown"_h, true);
+    // else if (direction.y < 0.f)
+    //     animation->SetActiveAnimation("walkUp"_h, true);
+    // else if (direction.y > 0.f)
+    //     animation->SetActiveAnimation("walkDown"_h, true);
 }
 
 // ==================== CLIMBING ====================
 // TODO: Climbing state is unfinished
 
-void Climbing::Update([[maybe_unused]] PlayerStateMachine& machine, [[maybe_unused]] Context& context)
+void Climbing::Update(PlayerStateMachine& machine, Context& context)
 {
     auto& [direction, position, animation, stage, player] = context;
     assert(stage != nullptr and "Stage cannot be null!");
@@ -90,6 +92,8 @@ void Climbing::Update([[maybe_unused]] PlayerStateMachine& machine, [[maybe_unus
 
     direction.x = 0.f;
     player->Move(direction);
+
+    stage->PrintTileType(position);
 
     if (stage->IsOnGround(position))
     {

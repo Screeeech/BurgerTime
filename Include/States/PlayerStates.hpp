@@ -17,7 +17,7 @@ struct Walking;
 struct Climbing;
 
 // Some data that we want to be passed to the states
-struct Context
+struct Context final
 {
     glm::vec3 direction{};
     glm::vec3 position{};
@@ -28,14 +28,14 @@ struct Context
 
 using PlayerStateMachine = StateMachine<Idle, Context, Idle, Walking, Climbing>;
 
-struct Idle
+struct Idle final
 {
-    static void Update(PlayerStateMachine& machine, Context& context);
+    static void Update(PlayerStateMachine& machine, Context const& context);
     static void OnEnter(Context const& context);
     // void OnExit(Context const& context);
 };
 
-struct Walking
+struct Walking final
 {
     static void Update(PlayerStateMachine& machine, Context& context);
     static void OnEnter(Context const& context);
@@ -45,7 +45,7 @@ private:
     static void ChangeAnimation(Context const& context);
 };
 
-struct Climbing
+struct Climbing final
 {
     static void Update(PlayerStateMachine& machine, Context& context);
     static void OnEnter(Context const& context);

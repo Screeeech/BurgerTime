@@ -33,6 +33,7 @@ PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, int p
         inputManager->BindAction<MoveCommand>("moveDown"_h, playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
         inputManager->BindAction<MoveCommand>("moveRight"_h, playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
     }
+
 }
 
 PlayerController::~PlayerController() noexcept
@@ -51,15 +52,9 @@ PlayerController::~PlayerController() noexcept
         eventManager->UnbindEvents(this);
 }
 
-void PlayerController::Update(float deltaTime)
+void PlayerController::FixedUpdate(float /*deltaTime*/)
 {
-    if (glm::length(m_direction) > 0)
-    {
-        m_direction = glm::normalize(m_direction);
-        m_direction *= deltaTime * m_speed;
-    }
-
-    glm::vec3 constexpr spriteFeetOffset{ 0.f, 16.f, 0.f };
+    glm::vec3 constexpr spriteFeetOffset{ 8.f, 15.f, 0.f };
     glm::vec3 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
     glm::vec3 const pos = worldPos + spriteFeetOffset;
 
@@ -103,13 +98,17 @@ void PlayerController::OnDeath(const gla::Event& event) const
 
 void PlayerController::Render()
 {
-    glm::vec3 constexpr spriteFeetOffset{ 0.f, 16.f, 0.f };
+    glm::vec3 constexpr spriteFeetOffset{ 8.f, 15.f, 0.f };
     glm::vec3 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
     glm::vec3 const pos = worldPos + spriteFeetOffset;
 
     auto const* renderer = gla::ServiceLocator::Request<gla::Renderer>().value();
+
     renderer->SetColor(colors::Red);
     renderer->DrawRect({ pos.x, pos.y, 1.f, 1.f });
+
+    renderer->SetColor(colors::Blue);
+    renderer->DrawRect({ pos.x + (m_direction.x * 4), pos.y, 1.f, 1.f });
 }
 
 

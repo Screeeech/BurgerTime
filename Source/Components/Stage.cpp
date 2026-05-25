@@ -52,7 +52,6 @@ Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
 
 void Stage::Update(float /*deltaTime*/)
 {
-
 }
 
 void Stage::Render()
@@ -82,29 +81,59 @@ void Stage::Render()
 
         if (tile == TileType::Platform)
         {
+            //renderer->SetColor(colors::Red);
+            //renderer->DrawRect({cursor.x, cursor.y, tileWidth, tileHeight});
+
             DrawPlatform(cursor, connectLeft, connectRight, renderer);
         }
         else if (tile == TileType::LadderPlatform)
         {
+            //renderer->SetColor(colors::Green);
+            //renderer->DrawRect({cursor.x, cursor.y, tileWidth, tileHeight});
+
             DrawPlatform(cursor, connectLeft, connectRight, renderer);
             renderer->SetColor(xIdx % 2 != 0 ? colors::GreenLadderColor : colors::BlueLadderColor);
             DrawLadder(cursor, renderer);
         }
         else if (tile == TileType::Ladder)
         {
+            //renderer->SetColor(colors::Blue);
+            //renderer->DrawRect({cursor.x, cursor.y, tileWidth, tileHeight});
+
             renderer->SetColor(xIdx % 2 != 0 ? colors::GreenLadderColor : colors::BlueLadderColor);
             DrawLadder(cursor, renderer);
         }
     }
 }
 
+void Stage::PrintTileType(glm::vec3 position) const
+{
+    std::println("Position: {}, {}", position.x - stageOffset, position.y - stageOffset);
+    switch (GetTileAtPosition(position))
+    {
+        case TileType::Null:
+            std::println("Tile: Null");
+            break;
+        case TileType::Platform:
+            std::println("Tile: Platform");
+            break;
+        case TileType::Ladder:
+            std::println("Tile: Ladder");
+            break;
+        case TileType::LadderPlatform:
+            std::println("Tile: LadderPlatform");
+            break;
+    }
+}
+
 auto Stage::IsOnGround(glm::vec3 position) const -> bool
 {
-    int const mod = static_cast<int>(position.y + stageOffset) % static_cast<int>(tileHeight);
-    if (mod > 4 and mod < 20)
+    int const mod = static_cast<int>(position.y - stageOffset) % static_cast<int>(tileHeight);
+    TileType const tile = GetTileAtPosition(position - glm::vec3{0.f, 2.f, 0.f});
+
+    if (mod != 14)
         return false;
 
-    auto const tile = GetTileAtPosition(position);
     switch (tile)
     {
         case TileType::Platform:
@@ -152,10 +181,21 @@ auto Stage::CanClimbDown(glm::vec3 position) const-> bool
     }
 }
 
+auto Stage::CanWalk(glm::vec3 position, glm::vec3 direction) const-> bool
+{
+    direction.y = 0.f;
+    TileType const tile = GetTileAtPosition(position + (direction * 8.f));
+
+    return tile == TileType::Platform or tile == TileType::LadderPlatform;
+}
+
 auto Stage::GetTileAtPosition(glm::vec3 position) const-> TileType
 {
     position.x -= stageOffset;
     position.y -= stageOffset;
+
+    if (position.x < 0.f or position.y < 0.f)
+        return TileType::Null;
 
     auto const xIdx{ static_cast<uint32_t>(position.x / tileWidth) };
     auto const yIdx{ static_cast<uint32_t>(position.y / tileHeight) };

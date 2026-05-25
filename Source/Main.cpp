@@ -97,7 +97,7 @@ void load()
     // Player 0
     {
         // GameObject
-        auto* player0{ scene.GetRoot()->CreateChild(100, 100, 0, "Player 0") };
+        auto* player0{ scene.GetRoot()->CreateChild(100, 174, 0, "Player 0") };
 
         // Animations
         auto* animation{ player0->AddComponent<gla::Animation>(2) };
@@ -238,7 +238,7 @@ auto main() -> int
             ++counter;
         }
         fs::current_path(data_location);
-        gla::Galena engine{ "Burger Time - Galena Engine" };
+        gla::Galena engine{ "Burger Time - Galena Engine", 60 };
         engine.Run(load);
     }
     catch (fs::filesystem_error const& e)
