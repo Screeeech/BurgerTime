@@ -7,7 +7,7 @@
 #include "Colors.hpp"
 #include "Components/PlayerController.hpp"
 #include "Components/Stage.hpp"
-#include "ServiceLocator.hpp"
+#include "Locator.hpp"
 #include "Utils.hpp"
 
 namespace bt::playerstates

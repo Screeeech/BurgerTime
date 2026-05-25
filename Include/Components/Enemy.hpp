@@ -10,13 +10,8 @@ class Enemy final : public gla::Component
 public:
     explicit Enemy(gla::GameObject* pOwner);
 
-    Enemy(Enemy const&) = delete;
-    auto operator=(Enemy const&) -> Enemy& = delete;
-    Enemy(Enemy&&) = delete;
-    auto operator=(Enemy&&) -> Enemy& = delete;
-
+protected:
     void Update(float deltaTime) override;
-    void FixedUpdate(float /*deltaTime*/) override {};
 };
 
 }  // namespace bt

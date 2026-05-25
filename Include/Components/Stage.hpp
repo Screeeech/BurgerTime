@@ -29,8 +29,6 @@ class Stage : public gla::Renderable
     static constexpr float tileWidth{ 24.f };
     static constexpr float tileHeight{ 16.f };
 
-
-
 public:
     explicit Stage(gla::GameObject* pOwner, std::string const& stageDataPath);
     ~Stage() noexcept override = default;
@@ -40,10 +38,6 @@ public:
     Stage(Stage&&) = delete;
     auto operator=(Stage&&) -> Stage& = delete;
 
-    void Update(float deltaTime) override;
-    void FixedUpdate(float /*deltaTime*/) override {};
-    void Render() override;
-
     void PrintTileType(glm::vec3 position) const;
 
     [[nodiscard]] auto IsOnGround(glm::vec3 position) const -> bool;
@@ -52,13 +46,17 @@ public:
     [[nodiscard]] auto CanWalk(glm::vec3 position, glm::vec3 direction) const -> bool;
 
     [[nodiscard]] auto GetTileAtPosition(glm::vec3 position) const -> TileType;
+
+protected:
+    void Render() override;
+
 private:
     std::array<TileType, stageSize> m_tileArray;
 
     [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType;
 
-    static void DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const* renderer);
-    static void DrawLadder(glm::vec2 cursor, gla::Renderer const* renderer);
+    static void DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const& renderer);
+    static void DrawLadder(glm::vec2 cursor, gla::Renderer const& renderer);
 };
 
 }  // namespace bt

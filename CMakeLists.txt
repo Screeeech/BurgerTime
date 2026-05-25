@@ -24,7 +24,6 @@ set(GAME_TARGET ${PROJECT_NAME})
 set(SOURCE_FILES
     "Source/Main.cpp"
     "Source/Commands/MoveCommand.cpp"
-    "Source/Components/CacheComponent.cpp"
     "Source/Components/PlayerController.cpp"
     "Source/Components/Stage.cpp"
     "Source/AchievementManager.cpp"

@@ -8,8 +8,8 @@
 #include "Commands/MoveCommand.hpp"
 #include "Events.hpp"
 #include "GameObject.hpp"
+#include "Locator.hpp"
 #include "SceneManager.hpp"
-#include "ServiceLocator.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/ISound.hpp"
@@ -26,30 +26,6 @@ PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, int p
     , m_playerIndex(playerIndex)
     , m_stage(stage)
 {
-    if (auto* inputManager = gla::ServiceLocator::Request<gla::InputManager>().value_or(nullptr))
-    {
-        inputManager->BindAction<MoveCommand>("moveUp"_h, playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
-        inputManager->BindAction<MoveCommand>("moveLeft"_h, playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
-        inputManager->BindAction<MoveCommand>("moveDown"_h, playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
-        inputManager->BindAction<MoveCommand>("moveRight"_h, playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
-    }
-
-}
-
-PlayerController::~PlayerController() noexcept
-{
-    if (auto* inputManager = gla::ServiceLocator::Request<gla::InputManager>().value_or(nullptr))
-    {
-        inputManager->UnbindAction("moveUp"_h, m_playerIndex);
-        inputManager->UnbindAction("moveLeft"_h, m_playerIndex);
-        inputManager->UnbindAction("moveDown"_h, m_playerIndex);
-        inputManager->UnbindAction("moveRight"_h, m_playerIndex);
-        inputManager->UnbindAction("damage"_h, m_playerIndex);
-        inputManager->UnbindAction("attack"_h, m_playerIndex);
-    }
-
-    if (auto* eventManager = gla::ServiceLocator::Request<gla::EventManager>().value_or(nullptr))
-        eventManager->UnbindEvents(this);
 }
 
 void PlayerController::FixedUpdate(float /*deltaTime*/)
@@ -71,6 +47,32 @@ void PlayerController::FixedUpdate(float /*deltaTime*/)
     m_direction = glm::vec3(0.0f);
 }
 
+void PlayerController::OnActivate()
+{
+    Renderable::OnActivate();
+
+    auto& inputManager = gla::Locator::Get<gla::InputManager>();
+    inputManager.BindAction<MoveCommand>("moveUp"_h, m_playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
+    inputManager.BindAction<MoveCommand>("moveLeft"_h, m_playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
+    inputManager.BindAction<MoveCommand>("moveDown"_h, m_playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
+    inputManager.BindAction<MoveCommand>("moveRight"_h, m_playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
+}
+
+void PlayerController::OnDeactivate()
+{
+    Renderable::OnDeactivate();
+
+    auto& inputManager = gla::Locator::Get<gla::InputManager>();
+    inputManager.UnbindAction("moveUp"_h, m_playerIndex);
+    inputManager.UnbindAction("moveLeft"_h, m_playerIndex);
+    inputManager.UnbindAction("moveDown"_h, m_playerIndex);
+    inputManager.UnbindAction("moveRight"_h, m_playerIndex);
+    inputManager.UnbindAction("damage"_h, m_playerIndex);
+    inputManager.UnbindAction("attack"_h, m_playerIndex);
+
+    gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
+}
+
 void PlayerController::SetDirection(glm::vec3 direction)
 {
     m_direction.x = std::clamp(m_direction.x + direction.x, -1.f, 1.f);
@@ -89,11 +91,7 @@ void PlayerController::OnDeath(const gla::Event& event) const
     if (playerEvent.playerIndex != m_playerIndex)
         return;
 
-    if (auto* sound{ gla::ServiceLocator::Request<gla::ISound>().value_or(nullptr) })
-        sound->PlayAudio("death"_h);
-
-    // auto* scene = gla::SceneManager::Get().GetActiveScene();
-    // scene->RemoveGameObject(m_pOwner);
+    gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
 }
 
 void PlayerController::Render()
@@ -102,13 +100,13 @@ void PlayerController::Render()
     glm::vec3 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
     glm::vec3 const pos = worldPos + spriteFeetOffset;
 
-    auto const* renderer = gla::ServiceLocator::Request<gla::Renderer>().value();
+    auto const& renderer = gla::Locator::Get<gla::Renderer>();
 
-    renderer->SetColor(colors::Red);
-    renderer->DrawRect({ pos.x, pos.y, 1.f, 1.f });
+    renderer.SetColor(colors::Red);
+    renderer.DrawRect({ pos.x, pos.y, 1.f, 1.f });
 
-    renderer->SetColor(colors::Blue);
-    renderer->DrawRect({ pos.x + (m_direction.x * 4), pos.y, 1.f, 1.f });
+    renderer.SetColor(colors::Blue);
+    renderer.DrawRect({ pos.x + (m_direction.x * 4), pos.y, 1.f, 1.f });
 }
 
 
