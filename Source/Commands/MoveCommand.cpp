@@ -5,15 +5,15 @@
 
 namespace bt
 {
-MoveCommand::MoveCommand(gla::GameObject* pCaller, glm::vec3 const& velocity)
+MoveCommand::MoveCommand(gla::GameObject* pCaller, glm::vec2 const& velocity)
     : GameObjectCommand(pCaller)
     , m_direction(velocity)
 {
 }
 
-MoveCommand::MoveCommand(gla::GameObject* pCaller, float x, float y, float z)
+MoveCommand::MoveCommand(gla::GameObject* pCaller, float x, float y)
     : GameObjectCommand(pCaller)
-    , m_direction(x, y, z)
+    , m_direction(x, y)
 {
 }
 

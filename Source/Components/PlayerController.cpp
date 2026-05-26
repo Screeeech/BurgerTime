@@ -28,11 +28,72 @@ PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, int p
 {
 }
 
-void PlayerController::FixedUpdate(float /*deltaTime*/)
+void PlayerController::SetDirection(glm::vec2 direction)
 {
-    glm::vec3 constexpr spriteFeetOffset{ 8.f, 15.f, 0.f };
-    glm::vec3 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
-    glm::vec3 const pos = worldPos + spriteFeetOffset;
+    m_direction.x = std::clamp(m_direction.x + direction.x, -1.f, 1.f);
+    m_direction.y = std::clamp(m_direction.y + direction.y, -1.f, 1.f);
+}
+
+void PlayerController::Move(glm::vec2 displacement) const
+{
+    m_pOwner->GetTransform().ChangeLocalPosition(displacement);
+}
+
+void PlayerController::Walk(float xDisplacement) const
+{
+    m_pOwner->GetTransform().ChangeLocalPosition(glm::vec2{ xDisplacement, 0.f });
+}
+
+void PlayerController::Climb(float yDisplacement) const
+{
+    auto& transform = m_pOwner->GetTransform();
+
+    // if uneven, step forward 3 pixels,
+    if (static_cast<int>(transform.GetLocalPosition().y) % 2 == 1)
+        transform.ChangeLocalPosition(glm::vec2{ 0.f, yDisplacement * 3.f });
+    // if even step down back pixel
+    else
+        transform.ChangeLocalPosition(glm::vec2{ 0.f, -yDisplacement });
+}
+
+void PlayerController::OnDeath(const gla::Event& event) const
+{
+    auto const& playerEvent{ dynamic_cast<const gla::PlayerEvent&>(event) };
+
+    if (playerEvent.playerIndex != m_playerIndex)
+        return;
+
+    gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
+}
+
+void PlayerController::Render()
+{
+    glm::vec2 constexpr spriteFeetOffset{ 8.f, 15.f };
+    glm::vec2 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
+    glm::vec2 const pos = worldPos + spriteFeetOffset;
+
+    auto const& renderer = gla::Locator::Get<gla::Renderer>();
+
+    renderer.SetColor(colors::Red);
+    renderer.DrawRect({ pos.x, pos.y, 1.f, 1.f });
+
+    renderer.SetColor(colors::Blue);
+    renderer.DrawRect({ pos.x + (m_direction.x * 4), pos.y, 1.f, 1.f });
+}
+
+void PlayerController::FixedUpdate(float deltaTime)
+{
+    glm::vec2 constexpr spriteFeetOffset{ 8.f, 15.f };
+    glm::vec2 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
+    glm::vec2 const pos = worldPos + spriteFeetOffset;
+
+    static float elapsedTime{};
+    elapsedTime += deltaTime;
+    while (elapsedTime >= 1.f)
+    {
+        elapsedTime -= 1.f;
+        std::println("Position:  x: {}, y: {}", pos.x - 32.f, pos.y - 32.f);
+    }
 
     playerstates::Context context{
         .direction = m_direction,
@@ -44,7 +105,7 @@ void PlayerController::FixedUpdate(float /*deltaTime*/)
     m_finiteStateMachine.Update(context);
 
     // Reset direction for the next frame
-    m_direction = glm::vec3(0.0f);
+    m_direction = glm::vec2(0.0f);
 }
 
 void PlayerController::OnActivate()
@@ -52,10 +113,10 @@ void PlayerController::OnActivate()
     Renderable::OnActivate();
 
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
-    inputManager.BindAction<MoveCommand>("moveUp"_h, m_playerIndex, m_pOwner, glm::vec3{ 0, -1, 0 });
-    inputManager.BindAction<MoveCommand>("moveLeft"_h, m_playerIndex, m_pOwner, glm::vec3{ -1, 0, 0 });
-    inputManager.BindAction<MoveCommand>("moveDown"_h, m_playerIndex, m_pOwner, glm::vec3{ 0, 1, 0 });
-    inputManager.BindAction<MoveCommand>("moveRight"_h, m_playerIndex, m_pOwner, glm::vec3{ 1, 0, 0 });
+    inputManager.BindAction<MoveCommand>("moveUp"_h, m_playerIndex, m_pOwner, glm::vec2{ 0, -1 });
+    inputManager.BindAction<MoveCommand>("moveLeft"_h, m_playerIndex, m_pOwner, glm::vec2{ -1, 0 });
+    inputManager.BindAction<MoveCommand>("moveDown"_h, m_playerIndex, m_pOwner, glm::vec2{ 0, 1 });
+    inputManager.BindAction<MoveCommand>("moveRight"_h, m_playerIndex, m_pOwner, glm::vec2{ 1, 0 });
 }
 
 void PlayerController::OnDeactivate()
@@ -71,54 +132,6 @@ void PlayerController::OnDeactivate()
     inputManager.UnbindAction("attack"_h, m_playerIndex);
 
     gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
-}
-
-void PlayerController::SetDirection(glm::vec3 direction)
-{
-    m_direction.x = std::clamp(m_direction.x + direction.x, -1.f, 1.f);
-    m_direction.y = std::clamp(m_direction.y + direction.y, -1.f, 1.f);
-}
-
-void PlayerController::Walk(float xDisplacement) const
-{
-    m_pOwner->GetTransform().ChangeLocalPosition(glm::vec3{ xDisplacement, 0.f, 0.f });
-}
-
-void PlayerController::Climb(float yDisplacement) const
-{
-    auto& transform = m_pOwner->GetTransform();
-
-    // if uneven, step forward 3 pixels,
-    if (static_cast<int>(transform.GetLocalPosition().y) % 2 == 1)
-        transform.ChangeLocalPosition(glm::vec3{ 0.f, yDisplacement * 3.f, 0.f });
-    // if even step down back pixel
-    else
-        transform.ChangeLocalPosition(glm::vec3{ 0.f, -yDisplacement, 0.f });
-}
-
-void PlayerController::OnDeath(const gla::Event& event) const
-{
-    auto const& playerEvent{ dynamic_cast<const gla::PlayerEvent&>(event) };
-
-    if (playerEvent.playerIndex != m_playerIndex)
-        return;
-
-    gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
-}
-
-void PlayerController::Render()
-{
-    glm::vec3 constexpr spriteFeetOffset{ 8.f, 15.f, 0.f };
-    glm::vec3 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
-    glm::vec3 const pos = worldPos + spriteFeetOffset;
-
-    auto const& renderer = gla::Locator::Get<gla::Renderer>();
-
-    renderer.SetColor(colors::Red);
-    renderer.DrawRect({ pos.x, pos.y, 1.f, 1.f });
-
-    renderer.SetColor(colors::Blue);
-    renderer.DrawRect({ pos.x + (m_direction.x * 4), pos.y, 1.f, 1.f });
 }
 
 

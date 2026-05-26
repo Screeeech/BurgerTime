@@ -38,14 +38,14 @@ public:
     Stage(Stage&&) = delete;
     auto operator=(Stage&&) -> Stage& = delete;
 
-    void PrintTileType(glm::vec3 position) const;
+    void PrintTileType(glm::vec2 position) const;
 
-    [[nodiscard]] auto IsOnGround(glm::vec3 position) const -> bool;
-    [[nodiscard]] auto CanClimbUp(glm::vec3 position) const -> bool;
-    [[nodiscard]] auto CanClimbDown(glm::vec3 position) const -> bool;
-    [[nodiscard]] auto CanWalk(glm::vec3 position, glm::vec3 direction) const -> bool;
+    [[nodiscard]] auto IsOnGround(glm::vec2 position) const -> bool;
+    [[nodiscard]] auto CanClimbUp(glm::vec2 position) const -> bool;
+    [[nodiscard]] auto CanClimbDown(glm::vec2 position) const -> bool;
+    [[nodiscard]] auto CanWalk(glm::vec2 position, glm::vec2 direction) const -> bool;
 
-    [[nodiscard]] auto GetTileAtPosition(glm::vec3 position) const -> TileType;
+    [[nodiscard]] auto GetTileAtPosition(glm::vec2 globalPosition) const -> TileType;
 
 protected:
     void Render() override;

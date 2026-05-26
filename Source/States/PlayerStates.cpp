@@ -20,7 +20,7 @@ void StandingIdle::Update(PlayerStateMachine& machine, Context const& context)
     auto const& [direction, position, animation, stage, player] = context;
     assert(stage != nullptr and "Stage cannot be null!");
 
-    if (direction != glm::zero<glm::vec3>() and stage->CanWalk(position, direction))
+    if (direction != glm::zero<glm::vec2>() and stage->CanWalk(position, direction))
         machine.TransitionTo<Walking>(context);
 }
 
@@ -28,7 +28,7 @@ void StandingIdle::OnEnter(Context const& context)
 {
     assert(context.animation != nullptr and "Animation cannot be null!");
 
-    std::println("Entered Standing Idle state");
+    // std::println("Entered Standing Idle state");
     context.animation->SetAnimation("idle"_h, true);
 }
 
@@ -67,7 +67,7 @@ void Walking::Update(PlayerStateMachine& machine, Context& context)
 
 void Walking::OnEnter(Context const& context)
 {
-    std::println("Entered walking state");
+    // std::println("Entered walking state");
     ChangeAnimation(context);
 }
 
@@ -92,7 +92,7 @@ void Walking::ChangeAnimation(Context const& context)
 // ==================== CLIMBING IDLE ====================
 void ClimbingIdle::OnEnter(Context const& context)
 {
-    std::println("Entered Climbing Idle state");
+    // std::println("Entered Climbing Idle state");
 
     auto const& [direction, position, animation, stage, player] = context;
     assert(animation != nullptr and "Animation cannot be null!");
@@ -102,13 +102,13 @@ void ClimbingIdle::OnEnter(Context const& context)
     if (direction.y < 0)
     {
         animation->SetAnimation("walkUp"_h);
-        animation->SetFrame(1, false); // Idle frame
+        animation->SetFrame(1, false);  // Idle frame
     }
     // Down
     else if (direction.y > 0)
     {
         animation->SetAnimation("walkDown"_h);
-        animation->SetFrame(1, false); // Idle frame
+        animation->SetFrame(1, false);  // Idle frame
     }
 }
 
@@ -122,6 +122,17 @@ void ClimbingIdle::Update(PlayerStateMachine& machine, Context& context)
 
 
 // ==================== CLIMBING ====================
+
+void Climbing::OnEnter(Context const& context)
+{
+    assert(context.animation != nullptr and "Animation cannot be null!");
+    assert(context.direction.y != 0.f and "Y input direction cannot be 0 when entering climbing state");
+
+    // std::println("Entered Climbing state");
+    ChangeAnimation(context);
+
+    previousYDirection = context.direction.y;
+}
 
 void Climbing::Update(PlayerStateMachine& machine, Context& context)
 {
@@ -161,25 +172,19 @@ void Climbing::Update(PlayerStateMachine& machine, Context& context)
     // This is to make the moving happen every 3 frames
     if (wait <= 2)
     {
-        std::println("Wait! {}", wait);
+        // std::println("Wait! {}", wait);
         ++wait;
         return;
     }
     wait = 0;
 
-    std::println("Climb");
+    // std::println("Climb");
+    if (firstClimb)
+    {
+        player->Move({ 0.f, direction.y });
+        firstClimb = false;
+    }
     player->Climb(direction.y);
-}
-
-void Climbing::OnEnter(Context const& context)
-{
-    assert(context.animation != nullptr and "Animation cannot be null!");
-    assert(context.direction.y != 0.f and "Y input direction cannot be 0 when entering climbing state");
-
-    std::println("Entered Climbing state");
-    ChangeAnimation(context);
-
-    previousYDirection = context.direction.y;
 }
 
 void Climbing::ChangeAnimation(Context const& context)

@@ -1,6 +1,7 @@
 #ifndef BURGERTIME_MOVECOMMAND_H
 #define BURGERTIME_MOVECOMMAND_H
 #include "Commands/GameObjectCommand.hpp"
+#include <glm/vec2.hpp>
 
 namespace bt
 {
@@ -8,19 +9,13 @@ namespace bt
 class MoveCommand : public gla::GameObjectCommand
 {
 public:
-    explicit MoveCommand(gla::GameObject* pCaller, const glm::vec3& velocity);
-    explicit MoveCommand(gla::GameObject* pCaller, float x, float y, float z = 0);
-    ~MoveCommand() noexcept override = default;
-
-    MoveCommand(MoveCommand const&) = delete;
-    auto operator=(MoveCommand const&) -> MoveCommand& = delete;
-    MoveCommand(MoveCommand&&) = delete;
-    auto operator=(MoveCommand&&) -> MoveCommand& = delete;
+    explicit MoveCommand(gla::GameObject* pCaller, const glm::vec2& velocity);
+    explicit MoveCommand(gla::GameObject* pCaller, float x, float y);
 
     void Execute() override;
 
 private:
-    glm::vec3 m_direction;
+    glm::vec2 m_direction;
 };
 
 }  // namespace bt

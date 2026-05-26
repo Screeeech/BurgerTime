@@ -20,8 +20,8 @@ struct Climbing;
 // Some data that we want to be passed to the states
 struct Context final
 {
-    glm::vec3 direction{};
-    glm::vec3 position{};
+    glm::vec2 direction{};
+    glm::vec2 position{};
     gla::Animation* animation{};
     Stage* stage{};
     PlayerController* playerController{};
@@ -55,10 +55,11 @@ struct ClimbingIdle final
 
 struct Climbing final
 {
+    bool firstClimb{ true };
     int wait{};
     float previousYDirection{};
-    void Update(PlayerStateMachine& machine, Context& context);
     void OnEnter(Context const& context);
+    void Update(PlayerStateMachine& machine, Context& context);
     // void OnExit(Context const& context);
 
 private:

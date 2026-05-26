@@ -20,8 +20,9 @@ class PlayerController final : public gla::Renderable
 public:
     explicit PlayerController(gla::GameObject* pPlayer, Stage* stage, int playerIndex);
 
-    void SetDirection(glm::vec3 direction);
+    void SetDirection(glm::vec2 direction);
 
+    void Move(glm::vec2 displacement) const;
     void Walk(float xDisplacement) const;
     void Climb(float yDisplacement) const;
     void OnDeath(const gla::Event& event) const;
@@ -39,7 +40,7 @@ private:
     int m_playerIndex;
     Stage* m_stage;
 
-    glm::vec3 m_direction{};
+    glm::vec2 m_direction{};
     //static float constexpr m_speed{ 1.f };
 };
 
