@@ -113,36 +113,36 @@ void load()
             "walkDown"_h,
             spriteSheet,
             {
-                { .colIdx = 0, .rowIdx = 0, .duration = 0.1f },
-                { .colIdx = 1, .rowIdx = 0, .duration = 0.1f },
-                { .colIdx = 2, .rowIdx = 0, .duration = 0.1f },
+                { .colIdx = 0, .rowIdx = 0, .duration = 4.f / 60.f },
+                { .colIdx = 1, .rowIdx = 0, .duration = 4.f / 60.f },
+                { .colIdx = 2, .rowIdx = 0, .duration = 4.f / 60.f },
             });
         animation->AddAnimation(
             "walkUp"_h,
             spriteSheet,
             {
-                { .colIdx = 6, .rowIdx = 0, .duration = 0.1f },
-                { .colIdx = 7, .rowIdx = 0, .duration = 0.1f },
-                { .colIdx = 8, .rowIdx = 0, .duration = 0.1f },
+                { .colIdx = 6, .rowIdx = 0, .duration = 4.f / 60.f },
+                { .colIdx = 7, .rowIdx = 0, .duration = 4.f / 60.f },
+                { .colIdx = 8, .rowIdx = 0, .duration = 4.f / 60.f },
             });
         animation->AddAnimation(
             "walkLeft"_h,
             spriteSheet,
             {
-                { .colIdx = 3, .rowIdx = 0, .duration = 0.1f },
-                { .colIdx = 4, .rowIdx = 0, .duration = 0.1f },
-                { .colIdx = 5, .rowIdx = 0, .duration = 0.1f },
+                { .colIdx = 3, .rowIdx = 0, .duration = 4.f / 60.f },
+                { .colIdx = 4, .rowIdx = 0, .duration = 4.f / 60.f },
+                { .colIdx = 5, .rowIdx = 0, .duration = 4.f / 60.f },
             });
         animation->AddAnimation(
             "walkRight"_h,
             spriteSheet,
             {
-                { .colIdx = 3, .rowIdx = 0, .duration = 0.1f, .flipX = true },
-                { .colIdx = 4, .rowIdx = 0, .duration = 0.1f, .flipX = true },
-                { .colIdx = 5, .rowIdx = 0, .duration = 0.1f, .flipX = true },
+                { .colIdx = 3, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
+                { .colIdx = 4, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
+                { .colIdx = 5, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
             });
 
-        animation->SetActiveAnimation("walkRight"_h, true);
+        animation->SetAnimation("walkRight"_h, true);
 
         player0->AddComponent<bt::PlayerController>(stage, 0);
 
@@ -169,32 +169,32 @@ void load()
             "walkUp"_h,
             spriteSheet,
             {
-                { .colIdx = 4, .rowIdx = 2, .duration = 0.1f },
-                { .colIdx = 5, .rowIdx = 2, .duration = 0.1f },
+                { .colIdx = 4, .rowIdx = 2, .duration = 3.f / 60.f },
+                { .colIdx = 5, .rowIdx = 2, .duration = 3.f / 60.f },
             });
         animation->AddAnimation(
             "walkDown"_h,
             spriteSheet,
             {
-                { .colIdx = 0, .rowIdx = 2, .duration = 0.1f },
-                { .colIdx = 1, .rowIdx = 2, .duration = 0.1f },
+                { .colIdx = 0, .rowIdx = 2, .duration = 3.f / 60.f },
+                { .colIdx = 1, .rowIdx = 2, .duration = 3.f / 60.f },
             });
         animation->AddAnimation(
             "walkLeft"_h,
             spriteSheet,
             {
-                { .colIdx = 2, .rowIdx = 2, .duration = 0.1f },
-                { .colIdx = 3, .rowIdx = 2, .duration = 0.1f },
+                { .colIdx = 2, .rowIdx = 2, .duration = 3.f / 60.f },
+                { .colIdx = 3, .rowIdx = 2, .duration = 3.f / 60.f },
             });
         animation->AddAnimation(
             "walkRight"_h,
             spriteSheet,
             {
-                { .colIdx = 2, .rowIdx = 2, .duration = 0.1f, .flipX = true },
-                { .colIdx = 3, .rowIdx = 2, .duration = 0.1f, .flipX = true },
+                { .colIdx = 2, .rowIdx = 2, .duration = 3.f / 60.f , .flipX = true },
+                { .colIdx = 3, .rowIdx = 2, .duration = 3.f / 60.f , .flipX = true },
             });
 
-        animation->SetActiveAnimation("walkLeft"_h, true);
+        animation->SetAnimation("walkLeft"_h, true);
     }
 
     // Achievement Event

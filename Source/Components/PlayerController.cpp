@@ -79,14 +79,26 @@ void PlayerController::SetDirection(glm::vec3 direction)
     m_direction.y = std::clamp(m_direction.y + direction.y, -1.f, 1.f);
 }
 
-void PlayerController::Move(glm::vec3 displacement) const
+void PlayerController::Walk(float xDisplacement) const
 {
-    m_pOwner->GetTransform().ChangeLocalPosition(displacement);
+    m_pOwner->GetTransform().ChangeLocalPosition(glm::vec3{ xDisplacement, 0.f, 0.f });
+}
+
+void PlayerController::Climb(float yDisplacement) const
+{
+    auto& transform = m_pOwner->GetTransform();
+
+    // if uneven, step forward 3 pixels,
+    if (static_cast<int>(transform.GetLocalPosition().y) % 2 == 1)
+        transform.ChangeLocalPosition(glm::vec3{ 0.f, yDisplacement * 3.f, 0.f });
+    // if even step down back pixel
+    else
+        transform.ChangeLocalPosition(glm::vec3{ 0.f, -yDisplacement, 0.f });
 }
 
 void PlayerController::OnDeath(const gla::Event& event) const
 {
-    const auto& playerEvent{ dynamic_cast<const gla::PlayerEvent&>(event) };
+    auto const& playerEvent{ dynamic_cast<const gla::PlayerEvent&>(event) };
 
     if (playerEvent.playerIndex != m_playerIndex)
         return;

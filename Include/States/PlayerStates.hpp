@@ -12,8 +12,9 @@ class Stage;
 }  // namespace bt
 namespace bt::playerstates
 {
-struct Idle;
+struct StandingIdle;
 struct Walking;
+struct ClimbingIdle;
 struct Climbing;
 
 // Some data that we want to be passed to the states
@@ -26,9 +27,9 @@ struct Context final
     PlayerController* playerController{};
 };
 
-using PlayerStateMachine = StateMachine<Idle, Context, Idle, Walking, Climbing>;
+using PlayerStateMachine = StateMachine<StandingIdle, Context, StandingIdle, Walking, ClimbingIdle, Climbing>;
 
-struct Idle final
+struct StandingIdle final
 {
     static void Update(PlayerStateMachine& machine, Context const& context);
     static void OnEnter(Context const& context);
@@ -37,7 +38,8 @@ struct Idle final
 
 struct Walking final
 {
-    static void Update(PlayerStateMachine& machine, Context& context);
+    int wait{};
+    void Update(PlayerStateMachine& machine, Context& context);
     static void OnEnter(Context const& context);
     // void OnExit(Context const& context);
 
@@ -45,10 +47,18 @@ private:
     static void ChangeAnimation(Context const& context);
 };
 
+struct ClimbingIdle final
+{
+    static void OnEnter(Context const& context);
+    static void Update(PlayerStateMachine& machine, Context& context);
+};
+
 struct Climbing final
 {
-    static void Update(PlayerStateMachine& machine, Context& context);
-    static void OnEnter(Context const& context);
+    int wait{};
+    float previousYDirection{};
+    void Update(PlayerStateMachine& machine, Context& context);
+    void OnEnter(Context const& context);
     // void OnExit(Context const& context);
 
 private:

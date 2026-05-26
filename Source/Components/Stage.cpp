@@ -45,7 +45,7 @@ Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
 
 void Stage::Render()
 {
-    auto& renderer{ gla::Locator::Get<gla::Renderer>() };
+    auto const& renderer{ gla::Locator::Get<gla::Renderer>() };
     for (size_t i{}; i < m_tileArray.size(); ++i)
     {
         auto const& tile = m_tileArray.at(i);
