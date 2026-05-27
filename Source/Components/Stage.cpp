@@ -111,10 +111,11 @@ void Stage::PrintTileType(glm::vec2 position) const
 auto Stage::IsOnGround(glm::vec2 position) const -> bool
 {
     int const yOffsetIntoTile = static_cast<int>(position.y - stageOffset) % static_cast<int>(tileHeight);
-    if (yOffsetIntoTile < 14 or yOffsetIntoTile > 16)
+    if (yOffsetIntoTile < 13 or yOffsetIntoTile > 17)
         return false;
 
-    TileType const tile = GetTileAtPosition(position - glm::vec2(0.f, 2.f));
+    // Check for tile below player
+    TileType const tile = GetTileAtPosition(position - glm::vec2(0.f, 1.f));
     switch (tile)
     {
         case TileType::Platform:

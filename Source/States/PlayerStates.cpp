@@ -44,13 +44,13 @@ void StandingIdle::OnEnter(Context const& context)
     std::println("Entered Standing Idle state");
     context.animation->SetAnimation("idle"_h, true);
 
-    // if (context.playerController)
-    //{
-    //     int const yOffsetIntoTile = static_cast<int>(context.position.y - Stage::stageOffset) % static_cast<int>(Stage::tileHeight);
-    //     float const bump = static_cast<float>(std::abs(yOffsetIntoTile - 14));
-    //     std::println("Bump y: {}", bump);
-    //     context.playerController->Move({ 0.f, bump });
-    // }
+     if (context.playerController)
+    {
+         auto const yOffsetIntoTile = static_cast<int>(context.position.y - Stage::stageOffset) % static_cast<int>(Stage::tileHeight);
+         auto const bump = static_cast<float>(13 - yOffsetIntoTile);
+         std::println("Bump y: {}", bump);
+         context.playerController->Move({ 0.f, bump });
+     }
 }
 
 
@@ -154,8 +154,8 @@ void Climbing::OnEnter(Context const& context)
     previousYDirection = direction.y;
 
     // Lock the player onto a ladder when climbing
-    int const xOffsetIntoTile = static_cast<int>(position.x - Stage::stageOffset) % static_cast<int>(Stage::tileWidth);
-    float const bump = static_cast<float>(7 - xOffsetIntoTile);
+    auto const xOffsetIntoTile = static_cast<int>(position.x - Stage::stageOffset) % static_cast<int>(Stage::tileWidth);
+    auto const bump = static_cast<float>(7 - xOffsetIntoTile);
     std::println("Bump x: {}", bump);
     player->Move({ bump, 0.f });
 }
