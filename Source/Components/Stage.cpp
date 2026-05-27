@@ -169,9 +169,15 @@ auto Stage::CanClimbDown(glm::vec2 position) const-> bool
 
 auto Stage::CanWalk(glm::vec2 position, glm::vec2 direction) const-> bool
 {
-    direction.y = 0.f;
-    TileType const tile = GetTileAtPosition(position + (direction * 8.f));
+    float constexpr halfPlayerSprite{ 8.f };
 
+    glm::vec2 xSideOffset{};
+    if (direction.x > 0)
+        xSideOffset.x = halfPlayerSprite * 2;
+    else if (direction.x < 0)
+        xSideOffset.x = -halfPlayerSprite;
+
+    TileType const tile = GetTileAtPosition(position + xSideOffset);
     return tile == TileType::Platform or tile == TileType::LadderPlatform;
 }
 
