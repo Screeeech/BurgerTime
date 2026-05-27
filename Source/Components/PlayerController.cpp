@@ -23,9 +23,10 @@ class Font;
 PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, Pepper* pepper, int playerIndex)
     : Renderable(pPlayer, 10)
     , m_playerIndex(playerIndex)
-    , m_finiteStateMachine({ .animation = pPlayer->GetComponent<gla::Animation>() })
     , m_pStage(stage)
     , m_pPepper(pepper)
+    , m_pAnimation(pPlayer->GetComponent<gla::Animation>())
+    , m_finiteStateMachine({ .animation = m_pAnimation })
 {
 }
 
@@ -77,7 +78,7 @@ void PlayerController::FixedUpdate(float deltaTime)
     playerstates::Context context{
         .direction = m_direction,
         .position = pos,
-        .animation = m_pOwner->GetComponent<gla::Animation>(),
+        .animation = m_pAnimation,
         .stage = m_pStage,
         .playerController = this,
         .deltaTime = deltaTime,

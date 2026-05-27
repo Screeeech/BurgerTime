@@ -5,6 +5,7 @@
 #include <print>
 
 #include "Colors.hpp"
+#include "Components/Pepper.hpp"
 #include "Components/PlayerController.hpp"
 #include "Components/Stage.hpp"
 #include "GameEvents.hpp"
@@ -77,15 +78,9 @@ void StandingIdle::OnExit(Context const& /*context*/)
 
 void StandingIdle::OnPepper(std::any const& eventArgs)
 {
-    [[maybe_unused]] auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
+    auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
 
-    // Left
-    if (previousXDirection <= 0)
-        std::println("Pepper! Standing left");
-    // Right
-    else if (previousXDirection > 0)
-        std::println("Pepper! Standing right");
-
+    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { previousXDirection, 0.f });
     remainingPepperDuration = 1.f;
 }
 
@@ -167,14 +162,8 @@ void Walking::OnExit(Context const& /*context*/)
 void Walking::OnPepper(std::any const& eventArgs)
 {
     [[maybe_unused]] auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
-    std::println("Pepper! Walking");
 
-    // Left
-    if (pepperArgs.inputDirection.x < 0)
-        std::println("Pepper! Walking left");
-    // Right
-    else if (pepperArgs.inputDirection.x > 0)
-        std::println("Pepper! Walking right");
+    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, pepperArgs.inputDirection);
     remainingPepperDuration = 1.f;
 }
 
@@ -244,14 +233,8 @@ void ClimbingIdle::OnExit(Context const& /*context*/)
 void ClimbingIdle::OnPepper(std::any const& eventArgs)
 {
     [[maybe_unused]] auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
-    std::println("Pepper! Climbing idle");
 
-    // Up
-    if (previousYDirection < 0)
-        std::println("Pepper! Climbing up");
-    // Down
-    else if (previousYDirection > 0)
-        std::println("Pepper! Climbing down");
+    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, previousYDirection });
     remainingPepperDuration = 1.f;
 }
 
@@ -372,12 +355,7 @@ void Climbing::OnPepper(std::any const& eventArgs)
 {
     [[maybe_unused]] auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
 
-    // Up
-    if (previousYDirection < 0)
-        std::println("Pepper! Climbing up");
-    // Down
-    else if (previousYDirection > 0)
-        std::println("Pepper! Climbing down");
+    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, previousYDirection });
     remainingPepperDuration = 1.f;
 }
 

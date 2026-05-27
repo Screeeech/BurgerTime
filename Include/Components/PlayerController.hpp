@@ -40,13 +40,15 @@ protected:
 private:
     static constexpr glm::vec2 spriteFeetOffset{ 8.f, 15.f };
 
-    playerstates::PlayerStateMachine m_finiteStateMachine;
 
     Stage* m_pStage;
     Pepper* m_pPepper;
+    gla::Animation* m_pAnimation;
 
     glm::vec2 m_direction{};
     // static float constexpr m_speed{ 1.f };
+
+    playerstates::PlayerStateMachine m_finiteStateMachine;
 };
 
 }  // namespace bt

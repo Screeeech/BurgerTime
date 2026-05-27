@@ -2,6 +2,10 @@
 #define BURGERTIME_PEPPER_HPP
 #include "Renderable.hpp"
 
+namespace gla
+{
+class Animation;
+}
 namespace bt
 {
 
@@ -11,14 +15,17 @@ public:
     explicit Pepper(gla::GameObject* pOwner, int zIndex = 0);
     ~Pepper() noexcept override = default;
 
+    void SpawnPepper(glm::vec2 position, glm::vec2 direction);
+
 protected:
     void Render() override;
-    void Update(float) override;
+    void FixedUpdate(float deltaTime) override;
     void OnActivate() override;
     void OnDeactivate() override;
 
 private:
-    //bool m_active{};
+    float m_duration{};
+    gla::Animation* m_pAnimation{};
 };
 
 }  // namespace bt
