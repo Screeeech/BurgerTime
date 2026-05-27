@@ -93,8 +93,8 @@ void load()
     // Player 0
     {
         // GameObject
-        auto* pepperObject{ scene.GetRoot()->CreateChild(50, 30, "Pepper") };
-        auto* pepperComponent{ pepperObject->AddComponent<bt::Pepper>(2) };
+        auto* pepperObject{ scene.GetRoot()->CreateChild(0, 0, "Pepper") };
+        auto* pepperComponent{ pepperObject->AddComponent<bt::Pepper>(3) };
 
         auto* player0{ scene.GetRoot()->CreateChild(100, 174, "Player 0") };
 

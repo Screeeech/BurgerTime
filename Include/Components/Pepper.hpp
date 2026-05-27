@@ -20,8 +20,6 @@ public:
 protected:
     void Render() override;
     void FixedUpdate(float deltaTime) override;
-    void OnActivate() override;
-    void OnDeactivate() override;
 
 private:
     float m_duration{};
