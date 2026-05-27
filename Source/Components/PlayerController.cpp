@@ -39,23 +39,6 @@ void PlayerController::Move(glm::vec2 displacement) const
     m_pOwner->GetTransform().ChangeLocalPosition(displacement);
 }
 
-void PlayerController::Walk(float xDisplacement) const
-{
-    m_pOwner->GetTransform().ChangeLocalPosition(glm::vec2{ xDisplacement, 0.f });
-}
-
-void PlayerController::Climb(float yDisplacement) const
-{
-    auto& transform = m_pOwner->GetTransform();
-
-    // if uneven, step forward 3 pixels,
-    if (static_cast<int>(transform.GetLocalPosition().y) % 2 == 1)
-        transform.ChangeLocalPosition(glm::vec2{ 0.f, yDisplacement * 3.f });
-    // if even step down back pixel
-    else
-        transform.ChangeLocalPosition(glm::vec2{ 0.f, -yDisplacement });
-}
-
 void PlayerController::OnDeath(const gla::Event& event) const
 {
     auto const& playerEvent{ dynamic_cast<const gla::PlayerEvent&>(event) };

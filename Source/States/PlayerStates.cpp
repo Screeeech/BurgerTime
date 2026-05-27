@@ -20,16 +20,37 @@ void StandingIdle::Update(PlayerStateMachine& machine, Context const& context)
     auto const& [direction, position, animation, stage, player] = context;
     assert(stage != nullptr and "Stage cannot be null!");
 
-    if (direction != glm::zero<glm::vec2>() and stage->CanWalk(position, direction))
+    if (direction.x != 0.f and stage->CanWalk(position, direction))
+    {
         machine.TransitionTo<Walking>(context);
+        return;
+    }
+    if (direction.y > 0.f and stage->CanClimbDown(position))
+    {
+        machine.TransitionTo<Walking>(context);
+        return;
+    }
+    if (direction.y < 0.f and stage->CanClimbUp(position))
+    {
+        machine.TransitionTo<Climbing>(context);
+        return;
+    }
 }
 
 void StandingIdle::OnEnter(Context const& context)
 {
     assert(context.animation != nullptr and "Animation cannot be null!");
 
-    // std::println("Entered Standing Idle state");
+    std::println("Entered Standing Idle state");
     context.animation->SetAnimation("idle"_h, true);
+
+    // if (context.playerController)
+    //{
+    //     int const yOffsetIntoTile = static_cast<int>(context.position.y - Stage::stageOffset) % static_cast<int>(Stage::tileHeight);
+    //     float const bump = static_cast<float>(std::abs(yOffsetIntoTile - 14));
+    //     std::println("Bump y: {}", bump);
+    //     context.playerController->Move({ 0.f, bump });
+    // }
 }
 
 
@@ -44,7 +65,7 @@ void Walking::Update(PlayerStateMachine& machine, Context& context)
         machine.TransitionTo<StandingIdle>(context);
         return;
     }
-    if ((direction.y < 0.f and stage->CanClimbUp(position)) /* or (direction.y > 0.f and stage->CanClimbDown(position))*/)
+    if ((direction.y < 0.f and stage->CanClimbUp(position)) or (direction.y > 0.f and stage->CanClimbDown(position)))
     {
         machine.TransitionTo<Climbing>(context);
         return;
@@ -53,21 +74,19 @@ void Walking::Update(PlayerStateMachine& machine, Context& context)
     ChangeAnimation(context);
 
     // Walk every 2 frames
-    if (wait > 1)
+    if (wait > 0)
     {
         --wait;
         return;
     }
     wait = 1;
 
-    player->Walk(direction.x);
-
-    stage->PrintTileType(position);
+    player->Move({ direction.x, 0.f });
 }
 
 void Walking::OnEnter(Context const& context)
 {
-    // std::println("Entered walking state");
+    std::println("Entered Walking state");
     ChangeAnimation(context);
 }
 
@@ -92,7 +111,7 @@ void Walking::ChangeAnimation(Context const& context)
 // ==================== CLIMBING IDLE ====================
 void ClimbingIdle::OnEnter(Context const& context)
 {
-    // std::println("Entered Climbing Idle state");
+    std::println("Entered Climbing Idle state");
 
     auto const& [direction, position, animation, stage, player] = context;
     assert(animation != nullptr and "Animation cannot be null!");
@@ -125,13 +144,20 @@ void ClimbingIdle::Update(PlayerStateMachine& machine, Context& context)
 
 void Climbing::OnEnter(Context const& context)
 {
-    assert(context.animation != nullptr and "Animation cannot be null!");
-    assert(context.direction.y != 0.f and "Y input direction cannot be 0 when entering climbing state");
+    auto& [direction, position, animation, stage, player] = context;
+    assert(animation != nullptr and "Animation cannot be null!");
+    assert(direction.y != 0.f and "Y input direction cannot be 0 when entering climbing state");
 
-    // std::println("Entered Climbing state");
+    std::println("Entered Climbing state");
     ChangeAnimation(context);
 
-    previousYDirection = context.direction.y;
+    previousYDirection = direction.y;
+
+    // Lock the player onto a ladder when climbing
+    int const xOffsetIntoTile = static_cast<int>(position.x - Stage::stageOffset) % static_cast<int>(Stage::tileWidth);
+    float const bump = static_cast<float>(7 - xOffsetIntoTile);
+    std::println("Bump x: {}", bump);
+    player->Move({ bump, 0.f });
 }
 
 void Climbing::Update(PlayerStateMachine& machine, Context& context)
@@ -153,6 +179,11 @@ void Climbing::Update(PlayerStateMachine& machine, Context& context)
             machine.TransitionTo<StandingIdle>(context);
             return;
         }
+        if (direction.y > 0 and not stage->CanClimbDown(position))
+        {
+            machine.TransitionTo<StandingIdle>(context);
+            return;
+        }
     }
     if (direction.y == 0)
     {
@@ -170,21 +201,14 @@ void Climbing::Update(PlayerStateMachine& machine, Context& context)
     previousYDirection = direction.y;
 
     // This is to make the moving happen every 3 frames
-    if (wait <= 2)
+    if (wait > 0)
     {
-        // std::println("Wait! {}", wait);
-        ++wait;
+        --wait;
         return;
     }
-    wait = 0;
+    wait = 1;
 
-    // std::println("Climb");
-    if (firstClimb)
-    {
-        player->Move({ 0.f, direction.y });
-        firstClimb = false;
-    }
-    player->Climb(direction.y);
+    player->Move({ 0.f, direction.y });
 }
 
 void Climbing::ChangeAnimation(Context const& context)

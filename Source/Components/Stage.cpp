@@ -91,7 +91,6 @@ void Stage::Render()
 
 void Stage::PrintTileType(glm::vec2 position) const
 {
-    std::println("Position: {}, {}", position.x - stageOffset, position.y - stageOffset);
     switch (GetTileAtPosition(position))
     {
         case TileType::Null:
@@ -111,12 +110,11 @@ void Stage::PrintTileType(glm::vec2 position) const
 
 auto Stage::IsOnGround(glm::vec2 position) const -> bool
 {
-    int const mod = static_cast<int>(position.y - stageOffset) % static_cast<int>(tileHeight);
-    TileType const tile = GetTileAtPosition(position - glm::vec2{0.f, 2.f});
-
-    if (mod != 14)
+    int const yOffsetIntoTile = static_cast<int>(position.y - stageOffset) % static_cast<int>(tileHeight);
+    if (yOffsetIntoTile < 14 or yOffsetIntoTile > 16)
         return false;
 
+    TileType const tile = GetTileAtPosition(position - glm::vec2(0.f, 2.f));
     switch (tile)
     {
         case TileType::Platform:
@@ -130,10 +128,10 @@ auto Stage::IsOnGround(glm::vec2 position) const -> bool
 
 auto Stage::CanClimbUp(glm::vec2 position) const-> bool
 {
-    int const mod = static_cast<int>(position.x - stageOffset) % static_cast<int>(tileWidth);
-    std::println("Mod: {}", mod);
-    return false;
-    if (mod > 4 and mod < 20)
+    int const xOffsetIntoTile = static_cast<int>(position.x - stageOffset) % static_cast<int>(tileWidth);
+
+    // Within this margin we are over a ladder
+    if (xOffsetIntoTile < 6 or xOffsetIntoTile > 9)
         return false;
 
     auto const tile = GetTileAtPosition(position);
@@ -150,11 +148,13 @@ auto Stage::CanClimbUp(glm::vec2 position) const-> bool
 
 auto Stage::CanClimbDown(glm::vec2 position) const-> bool
 {
-    int const mod = static_cast<int>(position.x - stageOffset) % static_cast<int>(tileWidth);
-    if (mod > 4 and mod < 20)
+    int const xOffsetIntoTile = static_cast<int>(position.x - stageOffset) % static_cast<int>(tileWidth);
+
+    // Within this margin we are over a ladder
+    if (xOffsetIntoTile < 6 or xOffsetIntoTile > 9)
         return false;
 
-    auto const tile = GetTileAtPosition(position);
+    auto const tile = GetTileAtPosition(position - glm::vec2(0.f, -4.f));
     switch (tile)
     {
         case TileType::Ladder:
@@ -225,19 +225,19 @@ void Stage::DrawLadder(glm::vec2 cursor, gla::Renderer const& renderer)
         {
             {
                 cursor + glm::vec2{ 2.f, 0.f },
-                cursor + glm::vec2{ 12.f, 0.f },
+                cursor + glm::vec2{ 11.f, 0.f },
             },
             {
                 cursor + glm::vec2{ 2.f, 2.f },
-                cursor + glm::vec2{ 12.f, 2.f },
+                cursor + glm::vec2{ 11.f, 2.f },
             },
             {
                 cursor + glm::vec2{ 2.f, 8.f },
-                cursor + glm::vec2{ 12.f, 8.f },
+                cursor + glm::vec2{ 11.f, 8.f },
             },
             {
                 cursor + glm::vec2{ 2.f, 10.f },
-                cursor + glm::vec2{ 12.f, 10.f },
+                cursor + glm::vec2{ 11.f, 10.f },
             },
         });
 }

@@ -21,13 +21,6 @@ enum class TileType : std::uint8_t
 
 class Stage : public gla::Renderable
 {
-    static constexpr int zIndex{ 1 };
-    static constexpr uint32_t stageWidth{ 9 };
-    static constexpr uint32_t stageHeight{ 10 };
-    static constexpr uint32_t stageSize{ stageWidth * stageHeight };
-    static constexpr float stageOffset{ 32.f };
-    static constexpr float tileWidth{ 24.f };
-    static constexpr float tileHeight{ 16.f };
 
 public:
     explicit Stage(gla::GameObject* pOwner, std::string const& stageDataPath);
@@ -47,6 +40,13 @@ public:
 
     [[nodiscard]] auto GetTileAtPosition(glm::vec2 globalPosition) const -> TileType;
 
+    static constexpr int zIndex{ 1 };
+    static constexpr uint32_t stageWidth{ 9 };
+    static constexpr uint32_t stageHeight{ 10 };
+    static constexpr uint32_t stageSize{ stageWidth * stageHeight };
+    static constexpr float stageOffset{ 32.f };
+    static constexpr float tileWidth{ 24.f };
+    static constexpr float tileHeight{ 16.f };
 protected:
     void Render() override;
 

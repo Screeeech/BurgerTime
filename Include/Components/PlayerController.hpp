@@ -23,8 +23,6 @@ public:
     void SetDirection(glm::vec2 direction);
 
     void Move(glm::vec2 displacement) const;
-    void Walk(float xDisplacement) const;
-    void Climb(float yDisplacement) const;
     void OnDeath(const gla::Event& event) const;
 
 protected:

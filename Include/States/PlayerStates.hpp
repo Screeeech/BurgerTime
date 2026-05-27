@@ -55,7 +55,6 @@ struct ClimbingIdle final
 
 struct Climbing final
 {
-    bool firstClimb{ true };
     int wait{};
     float previousYDirection{};
     void OnEnter(Context const& context);
