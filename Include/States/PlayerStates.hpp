@@ -25,23 +25,33 @@ struct Context final
     gla::Animation* animation{};
     Stage* stage{};
     PlayerController* playerController{};
+    float deltaTime{};
 };
 
 using PlayerStateMachine = StateMachine<StandingIdle, Context, StandingIdle, Walking, ClimbingIdle, Climbing>;
 
 struct StandingIdle final
 {
-    static void Update(PlayerStateMachine& machine, Context const& context);
-    static void OnEnter(Context const& context);
-    // void OnExit(Context const& context);
+    float previousXDirection{};
+
+    void OnEnter(Context const& context);
+    void Update(PlayerStateMachine& machine, Context const& context) const;
+    void OnExit(Context const& context);
+    void OnPepper(std::any const& eventArgs);
+
+private:
+    void ChangeAnimation(Context const& context) const;
 };
 
 struct Walking final
 {
     int wait{};
+    float previousXDirection{};
+
+    void OnEnter(Context const& context);
     void Update(PlayerStateMachine& machine, Context& context);
-    static void OnEnter(Context const& context);
-    // void OnExit(Context const& context);
+    void OnExit(Context const& context);
+    void OnPepper(std::any const& eventArgs);
 
 private:
     static void ChangeAnimation(Context const& context);
@@ -49,20 +59,29 @@ private:
 
 struct ClimbingIdle final
 {
-    static void OnEnter(Context const& context);
-    static void Update(PlayerStateMachine& machine, Context& context);
+    float previousYDirection{};
+
+    void OnEnter(Context const& context);
+    void Update(PlayerStateMachine& machine, Context& context) const;
+    void OnExit(Context const& context);
+    void OnPepper(std::any const& eventArgs);
+
+private:
+    void ChangeAnimation(Context const& context) const;
 };
 
 struct Climbing final
 {
     int wait{};
     float previousYDirection{};
+
     void OnEnter(Context const& context);
     void Update(PlayerStateMachine& machine, Context& context);
-    // void OnExit(Context const& context);
+    void OnExit(Context const& context);
+    void OnPepper(std::any const& eventArgs);
 
 private:
-    static void ChangeAnimation(Context const& context);
+    void ChangeAnimation(Context const& context) const;
 };
 
 

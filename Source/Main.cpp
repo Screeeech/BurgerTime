@@ -1,4 +1,3 @@
-
 #include <cstddef>
 #include <filesystem>
 #include <print>
@@ -8,6 +7,7 @@
 #include "Commands/VolumeCommand.hpp"
 #include "Components/Animation.hpp"
 #include "Components/FpsComponent.hpp"
+#include "Components/Pepper.hpp"
 #include "Components/PlayerController.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
@@ -41,7 +41,7 @@ void load()
     // Getting value without checking for nullopt cause if there's no service here I want the program to fail
     auto& resourceManager{ gla::Locator::Get<gla::ResourceManager>() };
     auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
-    auto& eventManager{ gla::Locator::Get<gla::EventManager>() };
+    //auto& eventManager{ gla::Locator::Get<gla::EventManager>() };
     auto& renderer{ gla::Locator::Get<gla::Renderer>() };
 
     auto& sound{ gla::Locator::Get<gla::ISound>() };
@@ -72,7 +72,7 @@ void load()
     renderer.SetLogicalResolution(256, 240);
     renderer.SetBackgroundColor(bt::colors::Black);
 
-    auto* go = scene.GetRoot()->CreateChild(0, 0, 0, "Stage");
+    auto* go = scene.GetRoot()->CreateChild(0, 0, "Stage");
     auto* stage = go->AddComponent<bt::Stage>("Stages/stage1.json");
 
     auto const spriteSheetTexture{ resourceManager.LoadTexture("Textures/spritesheet.png") };
@@ -80,7 +80,7 @@ void load()
     auto const smallFont = resourceManager.LoadFont("Fonts/nes.ttf", 8);
 
     // FPS display
-    go = scene.GetRoot()->CreateChild(10, 10, 0, "FPS Counter");
+    go = scene.GetRoot()->CreateChild(10, 10, "FPS Counter");
     go->AddComponent<gla::FpsComponent>(font);
 
     // Control display
@@ -93,7 +93,9 @@ void load()
     // Player 0
     {
         // GameObject
-        auto* player0{ scene.GetRoot()->CreateChild(100, 174, 0, "Player 0") };
+        auto* player0{ scene.GetRoot()->CreateChild(100, 174, "Player 0") };
+        auto* pepperObject{ scene.GetRoot()->CreateChild(0, 0, "Pepper") };
+        auto* pepperComponent{ pepperObject->AddComponent<bt::Pepper>(2) };
 
         // Animations
         auto* animation{ player0->AddComponent<gla::Animation>(2) };
@@ -141,10 +143,34 @@ void load()
                 { .colIdx = 4, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
                 { .colIdx = 5, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
             });
+        animation->AddAnimation(
+            "pepperDown"_h,
+            spriteSheet,
+            {
+                { .colIdx = 0, .rowIdx = 1, .duration = 0.f },
+            });
+        animation->AddAnimation(
+            "pepperLeft"_h,
+            spriteSheet,
+            {
+                { .colIdx = 1, .rowIdx = 1, .duration = 0.f },
+            });
+        animation->AddAnimation(
+            "pepperRight"_h,
+            spriteSheet,
+            {
+                { .colIdx = 1, .rowIdx = 1, .duration = 0.f, .flipX = true },
+            });
+        animation->AddAnimation(
+            "pepperUp"_h,
+            spriteSheet,
+            {
+                { .colIdx = 2, .rowIdx = 1, .duration = 0.f },
+            });
 
-        animation->SetAnimation("walkRight"_h, true);
+        animation->SetAnimation("idle"_h, true);
 
-        player0->AddComponent<bt::PlayerController>(stage, 0);
+        player0->AddComponent<bt::PlayerController>(stage, pepperComponent, 0);
 
         inputManager.RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, 0);
         inputManager.RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, 0);
@@ -157,7 +183,7 @@ void load()
 
     // Mr Hotdog
     {
-        auto* enemy = scene.GetRoot()->CreateChild(30, 30, 0, "Mr. Hotdog");
+        auto* enemy = scene.GetRoot()->CreateChild(30, 30, "Mr. Hotdog");
 
         auto* animation = enemy->AddComponent<gla::Animation>(2);
         auto const size{ spriteSheetTexture->GetSize() };
@@ -190,15 +216,12 @@ void load()
             "walkRight"_h,
             spriteSheet,
             {
-                { .colIdx = 2, .rowIdx = 2, .duration = 3.f / 60.f , .flipX = true },
-                { .colIdx = 3, .rowIdx = 2, .duration = 3.f / 60.f , .flipX = true },
+                { .colIdx = 2, .rowIdx = 2, .duration = 3.f / 60.f, .flipX = true },
+                { .colIdx = 3, .rowIdx = 2, .duration = 3.f / 60.f, .flipX = true },
             });
 
         animation->SetAnimation("walkLeft"_h, true);
     }
-
-    // Achievement Event
-    eventManager.BindEvent("win"_h, &bt::AchievementManager::Get(), &bt::AchievementManager::OnWin);
 
 
     scene.Load();

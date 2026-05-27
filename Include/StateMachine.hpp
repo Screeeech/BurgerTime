@@ -31,9 +31,9 @@ concept HasOnEnter = requires(T state, Context context) {
     { state.OnEnter(context) } -> std::same_as<void>;
 };
 
-template<typename T>
-concept HasOnExit = requires(T state) {
-    { state.OnExit() } -> std::same_as<void>;
+template<typename T, typename Context>
+concept HasOnExit = requires(T state, Context context) {
+    { state.OnExit(context) } -> std::same_as<void>;
 };
 
 template<typename InitialState, typename Context, typename... States>
@@ -96,7 +96,7 @@ private:
         std::visit(
             [&]<typename T>(T& state) -> void
             {
-                if constexpr (HasOnExit<std::decay_t<T>>)
+                if constexpr (HasOnExit<std::decay_t<T>, Context>)
                     state.OnExit(context);
             },
             m_currentState);

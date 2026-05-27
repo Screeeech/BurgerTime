@@ -6,7 +6,7 @@
 #include "Colors.hpp"
 #include "Commands/CallbackCommand.hpp"
 #include "Commands/MoveCommand.hpp"
-#include "Events.hpp"
+#include "GameEvents.hpp"
 #include "GameObject.hpp"
 #include "Locator.hpp"
 #include "SceneManager.hpp"
@@ -20,11 +20,12 @@ namespace bt
 {
 class Font;
 
-PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, int playerIndex)
+PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, Pepper* pepper, int playerIndex)
     : Renderable(pPlayer, 10)
-    , m_finiteStateMachine({ .animation = pPlayer->GetComponent<gla::Animation>() })
     , m_playerIndex(playerIndex)
-    , m_stage(stage)
+    , m_finiteStateMachine({ .animation = pPlayer->GetComponent<gla::Animation>() })
+    , m_pStage(stage)
+    , m_pPepper(pepper)
 {
 }
 
@@ -34,14 +35,19 @@ void PlayerController::SetDirection(glm::vec2 direction)
     m_direction.y = std::clamp(m_direction.y + direction.y, -1.f, 1.f);
 }
 
+auto PlayerController::GetDirection() const -> glm::vec2
+{
+    return m_direction;
+}
+
 void PlayerController::Move(glm::vec2 displacement) const
 {
     m_pOwner->GetTransform().ChangeLocalPosition(displacement);
 }
 
-void PlayerController::OnDeath(const gla::Event& event) const
+void PlayerController::OnDeath(std::any const& eventArgs) const
 {
-    auto const& playerEvent{ dynamic_cast<const gla::PlayerEvent&>(event) };
+    auto const playerEvent{ std::any_cast<gla::PlayerEvent>(eventArgs) };
 
     if (playerEvent.playerIndex != m_playerIndex)
         return;
@@ -51,7 +57,6 @@ void PlayerController::OnDeath(const gla::Event& event) const
 
 void PlayerController::Render()
 {
-    glm::vec2 constexpr spriteFeetOffset{ 8.f, 15.f };
     glm::vec2 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
     glm::vec2 const pos = worldPos + spriteFeetOffset;
 
@@ -66,24 +71,16 @@ void PlayerController::Render()
 
 void PlayerController::FixedUpdate(float deltaTime)
 {
-    glm::vec2 constexpr spriteFeetOffset{ 8.f, 15.f };
     glm::vec2 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
     glm::vec2 const pos = worldPos + spriteFeetOffset;
-
-    static float elapsedTime{};
-    elapsedTime += deltaTime;
-    while (elapsedTime >= 1.f)
-    {
-        elapsedTime -= 1.f;
-        std::println("Position:  x: {}, y: {}", pos.x - 32.f, pos.y - 32.f);
-    }
 
     playerstates::Context context{
         .direction = m_direction,
         .position = pos,
         .animation = m_pOwner->GetComponent<gla::Animation>(),
-        .stage = m_stage,
+        .stage = m_pStage,
         .playerController = this,
+        .deltaTime = deltaTime,
     };
     m_finiteStateMachine.Update(context);
 
@@ -100,6 +97,15 @@ void PlayerController::OnActivate()
     inputManager.BindAction<MoveCommand>("moveLeft"_h, m_playerIndex, m_pOwner, glm::vec2{ -1, 0 });
     inputManager.BindAction<MoveCommand>("moveDown"_h, m_playerIndex, m_pOwner, glm::vec2{ 0, 1 });
     inputManager.BindAction<MoveCommand>("moveRight"_h, m_playerIndex, m_pOwner, glm::vec2{ 1, 0 });
+    inputManager.BindAction<gla::CallbackCommand>(
+        "attack"_h,
+        m_playerIndex,
+        [this]
+        {
+            std::println("Attacking!");
+            gla::Locator::Get<gla::EventManager>().InvokeEvent(
+                PepperEvent("pepper"_h, m_playerIndex, GetDirection(), m_pOwner->GetWorldPosition() + spriteFeetOffset, m_pPepper));
+        });
 }
 
 void PlayerController::OnDeactivate()
