@@ -9,8 +9,10 @@
 
 namespace gla
 {
+class Collider;
+class CollisionRect;
 struct Event;
-}
+}  // namespace gla
 
 namespace bt
 {
@@ -22,10 +24,10 @@ public:
     explicit PlayerController(gla::GameObject* pPlayer, Stage* stage, Pepper* pepper, int playerIndex);
 
     void SetDirection(glm::vec2 direction);
-    [[nodiscard]] glm::vec2 GetDirection() const;
+    [[nodiscard]] auto GetDirection() const -> glm::vec2;
 
     void Move(glm::vec2 displacement) const;
-    void OnDeath(std::any const& eventArgs) const;
+    void OnHit(gla::Collider const& collider) const;
     // void OnPepper(std::any const& eventArgs) const;
 
     int const m_playerIndex;
@@ -44,6 +46,8 @@ private:
     Stage* m_pStage;
     Pepper* m_pPepper;
     gla::Animation* m_pAnimation;
+    gla::CollisionRect* m_pHitBox{};
+    gla::CollisionRect* m_pHurtBox{};
 
     glm::vec2 m_direction{};
     // static float constexpr m_speed{ 1.f };

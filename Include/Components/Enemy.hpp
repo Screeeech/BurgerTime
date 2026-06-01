@@ -2,6 +2,10 @@
 #define BURGERTIME_ENEMY_HPP
 #include "Component.hpp"
 
+namespace gla
+{
+class CollisionRect;
+}
 namespace bt
 {
 
@@ -11,7 +15,9 @@ public:
     explicit Enemy(gla::GameObject* pOwner);
 
 protected:
-    void Update(float deltaTime) override;
+
+private:
+    gla::CollisionRect* m_pHitBox;
 };
 
 }  // namespace bt

@@ -6,6 +6,8 @@
 #include "Colors.hpp"
 #include "Commands/CallbackCommand.hpp"
 #include "Commands/MoveCommand.hpp"
+#include "Components/Collider.hpp"
+#include "Components/CollisionRect.hpp"
 #include "GameEvents.hpp"
 #include "GameObject.hpp"
 #include "Locator.hpp"
@@ -26,6 +28,18 @@ PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, Peppe
     , m_pStage(stage)
     , m_pPepper(pepper)
     , m_pAnimation(pPlayer->GetComponent<gla::Animation>())
+    , m_pHitBox(pPlayer->AddComponent<gla::CollisionRect>(
+          static_cast<uint32_t>(gla::Collider::Bits::Layer1),
+          0,
+          std::vector<gla::CollisionCallback>{ [](auto&) { std::println("Hit!"); } },
+          glm::vec2{},
+          glm::vec2{ 16.f, 32.f }))
+    , m_pHurtBox(pPlayer->AddComponent<gla::CollisionRect>(
+          static_cast<uint32_t>(gla::Collider::Bits::Layer2),
+          0,
+          std::vector<gla::CollisionCallback>{ std::bind_front(&PlayerController::OnHit, this) },
+          glm::vec2{},
+          glm::vec2{ 16.f, 32.f }))
     , m_finiteStateMachine({ .animation = m_pAnimation })
 {
 }
@@ -46,13 +60,9 @@ void PlayerController::Move(glm::vec2 displacement) const
     m_pOwner->GetTransform().ChangeLocalPosition(displacement);
 }
 
-void PlayerController::OnDeath(std::any const& eventArgs) const
+void PlayerController::OnHit(gla::Collider const& /*collider*/) const
 {
-    auto const playerEvent{ std::any_cast<gla::PlayerEvent>(eventArgs) };
-
-    if (playerEvent.playerIndex != m_playerIndex)
-        return;
-
+    std::println("Player hit!!");
     gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
 }
 

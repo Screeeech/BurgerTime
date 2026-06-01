@@ -6,6 +6,7 @@
 #include "Colors.hpp"
 #include "Commands/VolumeCommand.hpp"
 #include "Components/Animation.hpp"
+#include "Components/Enemy.hpp"
 #include "Components/FpsComponent.hpp"
 #include "Components/Pepper.hpp"
 #include "Components/PlayerController.hpp"
@@ -41,7 +42,7 @@ void load()
     // Getting value without checking for nullopt cause if there's no service here I want the program to fail
     auto& resourceManager{ gla::Locator::Get<gla::ResourceManager>() };
     auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
-    //auto& eventManager{ gla::Locator::Get<gla::EventManager>() };
+    // auto& eventManager{ gla::Locator::Get<gla::EventManager>() };
     auto& renderer{ gla::Locator::Get<gla::Renderer>() };
 
     auto& sound{ gla::Locator::Get<gla::ISound>() };
@@ -184,7 +185,9 @@ void load()
 
     // Mr Hotdog
     {
-        auto* enemy = scene.GetRoot()->CreateChild(30, 30, "Mr. Hotdog");
+        auto* enemy = scene.GetRoot()->CreateChild(50, 174, "Mr. Hotdog");
+
+        [[maybe_unused]] auto* enemyComponent = enemy->AddComponent<bt::Enemy>();
 
         auto* animation = enemy->AddComponent<gla::Animation>(2);
         auto const size{ spriteSheetTexture->GetSize() };
