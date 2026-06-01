@@ -1,29 +1,34 @@
 #ifndef BURGERTIME_PEPPER_HPP
 #define BURGERTIME_PEPPER_HPP
-#include "Renderable.hpp"
+#include <glm/vec2.hpp>
+
+#include "Component.hpp"
 
 namespace gla
 {
+class CollisionRect;
+class Timer;
 class Animation;
 }
 namespace bt
 {
 
-class Pepper : public gla::Renderable
+class Pepper : public gla::Component
 {
 public:
     explicit Pepper(gla::GameObject* pOwner, int zIndex = 0);
     ~Pepper() noexcept override = default;
 
-    void SpawnPepper(glm::vec2 position, glm::vec2 direction);
+    void SpawnPepper(glm::vec2 position, glm::vec2 direction) const;
 
 protected:
-    void Render() override;
-    void FixedUpdate(float deltaTime) override;
+    void Update(float deltaTime) override;
 
 private:
-    float m_duration{};
+    static constexpr float pepperDuration{ 1.f };
+    gla::Timer* m_pTimer;
     gla::Animation* m_pAnimation{};
+    gla::CollisionRect* m_pHitbox{};
 };
 
 }  // namespace bt

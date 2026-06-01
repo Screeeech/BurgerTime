@@ -9,6 +9,7 @@
 
 namespace gla
 {
+class Timer;
 class Collider;
 class CollisionRect;
 struct Event;
@@ -27,7 +28,7 @@ public:
     [[nodiscard]] auto GetDirection() const -> glm::vec2;
 
     void Move(glm::vec2 displacement) const;
-    void OnHit(gla::Collider const& collider) const;
+    void OnDamage(gla::Collider const& collider) const;
     // void OnPepper(std::any const& eventArgs) const;
 
     int const m_playerIndex;
@@ -41,13 +42,14 @@ protected:
 
 private:
     static constexpr glm::vec2 spriteFeetOffset{ 8.f, 15.f };
+    static constexpr float hitDelay{ 3.f };
 
 
     Stage* m_pStage;
     Pepper* m_pPepper;
     gla::Animation* m_pAnimation;
     gla::CollisionRect* m_pHitBox{};
-    gla::CollisionRect* m_pHurtBox{};
+    gla::Timer* m_pHitDelayTimer{};
 
     glm::vec2 m_direction{};
     // static float constexpr m_speed{ 1.f };

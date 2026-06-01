@@ -2,7 +2,10 @@
 
 #include "Colors.hpp"
 #include "Components/Animation.hpp"
+#include "Components/Collider.hpp"
+#include "Components/CollisionRect.hpp"
 #include "Components/Sprite.hpp"
+#include "Components/Timer.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/ResourceManager.hpp"
 #include "Utils.hpp"
@@ -11,8 +14,16 @@ namespace bt
 {
 
 Pepper::Pepper(gla::GameObject* pOwner, int zIndex)
-    : Renderable(pOwner, zIndex)
+    : Component(pOwner)
+    , m_pTimer(pOwner->AddComponent<gla::Timer>())
     , m_pAnimation(pOwner->AddComponent<gla::Animation>(zIndex))
+    , m_pHitbox(pOwner->AddComponent<gla::CollisionRect>(
+          0,
+          static_cast<uint32_t>(gla::Collider::Bits::Layer1),
+          std::vector<gla::CollisionCallback>{},
+          glm::vec2{},
+          glm::vec2{ 16.f, 16.f },
+          false))
 {
     auto const spriteSheetTexture{ gla::Locator::Get<gla::ResourceManager>().LoadTexture("Textures/spritesheet.png") };
 
@@ -55,9 +66,11 @@ Pepper::Pepper(gla::GameObject* pOwner, int zIndex)
     m_pAnimation->SetAnimation("pepperDustNone"_h);
 }
 
-void Pepper::SpawnPepper(glm::vec2 position, glm::vec2 direction)
+void Pepper::SpawnPepper(glm::vec2 position, glm::vec2 direction) const
 {
-    m_duration = 1.f;
+    m_pTimer->Start(pepperDuration);
+    m_pHitbox->Enable();
+
     if (direction == glm::vec2{ 0, -1 })  // Up
     {
         m_pOwner->GetTransform().SetLocalPosition(position + glm::vec2(-8, -32));
@@ -73,29 +86,19 @@ void Pepper::SpawnPepper(glm::vec2 position, glm::vec2 direction)
         m_pOwner->GetTransform().SetLocalPosition(position + glm::vec2(-26, -18));
         m_pAnimation->SetAnimation("pepperDustLeft"_h, true);
     }
-    else // Right
+    else  // Right
     {
         m_pOwner->GetTransform().SetLocalPosition(position + glm::vec2(12, -18));
         m_pAnimation->SetAnimation("pepperDustRight"_h, true);
     }
 }
 
-void Pepper::Render()
+void Pepper::Update(float /*deltaTime*/)
 {
-    auto& renderer = gla::Locator::Get<gla::Renderer>();
-    auto pos = m_pOwner->GetWorldPosition();
-
-    renderer.SetColor(colors::Red);
-    renderer.DrawRect({ pos.x, pos.y, 16.f, 16.f });
-}
-
-void Pepper::FixedUpdate(float deltaTime)
-{
-    if (m_duration > 0.f)
+    if (m_pTimer->IsFinished())
     {
-        m_duration -= deltaTime;
-        if (m_duration <= 0.f)
-            m_pAnimation->SetAnimation("pepperDustNone"_h);
+        m_pAnimation->SetAnimation("pepperDustNone"_h);
+        m_pHitbox->Disable();
     }
 }
 

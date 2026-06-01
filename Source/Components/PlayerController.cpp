@@ -8,6 +8,7 @@
 #include "Commands/MoveCommand.hpp"
 #include "Components/Collider.hpp"
 #include "Components/CollisionRect.hpp"
+#include "Components/Timer.hpp"
 #include "GameEvents.hpp"
 #include "GameObject.hpp"
 #include "Locator.hpp"
@@ -29,17 +30,12 @@ PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, Peppe
     , m_pPepper(pepper)
     , m_pAnimation(pPlayer->GetComponent<gla::Animation>())
     , m_pHitBox(pPlayer->AddComponent<gla::CollisionRect>(
-          static_cast<uint32_t>(gla::Collider::Bits::Layer1),
-          0,
-          std::vector<gla::CollisionCallback>{ [](auto&) { std::println("Hit!"); } },
-          glm::vec2{},
-          glm::vec2{ 16.f, 32.f }))
-    , m_pHurtBox(pPlayer->AddComponent<gla::CollisionRect>(
           static_cast<uint32_t>(gla::Collider::Bits::Layer2),
           0,
-          std::vector<gla::CollisionCallback>{ std::bind_front(&PlayerController::OnHit, this) },
+          std::vector<gla::CollisionCallback>{ std::bind_front(&PlayerController::OnDamage, this) },
           glm::vec2{},
-          glm::vec2{ 16.f, 32.f }))
+          glm::vec2{ 16.f, 16.f }))
+    , m_pHitDelayTimer(pPlayer->AddComponent<gla::Timer>())
     , m_finiteStateMachine({ .animation = m_pAnimation })
 {
 }
@@ -60,9 +56,14 @@ void PlayerController::Move(glm::vec2 displacement) const
     m_pOwner->GetTransform().ChangeLocalPosition(displacement);
 }
 
-void PlayerController::OnHit(gla::Collider const& /*collider*/) const
+void PlayerController::OnDamage(gla::Collider const& /*collider*/) const
 {
-    std::println("Player hit!!");
+    if (m_pHitDelayTimer->IsFinished())
+    {
+        m_pHitDelayTimer->Start(hitDelay);
+        std::println("Player hit!");
+    }
+
     gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
 }
 

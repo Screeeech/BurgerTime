@@ -28,7 +28,7 @@ void StandingIdle::OnEnter(Context const& context)
 
     assert(context.animation != nullptr and "Animation cannot be null!");
 
-    std::println("Entered Standing Idle state");
+    //std::println("Entered Standing Idle state");
     context.animation->SetAnimation("idle"_h, true);
 
     if (context.playerController)
@@ -108,7 +108,7 @@ void Walking::OnEnter(Context const& context)
 
     previousXDirection = context.direction.x;
 
-    std::println("Entered Walking state");
+    //std::println("Entered Walking state");
     ChangeAnimation(context);
 }
 
@@ -199,7 +199,7 @@ void ClimbingIdle::OnEnter(Context const& context)
 
     previousYDirection = context.direction.y;
 
-    std::println("Entered Climbing Idle state");
+    //std::println("Entered Climbing Idle state");
 
     auto const& [direction, position, animation, stage, player, deltaTime] = context;
     assert(animation != nullptr and "Animation cannot be null!");
@@ -279,7 +279,7 @@ void Climbing::OnEnter(Context const& context)
     assert(animation != nullptr and "Animation cannot be null!");
     assert(direction.y != 0.f and "Y input direction cannot be 0 when entering climbing state");
 
-    std::println("Entered Climbing state");
+    //std::println("Entered Climbing state");
     ChangeAnimation(context);
 
     previousYDirection = direction.y;
