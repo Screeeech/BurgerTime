@@ -12,6 +12,7 @@ class Stage;
 }  // namespace bt
 namespace bt::playerstates
 {
+struct Dying;
 struct StandingIdle;
 struct Walking;
 struct ClimbingIdle;
@@ -28,7 +29,7 @@ struct Context final
     float deltaTime{};
 };
 
-using PlayerStateMachine = StateMachine<StandingIdle, Context, StandingIdle, Walking, ClimbingIdle, Climbing>;
+using PlayerStateMachine = StateMachine<StandingIdle, Context, StandingIdle, Walking, ClimbingIdle, Climbing, Dying>;
 
 struct StandingIdle final
 {
@@ -82,6 +83,16 @@ struct Climbing final
 
 private:
     void ChangeAnimation(Context const& context) const;
+};
+
+struct Dying final
+{
+    float wait{};
+    static constexpr float animationWait{ 1.8f };
+    static constexpr float totalTime{ 6.f };
+
+    void OnEnter(Context const& context);
+    void Update(PlayerStateMachine& machine, Context const& context);
 };
 
 

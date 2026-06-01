@@ -169,6 +169,23 @@ void load()
             {
                 { .colIdx = 2, .rowIdx = 1, .duration = 0.f },
             });
+        animation->AddAnimation(
+            "death"_h,
+            spriteSheet,
+            {
+                { .colIdx = 3, .rowIdx = 1, .duration = 0.5f },
+                { .colIdx = 4, .rowIdx = 1, .duration = 1.0f },
+                { .colIdx = 5, .rowIdx = 1, .duration = 0.15f },
+                { .colIdx = 6, .rowIdx = 1, .duration = 0.15f },
+            });
+        animation->AddAnimation(
+            "dying"_h,
+            spriteSheet,
+            {
+                { .colIdx = 7, .rowIdx = 1, .duration = 0.15f },
+                { .colIdx = 8, .rowIdx = 1, .duration = 0.15f },
+            });
+
 
         animation->SetAnimation("idle"_h, true);
 

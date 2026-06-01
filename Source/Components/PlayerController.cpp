@@ -56,13 +56,12 @@ void PlayerController::Move(glm::vec2 displacement) const
     m_pOwner->GetTransform().ChangeLocalPosition(displacement);
 }
 
-void PlayerController::OnDamage(gla::Collider const& /*collider*/) const
+void PlayerController::OnDamage(gla::Collider const& /*collider*/)
 {
-    if (m_pHitDelayTimer->IsFinished())
-    {
-        m_pHitDelayTimer->Start(hitDelay);
-        std::println("Player hit!");
-    }
+    m_finiteStateMachine.TransitionTo<playerstates::Dying>({ .animation = m_pAnimation });
+    m_pHitBox->Disable();
+
+    std::println("Player hit!");
 
     gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
 }

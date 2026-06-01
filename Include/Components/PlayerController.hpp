@@ -28,7 +28,7 @@ public:
     [[nodiscard]] auto GetDirection() const -> glm::vec2;
 
     void Move(glm::vec2 displacement) const;
-    void OnDamage(gla::Collider const& collider) const;
+    void OnDamage(gla::Collider const& collider);
     // void OnPepper(std::any const& eventArgs) const;
 
     int const m_playerIndex;
