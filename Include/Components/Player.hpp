@@ -42,7 +42,7 @@ private:
     MoveComponent* m_pMoveComponent;
     gla::Animation* m_pAnimation;
     gla::CollisionRect* m_pHitBox{};
-    gla::Timer* m_pHitDelayTimer{};
+    //gla::Timer* m_pTime{};
 
     playerstates::PlayerStateMachine m_finiteStateMachine;
 

@@ -11,7 +11,7 @@ class Stage;
 class MoveComponent final : public gla::Component
 {
 public:
-    explicit MoveComponent(gla::GameObject* pOwner, Stage* pStage);
+    explicit MoveComponent(gla::GameObject* pOwner, Stage* pStage, float walkModifier = 1.f, float climbModifier = 1.f);
 
     void Climb() const;
     void Walk() const;
@@ -36,10 +36,13 @@ protected:
 
 private:
     void Move(glm::vec2 displacement) const;
+
     static constexpr glm::vec2 spriteFeetOffset{ 8.f, 15.f };
 
     glm::vec2 m_direction{};
     Stage* m_pStage;
+    float m_walkModifier{};
+    float m_climbModifier{};
 };
 
 }  // namespace bt

@@ -8,6 +8,7 @@
 
 namespace gla
 {
+class Timer;
 class Animation;
 }
 namespace bt
@@ -50,7 +51,6 @@ private:
 
 struct Walking final
 {
-    int wait{};
     float previousXDirection{};
 
     void OnEnter(Context const& context);

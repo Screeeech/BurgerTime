@@ -91,7 +91,6 @@ void Climbing::Update(EnemyStateMachine& machine, Context const& context)
     assert(animation and "Animation cannot be null");
     assert(moveComponent and "MoveComponent cannot be null");
 
-    // Reached top
     // clang-format off
     if (moveComponent->IsOnGround() and
         ((moveComponent->GetDirection().y == 0) or

@@ -1,7 +1,6 @@
 #include "Components/MoveComponent.hpp"
 
 #include <algorithm>
-#include <glm/gtc/constants.hpp>
 
 #include "Components/Stage.hpp"
 #include "GameObject.hpp"
@@ -9,20 +8,22 @@
 namespace bt
 {
 
-MoveComponent::MoveComponent(gla::GameObject* pOwner, Stage* pStage)
+MoveComponent::MoveComponent(gla::GameObject* pOwner, Stage* pStage, float walkModifier, float climbModifier)
     : Component(pOwner)
     , m_pStage(pStage)
+    , m_walkModifier(walkModifier)
+    , m_climbModifier(climbModifier)
 {
 }
 
 void MoveComponent::Climb() const
 {
-    m_pOwner->GetTransform().ChangeLocalPosition(0.f, m_direction.y);
+    m_pOwner->GetTransform().ChangeLocalPosition(0.f, m_direction.y * m_climbModifier);
 }
 
 void MoveComponent::Walk() const
 {
-    m_pOwner->GetTransform().ChangeLocalPosition(m_direction.x, 0.f);
+    m_pOwner->GetTransform().ChangeLocalPosition(m_direction.x * m_walkModifier, 0.f);
 }
 
 void MoveComponent::Move(glm::vec2 displacement) const

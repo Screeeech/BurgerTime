@@ -290,7 +290,6 @@ void Climbing::Update(PlayerStateMachine& machine, Context& context)
         remainingPepperDuration = std::max(remainingPepperDuration, 0.f);
     }
 
-    // Reached top
     // clang-format off
     if (moveComponent->IsOnGround() and
         ((direction.y == 0) or
@@ -313,14 +312,6 @@ void Climbing::Update(PlayerStateMachine& machine, Context& context)
     ChangeAnimation(context);
 
     previousYDirection = direction.y;
-
-    // This is to make the moving happen every 3 frames
-    if (wait > 0)
-    {
-        --wait;
-        return;
-    }
-    wait = 1;
 
     moveComponent->Climb();
 }

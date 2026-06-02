@@ -17,7 +17,7 @@ namespace bt
 Enemy::Enemy(gla::GameObject* pOwner, Stage* pStage, int playerIndex)
     : Component(pOwner)
     , m_playerIndex(playerIndex)
-    , m_pMoveComponent(pOwner->AddComponent<MoveComponent>(pStage))
+    , m_pMoveComponent(pOwner->AddComponent<MoveComponent>(pStage, 0.6f, 0.5f))
     , m_pTimer(pOwner->AddComponent<gla::Timer>())
     , m_pAnimation(pOwner->GetComponent<gla::Animation>())
     , m_pHitBox(pOwner->AddComponent<gla::CollisionRect>(
