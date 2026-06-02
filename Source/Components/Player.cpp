@@ -8,6 +8,7 @@
 #include "Commands/MoveCommand.hpp"
 #include "Components/Collider.hpp"
 #include "Components/CollisionRect.hpp"
+#include "Components/MoveComponent.hpp"
 #include "Components/Timer.hpp"
 #include "GameEvents.hpp"
 #include "GameObject.hpp"
@@ -16,18 +17,17 @@
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/ISound.hpp"
-#include "Services/Renderer.hpp"
 #include "Utils.hpp"
 
 namespace bt
 {
 class Font;
 
-Player::Player(gla::GameObject* pPlayer, Stage* stage, Pepper* pepper, int playerIndex)
-    : Renderable(pPlayer, 10)
+Player::Player(gla::GameObject* pPlayer, Stage* pStage, Pepper* pPepper, int playerIndex)
+    : Component(pPlayer)
     , m_playerIndex(playerIndex)
-    , m_pStage(stage)
-    , m_pPepper(pepper)
+    , m_pPepper(pPepper)
+    , m_pMoveComponent(pPlayer->AddComponent<MoveComponent>(pStage))
     , m_pAnimation(pPlayer->GetComponent<gla::Animation>())
     , m_pHitBox(pPlayer->AddComponent<gla::CollisionRect>(
           static_cast<uint32_t>(gla::Collider::Bits::Layer2),
@@ -40,22 +40,6 @@ Player::Player(gla::GameObject* pPlayer, Stage* stage, Pepper* pepper, int playe
 {
 }
 
-void Player::SetDirection(glm::vec2 direction)
-{
-    m_direction.x = std::clamp(m_direction.x + direction.x, -1.f, 1.f);
-    m_direction.y = std::clamp(m_direction.y + direction.y, -1.f, 1.f);
-}
-
-auto Player::GetDirection() const -> glm::vec2
-{
-    return m_direction;
-}
-
-void Player::Move(glm::vec2 displacement) const
-{
-    m_pOwner->GetTransform().ChangeLocalPosition(displacement);
-}
-
 void Player::OnDamage(gla::Collider const& /*collider*/)
 {
     m_finiteStateMachine.TransitionTo<playerstates::Dying>({ .animation = m_pAnimation });
@@ -66,43 +50,19 @@ void Player::OnDamage(gla::Collider const& /*collider*/)
     gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
 }
 
-void Player::Render()
-{
-    glm::vec2 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
-    glm::vec2 const pos = worldPos + spriteFeetOffset;
-
-    auto const& renderer = gla::Locator::Get<gla::Renderer>();
-
-    renderer.SetColor(colors::Red);
-    renderer.DrawRect({ pos.x, pos.y, 1.f, 1.f });
-
-    renderer.SetColor(colors::Blue);
-    renderer.DrawRect({ pos.x + (m_direction.x * 4), pos.y, 1.f, 1.f });
-}
-
 void Player::FixedUpdate(float deltaTime)
 {
-    glm::vec2 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
-    glm::vec2 const pos = worldPos + spriteFeetOffset;
-
     playerstates::Context context{
-        .direction = m_direction,
-        .position = pos,
+        .direction = m_pMoveComponent->GetDirection(),
         .animation = m_pAnimation,
-        .stage = m_pStage,
-        .playerController = this,
+        .moveComponent = m_pMoveComponent,
         .deltaTime = deltaTime,
     };
     m_finiteStateMachine.Update(context);
-
-    // Reset direction for the next frame
-    m_direction = glm::vec2(0.0f);
 }
 
 void Player::OnActivate()
 {
-    Renderable::OnActivate();
-
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
     inputManager.BindAction<MoveCommand>("moveUp"_h, m_playerIndex, m_pOwner, glm::vec2{ 0, -1 });
     inputManager.BindAction<MoveCommand>("moveLeft"_h, m_playerIndex, m_pOwner, glm::vec2{ -1, 0 });
@@ -111,18 +71,20 @@ void Player::OnActivate()
     inputManager.BindAction<gla::CallbackCommand>(
         "attack"_h,
         m_playerIndex,
-        [this]
+        [this] -> void
         {
             std::println("Attacking!");
-            gla::Locator::Get<gla::EventManager>().InvokeEvent(
-                PepperEvent("pepper"_h, m_playerIndex, GetDirection(), m_pOwner->GetWorldPosition() + spriteFeetOffset, m_pPepper));
+            gla::Locator::Get<gla::EventManager>().InvokeEvent(PepperEvent(
+                "pepper"_h,
+                m_playerIndex,
+                m_pMoveComponent->GetDirection(),
+                m_pMoveComponent->GetSpritePosition(),
+                m_pPepper));
         });
 }
 
 void Player::OnDeactivate()
 {
-    Renderable::OnDeactivate();
-
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
     inputManager.UnbindAction("moveUp"_h, m_playerIndex);
     inputManager.UnbindAction("moveLeft"_h, m_playerIndex);

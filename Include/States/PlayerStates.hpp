@@ -12,7 +12,7 @@ class Animation;
 }
 namespace bt
 {
-class Player;
+class MoveComponent;
 class Stage;
 }  // namespace bt
 
@@ -28,14 +28,12 @@ struct Climbing;
 struct Context final
 {
     glm::vec2 direction{};
-    glm::vec2 position{};
     gla::Animation* animation{};
-    Stage* stage{};
-    Player* playerController{};
+    MoveComponent* moveComponent{};
     float deltaTime{};
 };
 
-using PlayerStateMachine = StateMachine<StandingIdle, Context, StandingIdle, Walking, ClimbingIdle, Climbing, Dying>;
+using PlayerStateMachine = StateMachine<Context, StandingIdle, Walking, ClimbingIdle, Climbing, Dying>;
 
 struct StandingIdle final
 {

@@ -11,18 +11,17 @@
 namespace bt
 {
 
-enum class TileType : std::uint8_t
-{
-    Null = 0,
-    Platform = 1,
-    Ladder = 2,
-    LadderPlatform = 3,
-};
-
 class Stage : public gla::Renderable
 {
-
 public:
+    enum class TileType : std::uint8_t
+    {
+        Null = 0,
+        Platform = 1,
+        Ladder = 2,
+        LadderPlatform = 3,
+    };
+
     explicit Stage(gla::GameObject* pOwner, std::string const& stageDataPath);
     ~Stage() noexcept override = default;
 
@@ -33,11 +32,6 @@ public:
 
     void PrintTileType(glm::vec2 position) const;
 
-    [[nodiscard]] auto IsOnGround(glm::vec2 position) const -> bool;
-    [[nodiscard]] auto CanClimbUp(glm::vec2 position) const -> bool;
-    [[nodiscard]] auto CanClimbDown(glm::vec2 position) const -> bool;
-    [[nodiscard]] auto CanWalk(glm::vec2 position, glm::vec2 direction) const -> bool;
-
     [[nodiscard]] auto GetTileAtPosition(glm::vec2 globalPosition) const -> TileType;
 
     static constexpr int zIndex{ 1 };
@@ -47,6 +41,7 @@ public:
     static constexpr float stageOffset{ 32.f };
     static constexpr float tileWidth{ 24.f };
     static constexpr float tileHeight{ 16.f };
+
 protected:
     void Render() override;
 

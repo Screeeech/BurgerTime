@@ -5,6 +5,7 @@
 #include "Commands/MoveCommand.hpp"
 #include "Components/Animation.hpp"
 #include "Components/CollisionRect.hpp"
+#include "Components/MoveComponent.hpp"
 #include "Components/Timer.hpp"
 #include "GameObject.hpp"
 #include "Services/InputManager.hpp"
@@ -16,7 +17,7 @@ namespace bt
 Enemy::Enemy(gla::GameObject* pOwner, Stage* pStage, int playerIndex)
     : Component(pOwner)
     , m_playerIndex(playerIndex)
-    , m_pStage(pStage)
+    , m_pMoveComponent(pOwner->AddComponent<MoveComponent>(pStage))
     , m_pTimer(pOwner->AddComponent<gla::Timer>())
     , m_pAnimation(pOwner->GetComponent<gla::Animation>())
     , m_pHitBox(pOwner->AddComponent<gla::CollisionRect>(
@@ -31,18 +32,11 @@ Enemy::Enemy(gla::GameObject* pOwner, Stage* pStage, int playerIndex)
 }
 void Enemy::FixedUpdate(float /*fixedDeltaTime*/)
 {
-    glm::vec2 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
-    glm::vec2 const pos = worldPos + spriteFeetOffset;
-
     enemystates::Context context{
-        .direction = glm::vec2{},
-        .position = pos,
         .animation = m_pAnimation,
         .timer = m_pTimer,
-        .enemy = this,
-        .stage = m_pStage,
+        .moveComponent = m_pMoveComponent,
     };
-
     m_stateMachine.Update(context);
 }
 
@@ -86,6 +80,12 @@ void Enemy::DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Tex
     auto& spriteSheet = animation.AddSpriteSheet(spriteSheetTexture, cols, rows);
 
     animation.AddAnimation(
+        "idle"_h,
+        spriteSheet,
+        {
+            { .colIdx = 0, .rowIdx = 2 },
+        });
+    animation.AddAnimation(
         "walkUp"_h,
         spriteSheet,
         {
@@ -121,8 +121,7 @@ void Enemy::DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Tex
             { .colIdx = 5, .rowIdx = 3, .duration = 12.f / 60.f, .flipX = true },
         });
 
-    animation.SetAnimation("walkLeft"_h, true);
-
+    animation.SetAnimation("idle"_h, true);
 }
 
 

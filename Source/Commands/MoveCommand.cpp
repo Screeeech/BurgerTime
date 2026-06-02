@@ -1,5 +1,6 @@
 #include "Commands/MoveCommand.hpp"
 
+#include "Components/MoveComponent.hpp"
 #include "Components/Player.hpp"
 #include "GameObject.hpp"
 
@@ -19,8 +20,8 @@ MoveCommand::MoveCommand(gla::GameObject* pCaller, float x, float y)
 
 void MoveCommand::Execute()
 {
-    auto* playerController = m_pCaller->GetComponent<Player>();
-    playerController->SetDirection(m_direction);
+    if (auto* moveComponent = m_pCaller->GetComponent<MoveComponent>())
+        moveComponent->SetDirection(m_direction);
 }
 
 }  // namespace bt

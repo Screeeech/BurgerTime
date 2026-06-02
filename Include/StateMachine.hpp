@@ -17,7 +17,7 @@ struct PackIsUnique : std::true_type
 {
 };
 template<typename T, typename... Rest>
-struct PackIsUnique<T, Rest...> : std::bool_constant<(not std::is_same_v<T, Rest> && ...) && PackIsUnique<Rest...>::value>
+struct PackIsUnique<T, Rest...> : std::bool_constant<(not std::is_same_v<T, Rest> and ...) and PackIsUnique<Rest...>::value>
 {
 };
 
@@ -36,16 +36,15 @@ concept HasOnExit = requires(T state, Context context) {
     { state.OnExit(context) } -> std::same_as<void>;
 };
 
-template<typename InitialState, typename Context, typename... States>
+template<typename Context, typename... States>
 class StateMachine final
 {
-    static_assert((IsValidState<States, StateMachine, Context> && ...), "Every state should have a valid Update function");
+    static_assert((IsValidState<States, StateMachine, Context> and ...), "Every state should have a valid Update function");
     static_assert(PackIsUnique<States...>::value, "Duplicate states are not allowed");
-    static_assert(IsInPack<InitialState, States...>, "Initial state must be a listed possible state");
 
 public:
     explicit StateMachine(Context const& context = {})
-        : m_currentState(InitialState{})
+        : m_currentState(std::tuple_element_t<0, std::tuple<States...>>{})
     {
         CallOnEnter(context);
     }

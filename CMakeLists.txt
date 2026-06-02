@@ -26,6 +26,7 @@ set(SOURCE_FILES
     "Source/Commands/MoveCommand.cpp"
     "Source/Components/Player.cpp"
     "Source/Components/Stage.cpp"
+    "Source/Components/MoveComponent.cpp"
     "Source/Components/Pepper.cpp"
     "Source/Components/Enemy.cpp"
     "Source/AchievementManager.cpp"

@@ -12,33 +12,41 @@ class Animation;
 
 namespace bt
 {
+class MoveComponent;
 class Enemy;
 class Stage;
 
 namespace enemystates
 {
 
+struct StandingIdle;
 struct Walking;
 struct Climbing;
+struct ClimbingIdle;
 struct StunnedWalking;
 struct StunnedClimbing;
 struct Dying;
 
 struct Context final
 {
-    glm::vec2 direction{};
-    glm::vec2 position{};
     gla::Animation* animation{};
     gla::Timer* timer{};
-    Enemy* enemy{};
-    Stage* stage{};
+    //Enemy* enemy{};
+    MoveComponent* moveComponent{};
 };
 
-using EnemyStateMachine = StateMachine<Walking, Context, Walking, Climbing, Dying, StunnedWalking, StunnedClimbing>;
+using EnemyStateMachine = StateMachine<Context, StandingIdle, Walking, Climbing, ClimbingIdle, Dying, StunnedWalking, StunnedClimbing>;
+
+struct StandingIdle final
+{
+    static void OnEnter(Context const& context);
+    static void Update(EnemyStateMachine& machine, Context const& context);
+    // void OnExit(Context const& context);
+};
 
 struct Walking final
 {
-    static void OnEnter(Context const& context);
+    //static void OnEnter(Context const& context);
     static void Update(EnemyStateMachine& machine, Context const& context);
     // void OnExit(Context const& context);
 };
@@ -46,6 +54,12 @@ struct Walking final
 struct Climbing final
 {
     static void OnEnter(Context const& context);
+    static void Update(EnemyStateMachine& machine, Context const& context);
+};
+
+struct ClimbingIdle final
+{
+    //static void OnEnter(Context const& context);
     static void Update(EnemyStateMachine& machine, Context const& context);
 };
 

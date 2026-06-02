@@ -19,7 +19,7 @@ class Stage;
 class Enemy final : public gla::Component
 {
 public:
-    explicit Enemy(gla::GameObject* pOwner, Stage* pStage, int playerIndex = 1);
+    explicit Enemy(gla::GameObject* pOwner, Stage* pStage, int playerIndex = 2);
 
 protected:
     void FixedUpdate(float fixedDeltaTime) override;
@@ -31,7 +31,7 @@ private:
     static constexpr glm::vec2 spriteFeetOffset{ 8.f, 15.f };
     int m_playerIndex;
 
-    Stage* m_pStage;
+    MoveComponent* m_pMoveComponent;
     gla::Timer* m_pTimer;
     gla::Animation* m_pAnimation;
     gla::CollisionRect* m_pHitBox;

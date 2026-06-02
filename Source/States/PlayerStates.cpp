@@ -1,11 +1,13 @@
 #include "States/PlayerStates.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <glm/gtc/constants.hpp>
 #include <print>
 
 #include "Colors.hpp"
 #include "Components/Animation.hpp"
+#include "Components/MoveComponent.hpp"
 #include "Components/Pepper.hpp"
 #include "Components/Player.hpp"
 #include "Components/Stage.hpp"
@@ -22,49 +24,45 @@ static float remainingPepperDuration{};
 // ==================== STANDING IDLE ====================
 void StandingIdle::OnEnter(Context const& context)
 {
+    auto const& [direction, animation, moveComponent, deltaTime] = context;
+
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("pepper"_h, this, &StandingIdle::OnPepper);
 
-    previousXDirection = context.direction.x;
+    previousXDirection = direction.x;
 
-    assert(context.animation != nullptr and "Animation cannot be null!");
+    assert(animation != nullptr and "Animation cannot be null!");
 
     // std::println("Entered Standing Idle state");
-    context.animation->SetAnimation("idle"_h, true);
+    animation->SetAnimation("idle"_h, true);
 
-    if (context.playerController)
-    {
-        auto const yOffsetIntoTile = static_cast<int>(context.position.y - Stage::stageOffset) % static_cast<int>(Stage::tileHeight);
-        auto const bump = static_cast<float>(13 - yOffsetIntoTile);
-        context.playerController->Move({ 0.f, bump });
-    }
+    if (moveComponent)
+        moveComponent->LockOntoGround();
 }
 
 void StandingIdle::Update(PlayerStateMachine& machine, Context const& context) const
 {
-    auto const& [direction, position, animation, stage, player, deltaTime] = context;
-    assert(stage != nullptr and "Stage cannot be null!");
+    auto const& [direction, animation, moveComponent, deltaTime] = context;
     assert(animation != nullptr and "Animation cannot be null");
 
     if (remainingPepperDuration > 0.f)
     {
         remainingPepperDuration -= deltaTime;
-        if (remainingPepperDuration <= 0.f)
-            remainingPepperDuration = 0.f;
+        remainingPepperDuration = std::max(remainingPepperDuration, 0.f);
         ChangeAnimation(context);
     }
 
-    if (direction.x != 0.f and stage->CanWalk(position, direction))
+    if (direction.x != 0.f and moveComponent->CanWalk())
     {
         machine.TransitionTo<Walking>(context);
         return;
     }
-    if (direction.y > 0.f and stage->CanClimbDown(position))
+    if (direction.y > 0.f and moveComponent->CanClimbDown())
     {
         machine.TransitionTo<Walking>(context);
         return;
     }
-    if (direction.y < 0.f and stage->CanClimbUp(position))
+    if (direction.y < 0.f and moveComponent->CanClimbUp())
     {
         machine.TransitionTo<Climbing>(context);
         return;
@@ -115,7 +113,7 @@ void Walking::OnEnter(Context const& context)
 
 void Walking::Update(PlayerStateMachine& machine, Context& context)
 {
-    auto& [direction, position, animation, stage, player, deltaTime] = context;
+    auto& [direction, animation, moveComponent, deltaTime] = context;
     assert(animation != nullptr and "Animation cannot be null!");
 
     if (remainingPepperDuration > 0.f)
@@ -126,14 +124,14 @@ void Walking::Update(PlayerStateMachine& machine, Context& context)
     }
 
 
-    if (direction.x == 0.f or not stage->CanWalk(position, direction))
+    if (direction.x == 0.f or not moveComponent->CanWalk())
     {
         auto newContext = context;
         newContext.direction.x = previousXDirection;
         machine.TransitionTo<StandingIdle>(newContext);
         return;
     }
-    if ((direction.y < 0.f and stage->CanClimbUp(position)) or (direction.y > 0.f and stage->CanClimbDown(position)))
+    if ((direction.y < 0.f and moveComponent->CanClimbUp()) or (direction.y > 0.f and moveComponent->CanClimbDown()))
     {
         machine.TransitionTo<Climbing>(context);
         return;
@@ -143,15 +141,7 @@ void Walking::Update(PlayerStateMachine& machine, Context& context)
 
     ChangeAnimation(context);
 
-    // Walk every 2 frames
-    // if (wait > 0)
-    //{
-    //    --wait;
-    //    return;
-    //}
-    // wait = 1;
-
-    player->Move({ direction.x, 0.f });
+    moveComponent->Walk();
 }
 
 void Walking::OnExit(Context const& /*context*/)
@@ -162,7 +152,7 @@ void Walking::OnExit(Context const& /*context*/)
 
 void Walking::OnPepper(std::any const& eventArgs)
 {
-    [[maybe_unused]] auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
+    auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, pepperArgs.inputDirection);
     remainingPepperDuration = 1.f;
@@ -202,7 +192,7 @@ void ClimbingIdle::OnEnter(Context const& context)
 
     // std::println("Entered Climbing Idle state");
 
-    auto const& [direction, position, animation, stage, player, deltaTime] = context;
+    auto const& [direction, animation, moveComponent, deltaTime] = context;
     assert(animation != nullptr and "Animation cannot be null!");
     assert(direction.y != 0 and "Previous direction cannot be 0 when entering climbing idle state");
 
@@ -211,7 +201,7 @@ void ClimbingIdle::OnEnter(Context const& context)
 
 void ClimbingIdle::Update(PlayerStateMachine& machine, Context& context) const
 {
-    auto const& [direction, position, animation, stage, player, deltaTime] = context;
+    auto const& [direction, animation, moveComponent, deltaTime] = context;
 
     if (remainingPepperDuration > 0.f)
     {
@@ -276,7 +266,7 @@ void Climbing::OnEnter(Context const& context)
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("pepper"_h, this, &Climbing::OnPepper);
 
-    auto& [direction, position, animation, stage, player, deltaTime] = context;
+    auto& [direction, animation, moveComponent, deltaTime] = context;
     assert(animation != nullptr and "Animation cannot be null!");
     assert(direction.y != 0.f and "Y input direction cannot be 0 when entering climbing state");
 
@@ -286,34 +276,31 @@ void Climbing::OnEnter(Context const& context)
     previousYDirection = direction.y;
 
     // Lock the player onto a ladder when climbing
-    auto const xOffsetIntoTile = static_cast<int>(position.x - Stage::stageOffset) % static_cast<int>(Stage::tileWidth);
-    auto const bump = static_cast<float>(7 - xOffsetIntoTile);
-    player->Move({ bump, 0.f });
+    moveComponent->LockOntoLadder();
 }
 
 void Climbing::Update(PlayerStateMachine& machine, Context& context)
 {
-    auto& [direction, position, animation, stage, player, deltaTime] = context;
-    assert(stage != nullptr and "Stage cannot be null!");
+    auto& [direction, animation, moveComponent, deltaTime] = context;
     assert(animation != nullptr and "Animation cannot be null!");
 
     if (remainingPepperDuration > 0.f)
     {
         remainingPepperDuration -= deltaTime;
-        if (remainingPepperDuration <= 0.f)
-            remainingPepperDuration = 0.f;
+        remainingPepperDuration = std::max(remainingPepperDuration, 0.f);
     }
 
-    if (stage->IsOnGround(position))
+    // Reached top
+    // clang-format off
+    if (moveComponent->IsOnGround() and
+        ((direction.y == 0) or
+        (direction.y < 0 and not moveComponent->CanClimbUp()) or
+        (direction.y > 0 and not moveComponent->CanClimbDown())))
     {
-        // Reached top
-        if ((direction.y == 0) or (direction.y < 0 and not stage->CanClimbUp(position)) or
-            (direction.y > 0 and not stage->CanClimbDown(position)))
-        {
-            machine.TransitionTo<StandingIdle>(context);
-            return;
-        }
+        machine.TransitionTo<StandingIdle>(context);
+        return;
     }
+    // clang-format on
 
     if (direction.y == 0)
     {
@@ -335,7 +322,7 @@ void Climbing::Update(PlayerStateMachine& machine, Context& context)
     }
     wait = 1;
 
-    player->Move({ 0.f, direction.y });
+    moveComponent->Climb();
 }
 
 void Climbing::OnExit(Context const& /*context*/)
