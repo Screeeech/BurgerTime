@@ -65,12 +65,20 @@ public:
     template<typename NewState>
     void TransitionTo(Context context = {})
     {
+        static_assert(IsInPack<NewState, States...> and "NewState must be a valid state of this State Machine");
         // Find a way to model all valid states at compile time
 
         CallOnExit(context);
         // What is this syntax C++??
         m_currentState.template emplace<NewState>();
         CallOnEnter(context);
+    }
+
+    template<typename State>
+    auto IsActive() -> bool
+    {
+        static_assert(IsInPack<State, States...> and "State must be a valid state of this State Machine");
+        return std::holds_alternative<State>(m_currentState);
     }
 
 private:

@@ -30,6 +30,7 @@ set(SOURCE_FILES
     "Source/Components/Enemy.cpp"
     "Source/AchievementManager.cpp"
     "Source/States/PlayerStates.cpp"
+    "Source/States/EnemyStates.cpp"
 )
 
 add_executable(${GAME_TARGET} ${SOURCE_FILES})

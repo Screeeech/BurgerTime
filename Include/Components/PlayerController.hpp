@@ -3,9 +3,10 @@
 
 #include <glm/vec3.hpp>
 
-#include "Component.hpp"
+#include "Components/Animation.hpp"
 #include "StateMachine.hpp"
 #include "States/PlayerStates.hpp"
+#include "Renderable.hpp"
 
 namespace gla
 {
@@ -55,6 +56,9 @@ private:
     // static float constexpr m_speed{ 1.f };
 
     playerstates::PlayerStateMachine m_finiteStateMachine;
+
+public:
+    static void DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
 };
 
 }  // namespace bt

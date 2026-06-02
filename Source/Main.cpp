@@ -39,7 +39,6 @@ void load()
 {
     auto& scene = gla::Locator::Get<gla::SceneManager>().CreateScene();
 
-    // Getting value without checking for nullopt cause if there's no service here I want the program to fail
     auto& resourceManager{ gla::Locator::Get<gla::ResourceManager>() };
     auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
     // auto& eventManager{ gla::Locator::Get<gla::EventManager>() };
@@ -98,96 +97,7 @@ void load()
         auto* pepperComponent{ pepperObject->AddComponent<bt::Pepper>(3) };
 
         auto* player0{ scene.GetRoot()->CreateChild(100, 174, "Player 0") };
-
-        // Animations
-        auto* animation{ player0->AddComponent<gla::Animation>(2) };
-
-        auto const size{ spriteSheetTexture->GetSize() };
-        auto const cols{ static_cast<int>(size.x / 16.f) };
-        auto const rows{ static_cast<int>(size.y / 16.f) };
-        auto& spriteSheet{ animation->AddSpriteSheet(spriteSheetTexture, cols, rows) };
-
-        animation->AddAnimation(
-            "idle"_h,
-            spriteSheet,
-            {
-                { .colIdx = 1, .rowIdx = 0 },
-            });
-        animation->AddAnimation(
-            "walkDown"_h,
-            spriteSheet,
-            {
-                { .colIdx = 0, .rowIdx = 0, .duration = 4.f / 60.f },
-                { .colIdx = 1, .rowIdx = 0, .duration = 4.f / 60.f },
-                { .colIdx = 2, .rowIdx = 0, .duration = 4.f / 60.f },
-            });
-        animation->AddAnimation(
-            "walkUp"_h,
-            spriteSheet,
-            {
-                { .colIdx = 6, .rowIdx = 0, .duration = 4.f / 60.f },
-                { .colIdx = 7, .rowIdx = 0, .duration = 4.f / 60.f },
-                { .colIdx = 8, .rowIdx = 0, .duration = 4.f / 60.f },
-            });
-        animation->AddAnimation(
-            "walkLeft"_h,
-            spriteSheet,
-            {
-                { .colIdx = 3, .rowIdx = 0, .duration = 4.f / 60.f },
-                { .colIdx = 4, .rowIdx = 0, .duration = 4.f / 60.f },
-                { .colIdx = 5, .rowIdx = 0, .duration = 4.f / 60.f },
-            });
-        animation->AddAnimation(
-            "walkRight"_h,
-            spriteSheet,
-            {
-                { .colIdx = 3, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
-                { .colIdx = 4, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
-                { .colIdx = 5, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
-            });
-        animation->AddAnimation(
-            "pepperDown"_h,
-            spriteSheet,
-            {
-                { .colIdx = 0, .rowIdx = 1, .duration = 0.f },
-            });
-        animation->AddAnimation(
-            "pepperLeft"_h,
-            spriteSheet,
-            {
-                { .colIdx = 1, .rowIdx = 1, .duration = 0.f },
-            });
-        animation->AddAnimation(
-            "pepperRight"_h,
-            spriteSheet,
-            {
-                { .colIdx = 1, .rowIdx = 1, .duration = 0.f, .flipX = true },
-            });
-        animation->AddAnimation(
-            "pepperUp"_h,
-            spriteSheet,
-            {
-                { .colIdx = 2, .rowIdx = 1, .duration = 0.f },
-            });
-        animation->AddAnimation(
-            "death"_h,
-            spriteSheet,
-            {
-                { .colIdx = 3, .rowIdx = 1, .duration = 0.5f },
-                { .colIdx = 4, .rowIdx = 1, .duration = 1.0f },
-                { .colIdx = 5, .rowIdx = 1, .duration = 0.15f },
-                { .colIdx = 6, .rowIdx = 1, .duration = 0.15f },
-            });
-        animation->AddAnimation(
-            "dying"_h,
-            spriteSheet,
-            {
-                { .colIdx = 7, .rowIdx = 1, .duration = 0.15f },
-                { .colIdx = 8, .rowIdx = 1, .duration = 0.15f },
-            });
-
-
-        animation->SetAnimation("idle"_h, true);
+        bt::PlayerController::DefineAnimations(*player0->AddComponent<gla::Animation>(2), spriteSheetTexture);
 
         player0->AddComponent<bt::PlayerController>(stage, pepperComponent, 0);
 
@@ -203,45 +113,13 @@ void load()
     // Mr Hotdog
     {
         auto* enemy = scene.GetRoot()->CreateChild(50, 174, "Mr. Hotdog");
+        bt::Enemy::DefineAnimations(*enemy->AddComponent<gla::Animation>(2), spriteSheetTexture);
+        enemy->AddComponent<bt::Enemy>(stage);
 
-        [[maybe_unused]] auto* enemyComponent = enemy->AddComponent<bt::Enemy>();
-
-        auto* animation = enemy->AddComponent<gla::Animation>(2);
-        auto const size{ spriteSheetTexture->GetSize() };
-        auto const cols{ static_cast<int>(size.x / 16.f) };
-        auto const rows{ static_cast<int>(size.y / 16.f) };
-        auto& spriteSheet = animation->AddSpriteSheet(spriteSheetTexture, cols, rows);
-
-        animation->AddAnimation(
-            "walkUp"_h,
-            spriteSheet,
-            {
-                { .colIdx = 4, .rowIdx = 2, .duration = 3.f / 60.f },
-                { .colIdx = 5, .rowIdx = 2, .duration = 3.f / 60.f },
-            });
-        animation->AddAnimation(
-            "walkDown"_h,
-            spriteSheet,
-            {
-                { .colIdx = 0, .rowIdx = 2, .duration = 3.f / 60.f },
-                { .colIdx = 1, .rowIdx = 2, .duration = 3.f / 60.f },
-            });
-        animation->AddAnimation(
-            "walkLeft"_h,
-            spriteSheet,
-            {
-                { .colIdx = 2, .rowIdx = 2, .duration = 3.f / 60.f },
-                { .colIdx = 3, .rowIdx = 2, .duration = 3.f / 60.f },
-            });
-        animation->AddAnimation(
-            "walkRight"_h,
-            spriteSheet,
-            {
-                { .colIdx = 2, .rowIdx = 2, .duration = 3.f / 60.f, .flipX = true },
-                { .colIdx = 3, .rowIdx = 2, .duration = 3.f / 60.f, .flipX = true },
-            });
-
-        animation->SetAnimation("walkLeft"_h, true);
+        inputManager.RegisterInput(SDL_SCANCODE_UP, gla::Input::Type::held, "moveUp"_h, 2);
+        inputManager.RegisterInput(SDL_SCANCODE_LEFT, gla::Input::Type::held, "moveLeft"_h, 2);
+        inputManager.RegisterInput(SDL_SCANCODE_DOWN, gla::Input::Type::held, "moveDown"_h, 2);
+        inputManager.RegisterInput(SDL_SCANCODE_RIGHT, gla::Input::Type::held, "moveRight"_h, 2);
     }
 
 

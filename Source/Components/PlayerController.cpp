@@ -129,9 +129,96 @@ void PlayerController::OnDeactivate()
     inputManager.UnbindAction("moveDown"_h, m_playerIndex);
     inputManager.UnbindAction("moveRight"_h, m_playerIndex);
     inputManager.UnbindAction("damage"_h, m_playerIndex);
-    inputManager.UnbindAction("attack"_h, m_playerIndex);
 
     gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
+}
+void PlayerController::DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
+{
+    auto const size{ spriteSheetTexture->GetSize() };
+    auto const cols{ static_cast<int>(size.x / 16.f) };
+    auto const rows{ static_cast<int>(size.y / 16.f) };
+    auto& spriteSheet{ animation.AddSpriteSheet(spriteSheetTexture, cols, rows) };
+
+    animation.AddAnimation(
+        "idle"_h,
+        spriteSheet,
+        {
+            { .colIdx = 1, .rowIdx = 0 },
+        });
+    animation.AddAnimation(
+        "walkDown"_h,
+        spriteSheet,
+        {
+            { .colIdx = 0, .rowIdx = 0, .duration = 4.f / 60.f },
+            { .colIdx = 1, .rowIdx = 0, .duration = 4.f / 60.f },
+            { .colIdx = 2, .rowIdx = 0, .duration = 4.f / 60.f },
+        });
+    animation.AddAnimation(
+        "walkUp"_h,
+        spriteSheet,
+        {
+            { .colIdx = 6, .rowIdx = 0, .duration = 4.f / 60.f },
+            { .colIdx = 7, .rowIdx = 0, .duration = 4.f / 60.f },
+            { .colIdx = 8, .rowIdx = 0, .duration = 4.f / 60.f },
+        });
+    animation.AddAnimation(
+        "walkLeft"_h,
+        spriteSheet,
+        {
+            { .colIdx = 3, .rowIdx = 0, .duration = 4.f / 60.f },
+            { .colIdx = 4, .rowIdx = 0, .duration = 4.f / 60.f },
+            { .colIdx = 5, .rowIdx = 0, .duration = 4.f / 60.f },
+        });
+    animation.AddAnimation(
+        "walkRight"_h,
+        spriteSheet,
+        {
+            { .colIdx = 3, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
+            { .colIdx = 4, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
+            { .colIdx = 5, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
+        });
+    animation.AddAnimation(
+        "pepperDown"_h,
+        spriteSheet,
+        {
+            { .colIdx = 0, .rowIdx = 1, .duration = 0.f },
+        });
+    animation.AddAnimation(
+        "pepperLeft"_h,
+        spriteSheet,
+        {
+            { .colIdx = 1, .rowIdx = 1, .duration = 0.f },
+        });
+    animation.AddAnimation(
+        "pepperRight"_h,
+        spriteSheet,
+        {
+            { .colIdx = 1, .rowIdx = 1, .duration = 0.f, .flipX = true },
+        });
+    animation.AddAnimation(
+        "pepperUp"_h,
+        spriteSheet,
+        {
+            { .colIdx = 2, .rowIdx = 1, .duration = 0.f },
+        });
+    animation.AddAnimation(
+        "death"_h,
+        spriteSheet,
+        {
+            { .colIdx = 3, .rowIdx = 1, .duration = 0.5f },
+            { .colIdx = 4, .rowIdx = 1, .duration = 1.0f },
+            { .colIdx = 5, .rowIdx = 1, .duration = 0.15f },
+            { .colIdx = 6, .rowIdx = 1, .duration = 0.15f },
+        });
+    animation.AddAnimation(
+        "dying"_h,
+        spriteSheet,
+        {
+            { .colIdx = 7, .rowIdx = 1, .duration = 0.15f },
+            { .colIdx = 8, .rowIdx = 1, .duration = 0.15f },
+        });
+
+    animation.SetAnimation("idle"_h, true);
 }
 
 

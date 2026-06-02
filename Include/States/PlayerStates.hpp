@@ -1,15 +1,21 @@
 #ifndef BURGERTIME_PLAYERSTATES_HPP
 #define BURGERTIME_PLAYERSTATES_HPP
+#include <any>
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-#include "Components/Animation.hpp"
 #include "StateMachine.hpp"
 
+namespace gla
+{
+class Animation;
+}
 namespace bt
 {
 class PlayerController;
 class Stage;
 }  // namespace bt
+
 namespace bt::playerstates
 {
 struct Dying;
@@ -91,7 +97,7 @@ struct Dying final
     static constexpr float animationWait{ 1.8f };
     static constexpr float totalTime{ 6.f };
 
-    void OnEnter(Context const& context);
+    static void OnEnter(Context const& context);
     void Update(PlayerStateMachine& machine, Context const& context);
 };
 

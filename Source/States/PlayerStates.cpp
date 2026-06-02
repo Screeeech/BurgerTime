@@ -5,6 +5,7 @@
 #include <print>
 
 #include "Colors.hpp"
+#include "Components/Animation.hpp"
 #include "Components/Pepper.hpp"
 #include "Components/PlayerController.hpp"
 #include "Components/Stage.hpp"
@@ -306,22 +307,14 @@ void Climbing::Update(PlayerStateMachine& machine, Context& context)
     if (stage->IsOnGround(position))
     {
         // Reached top
-        if (direction.y == 0)
-        {
-            machine.TransitionTo<StandingIdle>(context);
-            return;
-        }
-        if (direction.y < 0 and not stage->CanClimbUp(position))
-        {
-            machine.TransitionTo<StandingIdle>(context);
-            return;
-        }
-        if (direction.y > 0 and not stage->CanClimbDown(position))
+        if ((direction.y == 0) or (direction.y < 0 and not stage->CanClimbUp(position)) or
+            (direction.y > 0 and not stage->CanClimbDown(position)))
         {
             machine.TransitionTo<StandingIdle>(context);
             return;
         }
     }
+
     if (direction.y == 0)
     {
         auto newContext = context;
