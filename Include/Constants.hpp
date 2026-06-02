@@ -2,7 +2,10 @@
 #define BURGERTIME_COLORS_HPP
 #include <SDL3/SDL_pixels.h>
 
-namespace bt::colors
+namespace bt
+{
+
+namespace colors
 {
 
 inline constexpr SDL_Color PlatformColor{ .r = 255, .g = 154, .b = 57, .a = 255 };
@@ -15,6 +18,20 @@ inline constexpr SDL_Color Blue{ .r = 0, .g = 0, .b = 255, .a = 255 };
 inline constexpr SDL_Color Black{ .r = 0, .g = 0, .b = 0, .a = 255 };
 inline constexpr SDL_Color Grey{ .r = 50, .g = 50, .b = 50, .a = 255 };
 
-}  // namespace bt::colors
+}  // namespace colors
+
+namespace layers
+{
+
+inline constexpr int stage{ 0 };
+inline constexpr int enemies{ 1 };
+inline constexpr int burgerParts{ 2 };
+inline constexpr int player{ 3 };
+inline constexpr int text{ 10 };
+
+;
+}  // namespace layers
+
+}  // namespace bt
 
 #endif  // BURGERTIME_COLORS_HPP

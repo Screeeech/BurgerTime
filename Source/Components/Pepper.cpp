@@ -1,11 +1,11 @@
 #include "Components/Pepper.hpp"
 
-#include "Colors.hpp"
 #include "Components/Animation.hpp"
 #include "Components/Collider.hpp"
 #include "Components/CollisionRect.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Timer.hpp"
+#include "Constants.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/ResourceManager.hpp"
 #include "Utils.hpp"

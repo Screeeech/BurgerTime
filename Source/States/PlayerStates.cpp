@@ -5,12 +5,12 @@
 #include <glm/gtc/constants.hpp>
 #include <print>
 
-#include "Colors.hpp"
 #include "Components/Animation.hpp"
 #include "Components/MoveComponent.hpp"
 #include "Components/Pepper.hpp"
 #include "Components/Player.hpp"
 #include "Components/Stage.hpp"
+#include "Constants.hpp"
 #include "GameEvents.hpp"
 #include "Locator.hpp"
 #include "Services/EventManager.hpp"

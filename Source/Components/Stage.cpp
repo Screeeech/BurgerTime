@@ -7,7 +7,7 @@
 #include <print>
 #include <ranges>
 
-#include "Colors.hpp"
+#include "Constants.hpp"
 #include "Locator.hpp"
 #include "Services/ISound.hpp"
 #include "Services/Renderer.hpp"
@@ -21,7 +21,7 @@ namespace bt
 {
 
 Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
-    : Renderable{ pOwner, zIndex }
+    : Renderable{ pOwner, layers::stage }
     , m_tileArray{}
 {
     std::ifstream file{ stageDataPath };

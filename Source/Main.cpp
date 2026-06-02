@@ -3,9 +3,9 @@
 #include <print>
 
 #include "AchievementManager.hpp"
-#include "Colors.hpp"
 #include "Commands/VolumeCommand.hpp"
 #include "Components/Animation.hpp"
+#include "Components/BurgerPart.hpp"
 #include "Components/Enemy.hpp"
 #include "Components/FpsComponent.hpp"
 #include "Components/Pepper.hpp"
@@ -13,6 +13,7 @@
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
 #include "Components/TextComponent.hpp"
+#include "Constants.hpp"
 #include "Events.hpp"
 #include "Galena.hpp"
 #include "Locator.hpp"
@@ -79,16 +80,19 @@ void load()
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
     auto const smallFont = resourceManager.LoadFont("Fonts/nes.ttf", 8);
 
+    auto* bun = scene.GetRoot()->CreateChild(150, 182, "bun");
+    bun->AddComponent<bt::BurgerPart>(bt::BurgerPart::Piece::TopBun, spriteSheetTexture);
+
     // FPS display
     go = scene.GetRoot()->CreateChild(10, 10, "FPS Counter");
     go->AddComponent<gla::FpsComponent>(font);
 
     // Control display
     go = scene.GetRoot()->CreateChild(10, 205);
-    go->AddComponent<gla::TextComponent>("PLAY SOUND: Q", smallFont, 3);
+    go->AddComponent<gla::TextComponent>("PLAY SOUND: Q", smallFont, bt::layers::text);
 
     go = scene.GetRoot()->CreateChild(10, 215);
-    go->AddComponent<gla::TextComponent>("VOLUME: UP DOWN", smallFont, 3);
+    go->AddComponent<gla::TextComponent>("VOLUME: UP DOWN", smallFont, bt::layers::text);
 
     // Player 0
     {
@@ -97,7 +101,7 @@ void load()
         auto* pepperComponent{ pepperObject->AddComponent<bt::Pepper>(3) };
 
         auto* player0{ scene.GetRoot()->CreateChild(100, 174, "Player 0") };
-        bt::Player::DefineAnimations(*player0->AddComponent<gla::Animation>(2), spriteSheetTexture);
+        bt::Player::DefineAnimations(*player0->AddComponent<gla::Animation>(bt::layers::player), spriteSheetTexture);
 
         player0->AddComponent<bt::Player>(stage, pepperComponent, 0);
 
@@ -113,7 +117,7 @@ void load()
     // Mr Hotdog
     {
         auto* enemy = scene.GetRoot()->CreateChild(50, 174, "Mr. Hotdog");
-        bt::Enemy::DefineAnimations(*enemy->AddComponent<gla::Animation>(2), spriteSheetTexture);
+        bt::Enemy::DefineAnimations(*enemy->AddComponent<gla::Animation>(bt::layers::enemies), spriteSheetTexture);
         enemy->AddComponent<bt::Enemy>(stage);
 
         inputManager.RegisterInput(SDL_SCANCODE_UP, gla::Input::Type::held, "moveUp"_h, 2);

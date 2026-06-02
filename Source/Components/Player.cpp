@@ -3,13 +3,13 @@
 #include <algorithm>
 #include <format>
 
-#include "Colors.hpp"
 #include "Commands/CallbackCommand.hpp"
 #include "Commands/MoveCommand.hpp"
 #include "Components/Collider.hpp"
 #include "Components/CollisionRect.hpp"
 #include "Components/MoveComponent.hpp"
 #include "Components/Timer.hpp"
+#include "Constants.hpp"
 #include "GameEvents.hpp"
 #include "GameObject.hpp"
 #include "Locator.hpp"
@@ -31,7 +31,7 @@ Player::Player(gla::GameObject* pPlayer, Stage* pStage, Pepper* pPepper, int pla
     , m_pAnimation(pPlayer->GetComponent<gla::Animation>())
     , m_pHitBox(pPlayer->AddComponent<gla::CollisionRect>(
           static_cast<uint32_t>(gla::Collider::Bits::Layer2),
-          0,
+          static_cast<uint32_t>(gla::Collider::Bits::Layer3),
           std::vector<gla::CollisionCallback>{ std::bind_front(&Player::OnDamage, this) },
           glm::vec2{},
           glm::vec2{ 16.f, 16.f }))
@@ -74,12 +74,8 @@ void Player::OnActivate()
         [this] -> void
         {
             std::println("Attacking!");
-            gla::Locator::Get<gla::EventManager>().InvokeEvent(PepperEvent(
-                "pepper"_h,
-                m_playerIndex,
-                m_pMoveComponent->GetDirection(),
-                m_pMoveComponent->GetSpritePosition(),
-                m_pPepper));
+            gla::Locator::Get<gla::EventManager>().InvokeEvent(
+                PepperEvent("pepper"_h, m_playerIndex, m_pMoveComponent->GetDirection(), m_pMoveComponent->GetSpritePosition(), m_pPepper));
         });
 }
 
