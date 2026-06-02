@@ -7,7 +7,7 @@
 #include "Colors.hpp"
 #include "Components/Animation.hpp"
 #include "Components/Pepper.hpp"
-#include "Components/PlayerController.hpp"
+#include "Components/Player.hpp"
 #include "Components/Stage.hpp"
 #include "GameEvents.hpp"
 #include "Locator.hpp"

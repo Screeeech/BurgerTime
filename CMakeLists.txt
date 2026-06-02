@@ -24,7 +24,7 @@ set(GAME_TARGET ${PROJECT_NAME})
 set(SOURCE_FILES
     "Source/Main.cpp"
     "Source/Commands/MoveCommand.cpp"
-    "Source/Components/PlayerController.cpp"
+    "Source/Components/Player.cpp"
     "Source/Components/Stage.cpp"
     "Source/Components/Pepper.cpp"
     "Source/Components/Enemy.cpp"

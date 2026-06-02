@@ -12,7 +12,7 @@ class Animation;
 }
 namespace bt
 {
-class PlayerController;
+class Player;
 class Stage;
 }  // namespace bt
 
@@ -31,7 +31,7 @@ struct Context final
     glm::vec2 position{};
     gla::Animation* animation{};
     Stage* stage{};
-    PlayerController* playerController{};
+    Player* playerController{};
     float deltaTime{};
 };
 

@@ -20,10 +20,10 @@ namespace bt
 {
 class Pepper;
 
-class PlayerController final : public gla::Renderable
+class Player final : public gla::Renderable
 {
 public:
-    explicit PlayerController(gla::GameObject* pPlayer, Stage* stage, Pepper* pepper, int playerIndex);
+    explicit Player(gla::GameObject* pPlayer, Stage* stage, Pepper* pepper, int playerIndex);
 
     void SetDirection(glm::vec2 direction);
     [[nodiscard]] auto GetDirection() const -> glm::vec2;

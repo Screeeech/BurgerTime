@@ -1,4 +1,4 @@
-#include "Components/PlayerController.hpp"
+#include "Components/Player.hpp"
 
 #include <algorithm>
 #include <format>
@@ -23,7 +23,7 @@ namespace bt
 {
 class Font;
 
-PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, Pepper* pepper, int playerIndex)
+Player::Player(gla::GameObject* pPlayer, Stage* stage, Pepper* pepper, int playerIndex)
     : Renderable(pPlayer, 10)
     , m_playerIndex(playerIndex)
     , m_pStage(stage)
@@ -32,7 +32,7 @@ PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, Peppe
     , m_pHitBox(pPlayer->AddComponent<gla::CollisionRect>(
           static_cast<uint32_t>(gla::Collider::Bits::Layer2),
           0,
-          std::vector<gla::CollisionCallback>{ std::bind_front(&PlayerController::OnDamage, this) },
+          std::vector<gla::CollisionCallback>{ std::bind_front(&Player::OnDamage, this) },
           glm::vec2{},
           glm::vec2{ 16.f, 16.f }))
     , m_pHitDelayTimer(pPlayer->AddComponent<gla::Timer>())
@@ -40,23 +40,23 @@ PlayerController::PlayerController(gla::GameObject* pPlayer, Stage* stage, Peppe
 {
 }
 
-void PlayerController::SetDirection(glm::vec2 direction)
+void Player::SetDirection(glm::vec2 direction)
 {
     m_direction.x = std::clamp(m_direction.x + direction.x, -1.f, 1.f);
     m_direction.y = std::clamp(m_direction.y + direction.y, -1.f, 1.f);
 }
 
-auto PlayerController::GetDirection() const -> glm::vec2
+auto Player::GetDirection() const -> glm::vec2
 {
     return m_direction;
 }
 
-void PlayerController::Move(glm::vec2 displacement) const
+void Player::Move(glm::vec2 displacement) const
 {
     m_pOwner->GetTransform().ChangeLocalPosition(displacement);
 }
 
-void PlayerController::OnDamage(gla::Collider const& /*collider*/)
+void Player::OnDamage(gla::Collider const& /*collider*/)
 {
     m_finiteStateMachine.TransitionTo<playerstates::Dying>({ .animation = m_pAnimation });
     m_pHitBox->Disable();
@@ -66,7 +66,7 @@ void PlayerController::OnDamage(gla::Collider const& /*collider*/)
     gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
 }
 
-void PlayerController::Render()
+void Player::Render()
 {
     glm::vec2 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
     glm::vec2 const pos = worldPos + spriteFeetOffset;
@@ -80,7 +80,7 @@ void PlayerController::Render()
     renderer.DrawRect({ pos.x + (m_direction.x * 4), pos.y, 1.f, 1.f });
 }
 
-void PlayerController::FixedUpdate(float deltaTime)
+void Player::FixedUpdate(float deltaTime)
 {
     glm::vec2 const worldPos = m_pOwner->GetTransform().GetWorldPosition();
     glm::vec2 const pos = worldPos + spriteFeetOffset;
@@ -99,7 +99,7 @@ void PlayerController::FixedUpdate(float deltaTime)
     m_direction = glm::vec2(0.0f);
 }
 
-void PlayerController::OnActivate()
+void Player::OnActivate()
 {
     Renderable::OnActivate();
 
@@ -119,7 +119,7 @@ void PlayerController::OnActivate()
         });
 }
 
-void PlayerController::OnDeactivate()
+void Player::OnDeactivate()
 {
     Renderable::OnDeactivate();
 
@@ -132,7 +132,7 @@ void PlayerController::OnDeactivate()
 
     gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
 }
-void PlayerController::DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
+void Player::DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
 {
     auto const size{ spriteSheetTexture->GetSize() };
     auto const cols{ static_cast<int>(size.x / 16.f) };

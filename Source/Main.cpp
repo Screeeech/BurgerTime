@@ -9,7 +9,7 @@
 #include "Components/Enemy.hpp"
 #include "Components/FpsComponent.hpp"
 #include "Components/Pepper.hpp"
-#include "Components/PlayerController.hpp"
+#include "Components/Player.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
 #include "Components/TextComponent.hpp"
@@ -97,9 +97,9 @@ void load()
         auto* pepperComponent{ pepperObject->AddComponent<bt::Pepper>(3) };
 
         auto* player0{ scene.GetRoot()->CreateChild(100, 174, "Player 0") };
-        bt::PlayerController::DefineAnimations(*player0->AddComponent<gla::Animation>(2), spriteSheetTexture);
+        bt::Player::DefineAnimations(*player0->AddComponent<gla::Animation>(2), spriteSheetTexture);
 
-        player0->AddComponent<bt::PlayerController>(stage, pepperComponent, 0);
+        player0->AddComponent<bt::Player>(stage, pepperComponent, 0);
 
         inputManager.RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, 0);
         inputManager.RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, 0);
