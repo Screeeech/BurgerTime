@@ -17,8 +17,13 @@ namespace bt
 BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Piece pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
     //: Component(pOwner)
     : Renderable(pOwner, 20)
+    , m_stateMachine(
+          burgerpartstates::Context{
+              .transform = m_pOwner->GetTransform(),
+              .steppedPieces = m_steppedPieces,
+              .stage = *pStage,
+          })
     , m_pStage(pStage)
-//, m_pMoveComponent(pOwner->AddComponent<MoveComponent>(pStage))
 {
     for (auto const& [i, pair] : m_pieces | vw::enumerate)
     {
@@ -29,7 +34,7 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Piece pieceType, 
         hitbox = pOwner->AddComponent<gla::CollisionRect>(
             gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4,
             gla::Collider::Bits::Layer4,
-            std::vector<gla::CollisionCallback>{ [this, i](auto& collider) -> void { OnPieceStep(collider, i); } },
+            std::vector<gla::CollisionCallback>{ [this, i](auto&) -> void { OnPieceStep(i); } },
             glm::vec2{ xOffset, 0.f },
             glm::vec2(pieceSize));
         sprite = pOwner->AddComponent<gla::Sprite>(spriteSheetTexture, layers::burgerParts);
@@ -41,22 +46,15 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Piece pieceType, 
 
 void BurgerPart::FixedUpdate(float fixedDeltaTime)
 {
-    if (m_steppedPieces >= pieceCount)
-    {
-        m_pOwner->GetTransform().ChangeLocalPosition({ 0.f, fallingSpeed * fixedDeltaTime });
-        if (IsOnPlatform())
-        {
-            LockOntoGround();
+    burgerpartstates::Context context{
+        .transform = m_pOwner->GetTransform(),
+        .steppedPieces = m_steppedPieces,
+        .deltaTime = fixedDeltaTime,
+        .stage = *m_pStage,
+        .pieces = &m_pieces,
+    };
 
-            m_steppedPieces = 0;
-            for (auto const& [collider, sprite] : m_pieces)
-            {
-                collider->m_collisionLayers |= gla::Collider::Bits::Layer3;
-                sprite->m_offset.y = 0;
-            }
-            std::println("Burger landed!");
-        }
-    }
+    m_stateMachine.Update(context);
 }
 
 void BurgerPart::Render()
@@ -81,49 +79,15 @@ auto BurgerPart::GetBurgerPieceSourceRect(Piece type, long index) -> SDL_FRect
     };
 }
 
-void BurgerPart::OnPieceStep(gla::Collider const& collider, long index)
+void BurgerPart::OnPieceStep(long index)
 {
-    // If it's a burger hitting another burger
-    if (collider.m_collisionMasks == gla::Collider::Bits::Layer4)
-    {
-        std::println("Burger Collision!");
-    }
-    else  // If it's the player stepping on a burger
-    {
-        auto& [hitbox, sprite] = m_pieces.at(index);
+    auto& [hitbox, sprite] = m_pieces.at(index);
 
-        // Turn off player stepping collisions
-        hitbox->m_collisionLayers &= not gla::Collider::Bits::Layer3;
+    // Turn off player stepping collisions
+    hitbox->m_collisionLayers &= not gla::Collider::Bits::Layer3;
 
-        sprite->m_offset.y = pieceStepOffset;
-
-        ++m_steppedPieces;
-        if (m_steppedPieces >= pieceCount)
-            std::println("Burger falling!", index);
-    }
-}
-
-auto BurgerPart::IsOnPlatform() const -> bool
-{
-    auto const worldPos = m_pOwner->GetLocalPosition();
-    auto const bottomYPos = std::ceil(worldPos.y) + pieceSize;
-    auto const mod = static_cast<int>(bottomYPos + 1) % static_cast<int>(Stage::tileHeight);
-    if (mod == Stage::tileHeight - 2.f)
-    {
-        auto const tileType = m_pStage->GetTileAtPosition(glm::vec2{ worldPos.x, bottomYPos } + glm::vec2{ 0.f, 1.f });
-        if (tileType == Stage::TileType::Platform or tileType == Stage::TileType::LadderPlatform)
-            return true;
-    }
-
-    return false;
-}
-
-void BurgerPart::LockOntoGround() const
-{
-    auto const bottomBurgerPos = m_pOwner->GetLocalPosition() + glm::vec2{ 0.f, pieceSize };
-    auto const yOffsetIntoTile = static_cast<int>(bottomBurgerPos.y) % static_cast<int>(Stage::tileHeight);
-    auto const bump = Stage::tileHeight - static_cast<float>(yOffsetIntoTile) - 1;
-    m_pOwner->GetTransform().SetLocalPosition({ bottomBurgerPos.x, bottomBurgerPos.y + bump - pieceSize });
+    sprite->m_offset.y = pieceStepOffset;
+    ++m_steppedPieces;
 }
 
 

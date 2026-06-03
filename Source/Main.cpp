@@ -83,6 +83,9 @@ void load()
     auto* bun = stageObject->CreateChild(118, 86, "bun");
     bun->AddComponent<bt::BurgerPart>(stage, bt::BurgerPart::Piece::TopBun, spriteSheetTexture);
 
+    auto* patty = stageObject->CreateChild(118, 118, "patty");
+    patty->AddComponent<bt::BurgerPart>(stage, bt::BurgerPart::Piece::Patty, spriteSheetTexture);
+
     // FPS display
     auto* go = scene.GetRoot()->CreateChild(10, 10, "FPS Counter");
     go->AddComponent<gla::FpsComponent>(font);

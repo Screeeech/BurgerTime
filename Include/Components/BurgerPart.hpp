@@ -7,6 +7,7 @@
 
 #include "Component.hpp"
 #include "Renderable.hpp"
+#include "States/BurgerPartStates.hpp"
 
 namespace gla
 {
@@ -36,25 +37,23 @@ public:
 
     explicit BurgerPart(gla::GameObject* pOwner, Stage* pStage, Piece pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
 
+    static constexpr float pieceStepOffset{ 2.f };
+    static constexpr float pieceSize{ 8.f };
+    static constexpr float fallingSpeed{ 50.f };
+    static constexpr int pieceCount{ 4 };
 protected:
     void FixedUpdate(float fixedDeltaTime) override;
     void Render() override;
 
 private:
-    static constexpr float pieceStepOffset{ 2.f };
-    static constexpr float pieceSize{ 8.f };
-    static constexpr float fallingSpeed{ 25.f };
-    static constexpr int pieceCount{ 4 };
 
     static auto GetBurgerPieceSourceRect(Piece type, long index) -> SDL_FRect;
-    void OnPieceStep(gla::Collider const& collider, long index);
-    auto IsOnPlatform() const -> bool;
-    void LockOntoGround() const;
+    void OnPieceStep(long index);
 
+    burgerpartstates::BurgerStateMachine m_stateMachine;
     std::array<std::pair<gla::CollisionRect*, gla::Sprite*>, pieceCount> m_pieces{};
     int m_steppedPieces{};
     Stage* m_pStage;
-    //MoveComponent* m_pMoveComponent;
 };
 
 }  // namespace bt
