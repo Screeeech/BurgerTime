@@ -44,14 +44,14 @@ auto MoveComponent::GetDirection() const -> glm::vec2
 
 auto MoveComponent::GetSpritePosition() const -> glm::vec2
 {
-    return m_pOwner->GetWorldPosition() + spriteFeetOffset;
+    return m_pOwner->GetLocalPosition() + spriteFeetOffset;
 }
 
 void MoveComponent::LockOntoGround() const
 {
     static constexpr int groundOffset{ 13 };
 
-    auto const yOffsetIntoTile = static_cast<int>(GetSpritePosition().y - Stage::stageOffset) % static_cast<int>(Stage::tileHeight);
+    auto const yOffsetIntoTile = static_cast<int>(GetSpritePosition().y) % static_cast<int>(Stage::tileHeight);
     auto const bump = static_cast<float>(groundOffset - yOffsetIntoTile);
     Move({ 0.f, bump });
 }
@@ -60,7 +60,7 @@ void MoveComponent::LockOntoLadder() const
 {
     static constexpr int ladderOffset{ 7 };
 
-    auto const xOffsetIntoTile = static_cast<int>(GetSpritePosition().x - Stage::stageOffset) % static_cast<int>(Stage::tileWidth);
+    auto const xOffsetIntoTile = static_cast<int>(GetSpritePosition().x) % static_cast<int>(Stage::tileWidth);
     auto const bump = static_cast<float>(ladderOffset - xOffsetIntoTile);
     Move({ bump, 0.f });
 }
@@ -81,7 +81,7 @@ auto MoveComponent::CanWalk() const -> bool
 
 auto MoveComponent::CanClimbDown() const -> bool
 {
-    int const xOffsetIntoTile = static_cast<int>(GetSpritePosition().x - Stage::stageOffset) % static_cast<int>(Stage::tileWidth);
+    int const xOffsetIntoTile = static_cast<int>(GetSpritePosition().x) % static_cast<int>(Stage::tileWidth);
 
     // Within this margin we are over a ladder
     if (xOffsetIntoTile < 6 or xOffsetIntoTile > 9)
@@ -100,7 +100,7 @@ auto MoveComponent::CanClimbDown() const -> bool
 
 auto MoveComponent::CanClimbUp() const -> bool
 {
-    int const xOffsetIntoTile = static_cast<int>(GetSpritePosition().x - Stage::stageOffset) % static_cast<int>(Stage::tileWidth);
+    int const xOffsetIntoTile = static_cast<int>(GetSpritePosition().x) % static_cast<int>(Stage::tileWidth);
 
     // Within this margin we are over a ladder
     if (xOffsetIntoTile < 6 or xOffsetIntoTile > 9)
@@ -118,7 +118,7 @@ auto MoveComponent::CanClimbUp() const -> bool
 }
 auto MoveComponent::IsOnGround() const -> bool
 {
-    int const yOffsetIntoTile = static_cast<int>(GetSpritePosition().y - Stage::stageOffset) % static_cast<int>(Stage::tileHeight);
+    int const yOffsetIntoTile = static_cast<int>(GetSpritePosition().y) % static_cast<int>(Stage::tileHeight);
     if (yOffsetIntoTile < 13 or yOffsetIntoTile > 17)
         return false;
 

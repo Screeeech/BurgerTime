@@ -15,6 +15,7 @@ public:
 
     void Climb() const;
     void Walk() const;
+    void Move(glm::vec2 displacement) const;
 
     void SetDirection(glm::vec2 direction);
     auto GetDirection() const -> glm::vec2;
@@ -35,7 +36,6 @@ protected:
     void LateUpdate(float deltaTime) override;
 
 private:
-    void Move(glm::vec2 displacement) const;
 
     static constexpr glm::vec2 spriteFeetOffset{ 8.f, 15.f };
 

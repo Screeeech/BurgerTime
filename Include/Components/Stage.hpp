@@ -37,7 +37,7 @@ public:
 
     void PrintTileType(glm::vec2 position) const;
 
-    [[nodiscard]] auto GetTileAtPosition(glm::vec2 globalPosition) const -> TileType;
+    [[nodiscard]] auto GetTileAtPosition(glm::vec2 stageLocalPosition) const -> TileType;
 
     static constexpr uint32_t stageWidth{ 9 };
     static constexpr uint32_t stageHeight{ 10 };

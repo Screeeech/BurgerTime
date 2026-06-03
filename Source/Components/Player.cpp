@@ -30,8 +30,8 @@ Player::Player(gla::GameObject* pPlayer, Stage* pStage, Pepper* pPepper, int pla
     , m_pMoveComponent(pPlayer->AddComponent<MoveComponent>(pStage, 0.85f, 0.65f))
     , m_pAnimation(pPlayer->GetComponent<gla::Animation>())
     , m_pHitBox(pPlayer->AddComponent<gla::CollisionRect>(
-          static_cast<uint32_t>(gla::Collider::Bits::Layer2),
-          static_cast<uint32_t>(gla::Collider::Bits::Layer3),
+          gla::Collider::Bits::Layer2,
+          gla::Collider::Bits::Layer3,
           std::vector<gla::CollisionCallback>{ std::bind_front(&Player::OnDamage, this) },
           glm::vec2{},
           glm::vec2{ 16.f, 16.f }))

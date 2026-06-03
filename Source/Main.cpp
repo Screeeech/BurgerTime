@@ -73,18 +73,18 @@ void load()
     renderer.SetLogicalResolution(256, 240);
     renderer.SetBackgroundColor(bt::colors::Black);
 
-    auto* go = scene.GetRoot()->CreateChild(0, 0, "Stage");
-    auto* stage = go->AddComponent<bt::Stage>("Stages/stage1.json");
+    auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
+    auto* stage = stageObject->AddComponent<bt::Stage>("Stages/stage1.json");
 
     auto const spriteSheetTexture{ resourceManager.LoadTexture("Textures/spritesheet.png") };
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
     auto const smallFont = resourceManager.LoadFont("Fonts/nes.ttf", 8);
 
-    auto* bun = scene.GetRoot()->CreateChild(150, 182, "bun");
-    bun->AddComponent<bt::BurgerPart>(bt::BurgerPart::Piece::TopBun, spriteSheetTexture);
+    auto* bun = stageObject->CreateChild(118, 86, "bun");
+    bun->AddComponent<bt::BurgerPart>(stage, bt::BurgerPart::Piece::TopBun, spriteSheetTexture);
 
     // FPS display
-    go = scene.GetRoot()->CreateChild(10, 10, "FPS Counter");
+    auto* go = scene.GetRoot()->CreateChild(10, 10, "FPS Counter");
     go->AddComponent<gla::FpsComponent>(font);
 
     // Control display
@@ -97,10 +97,10 @@ void load()
     // Player 0
     {
         // GameObject
-        auto* pepperObject{ scene.GetRoot()->CreateChild(0, 0, "Pepper") };
+        auto* pepperObject{ stageObject->CreateChild(0, 0, "Pepper") };
         auto* pepperComponent{ pepperObject->AddComponent<bt::Pepper>(3) };
 
-        auto* player0{ scene.GetRoot()->CreateChild(100, 174, "Player 0") };
+        auto* player0{ stageObject->CreateChild(68, 142, "Player 0") };
         bt::Player::DefineAnimations(*player0->AddComponent<gla::Animation>(bt::layers::player), spriteSheetTexture);
 
         player0->AddComponent<bt::Player>(stage, pepperComponent, 0);
@@ -116,7 +116,7 @@ void load()
 
     // Mr Hotdog
     {
-        auto* enemy = scene.GetRoot()->CreateChild(50, 174, "Mr. Hotdog");
+        auto* enemy = stageObject->CreateChild(50, 174, "Mr. Hotdog");
         bt::Enemy::DefineAnimations(*enemy->AddComponent<gla::Animation>(bt::layers::enemies), spriteSheetTexture);
         enemy->AddComponent<bt::Enemy>(stage);
 

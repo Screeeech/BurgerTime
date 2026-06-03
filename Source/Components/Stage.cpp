@@ -108,16 +108,13 @@ void Stage::PrintTileType(glm::vec2 position) const
     }
 }
 
-auto Stage::GetTileAtPosition(glm::vec2 globalPosition) const-> TileType
+auto Stage::GetTileAtPosition(glm::vec2 stageLocalPosition) const-> TileType
 {
-    globalPosition.x -= stageOffset;
-    globalPosition.y -= stageOffset;
-
-    if (globalPosition.x < 0.f or globalPosition.y < 0.f)
+    if (stageLocalPosition.x < 0.f or stageLocalPosition.y < 0.f)
         return TileType::Null;
 
-    auto const xIdx{ static_cast<uint32_t>(globalPosition.x / tileWidth) };
-    auto const yIdx{ static_cast<uint32_t>(globalPosition.y / tileHeight) };
+    auto const xIdx{ static_cast<uint32_t>(stageLocalPosition.x / tileWidth) };
+    auto const yIdx{ static_cast<uint32_t>(stageLocalPosition.y / tileHeight) };
 
     return GetTileAtIndex(xIdx, yIdx);
 }
