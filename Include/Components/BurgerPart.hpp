@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "Component.hpp"
-#include "Renderable.hpp"
 #include "States/BurgerPartStates.hpp"
 
 namespace gla
@@ -22,10 +21,10 @@ namespace bt
 class MoveComponent;
 class Stage;
 
-class BurgerPart final : public gla::Renderable
+class BurgerPart final : public gla::Component
 {
 public:
-    enum class Piece : std::uint8_t
+    enum class Type : std::uint8_t
     {
         TopBun,
         BottomBun,
@@ -35,7 +34,7 @@ public:
         Lettuce,
     };
 
-    explicit BurgerPart(gla::GameObject* pOwner, Stage* pStage, Piece pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
+    explicit BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
 
     static constexpr float pieceStepOffset{ 2.f };
     static constexpr float pieceSize{ 8.f };
@@ -43,11 +42,10 @@ public:
     static constexpr int pieceCount{ 4 };
 protected:
     void FixedUpdate(float fixedDeltaTime) override;
-    void Render() override;
 
 private:
 
-    static auto GetBurgerPieceSourceRect(Piece type, long index) -> SDL_FRect;
+    static auto GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect;
     void OnPieceStep(long index);
 
     burgerpartstates::BurgerStateMachine m_stateMachine;

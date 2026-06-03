@@ -73,18 +73,18 @@ void load()
     renderer.SetLogicalResolution(256, 240);
     renderer.SetBackgroundColor(bt::colors::Black);
 
-    auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
-    auto* stage = stageObject->AddComponent<bt::Stage>("Stages/stage1.json");
 
     auto const spriteSheetTexture{ resourceManager.LoadTexture("Textures/spritesheet.png") };
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
     auto const smallFont = resourceManager.LoadFont("Fonts/nes.ttf", 8);
 
-    auto* bun = stageObject->CreateChild(118, 86, "bun");
-    bun->AddComponent<bt::BurgerPart>(stage, bt::BurgerPart::Piece::TopBun, spriteSheetTexture);
-
-    auto* patty = stageObject->CreateChild(118, 118, "patty");
-    patty->AddComponent<bt::BurgerPart>(stage, bt::BurgerPart::Piece::Patty, spriteSheetTexture);
+    auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
+    auto* stage = stageObject->AddComponent<bt::Stage>("Stages/stage1.json", spriteSheetTexture);
+    // auto* bun = stageObject->CreateChild(118, 86, "bun");
+    // bun->AddComponent<bt::BurgerPart>(stage, bt::BurgerPart::Piece::TopBun, spriteSheetTexture);
+    //
+    // auto* patty = stageObject->CreateChild(118, 118, "patty");
+    // patty->AddComponent<bt::BurgerPart>(stage, bt::BurgerPart::Piece::Patty, spriteSheetTexture);
 
     // FPS display
     auto* go = scene.GetRoot()->CreateChild(10, 10, "FPS Counter");

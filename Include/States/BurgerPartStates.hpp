@@ -9,7 +9,7 @@ namespace gla
 class Sprite;
 class Transform;
 class CollisionRect;
-}
+}  // namespace gla
 
 namespace bt
 {
@@ -52,7 +52,7 @@ private:
 
 struct Finished final
 {
-    //static void OnEnter(Context const& context);
+    // static void OnEnter(Context const& context);
     static void Update(BurgerStateMachine& machine, Context const& context);
 };
 

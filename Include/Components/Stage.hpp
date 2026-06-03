@@ -2,6 +2,7 @@
 #define BURGERTIME_STAGE_HPP
 #include <SDL3/SDL_pixels.h>
 
+#include <nlohmann/json_fwd.hpp>
 #include <string>
 
 #include "Component.hpp"
@@ -22,12 +23,7 @@ public:
         LadderPlatform = 3,
     };
 
-    struct BurgerPart
-    {
-
-    };
-
-    explicit Stage(gla::GameObject* pOwner, std::string const& stageDataPath);
+    explicit Stage(gla::GameObject* pOwner, std::string const& stageDataPath, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
     ~Stage() noexcept override = default;
 
     Stage(Stage const&) = delete;
@@ -53,6 +49,10 @@ private:
     std::array<TileType, stageSize> m_tileArray;
 
     [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType;
+
+    void PopulateTiles(nlohmann::json const& tileList);
+    void SpawnBurgerParts(nlohmann::json const& burgerPartList, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
+    static void ValidateBurgerPart(nlohmann::json const& burgerPart);
 
     static void DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const& renderer);
     static void DrawLadder(glm::vec2 cursor, gla::Renderer const& renderer);

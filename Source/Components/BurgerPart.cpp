@@ -14,9 +14,9 @@ namespace vw = std::ranges::views;
 namespace bt
 {
 
-BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Piece pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
-    //: Component(pOwner)
-    : Renderable(pOwner, 20)
+BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
+    : Component(pOwner)
+    //: Renderable(pOwner, 20)
     , m_stateMachine(
           burgerpartstates::Context{
               .transform = m_pOwner->GetTransform(),
@@ -57,16 +57,16 @@ void BurgerPart::FixedUpdate(float fixedDeltaTime)
     m_stateMachine.Update(context);
 }
 
-void BurgerPart::Render()
-{
-    auto const& renderer = gla::Locator::Get<gla::Renderer>();
-    auto const worldPos = m_pOwner->GetWorldPosition();
+//void BurgerPart::Render()
+//{
+//    auto const& renderer = gla::Locator::Get<gla::Renderer>();
+//    auto const worldPos = m_pOwner->GetWorldPosition();
+//
+//    renderer.SetColor(colors::Blue);
+//    renderer.DrawRect({ worldPos.x, worldPos.y, 1.f, 1.f });
+//}
 
-    renderer.SetColor(colors::Blue);
-    renderer.DrawRect({ worldPos.x, worldPos.y, 1.f, 1.f });
-}
-
-auto BurgerPart::GetBurgerPieceSourceRect(Piece type, long index) -> SDL_FRect
+auto BurgerPart::GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect
 {
     float const xIndex{ 14.f + static_cast<float>(index) };
     float const yIndex{ 6.f + static_cast<float>(type) };
