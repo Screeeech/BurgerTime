@@ -80,11 +80,6 @@ void load()
 
     auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
     auto* stage = stageObject->AddComponent<bt::Stage>("Stages/stage1.json", spriteSheetTexture);
-    // auto* bun = stageObject->CreateChild(118, 86, "bun");
-    // bun->AddComponent<bt::BurgerPart>(stage, bt::BurgerPart::Piece::TopBun, spriteSheetTexture);
-    //
-    // auto* patty = stageObject->CreateChild(118, 118, "patty");
-    // patty->AddComponent<bt::BurgerPart>(stage, bt::BurgerPart::Piece::Patty, spriteSheetTexture);
 
     // FPS display
     auto* go = scene.GetRoot()->CreateChild(10, 10, "FPS Counter");
@@ -103,7 +98,7 @@ void load()
         auto* pepperObject{ stageObject->CreateChild(0, 0, "Pepper") };
         auto* pepperComponent{ pepperObject->AddComponent<bt::Pepper>(3) };
 
-        auto* player0{ stageObject->CreateChild(68, 142, "Player 0") };
+        auto* player0{ stageObject->CreateChild(95, -2, "Player 0") };
         bt::Player::DefineAnimations(*player0->AddComponent<gla::Animation>(bt::layers::player), spriteSheetTexture);
 
         player0->AddComponent<bt::Player>(stage, pepperComponent, 0);

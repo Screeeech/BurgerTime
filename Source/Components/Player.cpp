@@ -27,14 +27,15 @@ Player::Player(gla::GameObject* pPlayer, Stage* pStage, Pepper* pPepper, int pla
     : Component(pPlayer)
     , m_playerIndex(playerIndex)
     , m_pPepper(pPepper)
-    , m_pMoveComponent(pPlayer->AddComponent<MoveComponent>(pStage, 0.85f, 0.65f))
+    , m_pMoveComponent(pPlayer->AddComponent<MoveComponent>(pStage))
+    //, m_pMoveComponent(pPlayer->AddComponent<MoveComponent>(pStage, 0.85f, 0.65f))
     , m_pAnimation(pPlayer->GetComponent<gla::Animation>())
     , m_pHitBox(pPlayer->AddComponent<gla::CollisionRect>(
           gla::Collider::Bits::Layer2,
           gla::Collider::Bits::Layer3,
           std::vector<gla::CollisionCallback>{ std::bind_front(&Player::OnDamage, this) },
-          glm::vec2{},
-          glm::vec2{ 16.f, 16.f }))
+          glm::vec2{ 3.f, 0.f },
+          glm::vec2{ 10.f, 16.f }))
     //, m_pTime(pPlayer->AddComponent<gla::Timer>())
     , m_finiteStateMachine({ .animation = m_pAnimation })
 {

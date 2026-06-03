@@ -7,6 +7,7 @@
 #include "Components/MoveComponent.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
+#include "Components/Timer.hpp"
 #include "Constants.hpp"
 
 namespace vw = std::ranges::views;
@@ -17,13 +18,15 @@ namespace bt
 BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
     : Component(pOwner)
     //: Renderable(pOwner, 20)
+    , m_pResetTimer(pOwner->AddComponent<gla::Timer>())
+    , m_pStage(pStage)
     , m_stateMachine(
           burgerpartstates::Context{
               .transform = m_pOwner->GetTransform(),
               .steppedPieces = m_steppedPieces,
               .stage = *pStage,
+              .timer = *m_pResetTimer,
           })
-    , m_pStage(pStage)
 {
     for (auto const& [i, pair] : m_pieces | vw::enumerate)
     {
@@ -34,11 +37,11 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, s
         hitbox = pOwner->AddComponent<gla::CollisionRect>(
             gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4,
             gla::Collider::Bits::Layer4,
-            std::vector<gla::CollisionCallback>{ [this, i](auto&) -> void { OnPieceStep(i); } },
+            std::vector<gla::CollisionCallback>{ [this, i](auto& collider) -> void { OnPieceStep(collider, *m_pResetTimer, i); } },
             glm::vec2{ xOffset, 0.f },
             glm::vec2(pieceSize));
         sprite = pOwner->AddComponent<gla::Sprite>(spriteSheetTexture, layers::burgerParts);
-        auto srcRect = GetBurgerPieceSourceRect(pieceType, i);
+        auto const srcRect = GetBurgerPieceSourceRect(pieceType, i);
         sprite->SetSourceRect(srcRect);
         sprite->m_offset.x = xOffset;
     }
@@ -52,19 +55,20 @@ void BurgerPart::FixedUpdate(float fixedDeltaTime)
         .deltaTime = fixedDeltaTime,
         .stage = *m_pStage,
         .pieces = &m_pieces,
+        .timer = *m_pResetTimer,
     };
 
     m_stateMachine.Update(context);
 }
 
-//void BurgerPart::Render()
+// void BurgerPart::Render()
 //{
-//    auto const& renderer = gla::Locator::Get<gla::Renderer>();
-//    auto const worldPos = m_pOwner->GetWorldPosition();
+//     auto const& renderer = gla::Locator::Get<gla::Renderer>();
+//     auto const worldPos = m_pOwner->GetWorldPosition();
 //
-//    renderer.SetColor(colors::Blue);
-//    renderer.DrawRect({ worldPos.x, worldPos.y, 1.f, 1.f });
-//}
+//     renderer.SetColor(colors::Blue);
+//     renderer.DrawRect({ worldPos.x, worldPos.y, 1.f, 1.f });
+// }
 
 auto BurgerPart::GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect
 {
@@ -79,15 +83,22 @@ auto BurgerPart::GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect
     };
 }
 
-void BurgerPart::OnPieceStep(long index)
+void BurgerPart::OnPieceStep([[maybe_unused]] gla::Collider const& collider, [[maybe_unused]] gla::Timer& timer, long index)
 {
     auto& [hitbox, sprite] = m_pieces.at(index);
 
     // Turn off player stepping collisions
-    hitbox->m_collisionLayers &= not gla::Collider::Bits::Layer3;
+    hitbox->m_collisionLayers &= ~gla::Collider::Bits::Layer3;
 
     sprite->m_offset.y = pieceStepOffset;
     ++m_steppedPieces;
+
+    //// If burger collision
+    // if (collider.m_collisionMasks & gla::Collider::Bits::Layer4)
+    //{
+    //     // Turn off burger collisions temporarily
+    //     hitbox->m_collisionLayers &= ~gla::Collider::Bits::Layer4;
+    // }
 }
 
 

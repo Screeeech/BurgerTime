@@ -10,6 +10,7 @@
 
 namespace gla
 {
+class Timer;
 class Collider;
 class Sprite;
 class Texture2D;
@@ -36,6 +37,7 @@ public:
 
     explicit BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
 
+    static constexpr float resetTime{ 0.5f };
     static constexpr float pieceStepOffset{ 2.f };
     static constexpr float pieceSize{ 8.f };
     static constexpr float fallingSpeed{ 50.f };
@@ -46,12 +48,13 @@ protected:
 private:
 
     static auto GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect;
-    void OnPieceStep(long index);
+    void OnPieceStep(gla::Collider const& collider, gla::Timer& timer, long index);
 
-    burgerpartstates::BurgerStateMachine m_stateMachine;
+    gla::Timer* m_pResetTimer{};
     std::array<std::pair<gla::CollisionRect*, gla::Sprite*>, pieceCount> m_pieces{};
     int m_steppedPieces{};
     Stage* m_pStage;
+    burgerpartstates::BurgerStateMachine m_stateMachine;
 };
 
 }  // namespace bt

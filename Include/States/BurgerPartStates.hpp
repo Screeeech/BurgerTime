@@ -6,6 +6,7 @@
 
 namespace gla
 {
+class Timer;
 class Sprite;
 class Transform;
 class CollisionRect;
@@ -29,14 +30,17 @@ struct Context final
     float deltaTime{};
     Stage& stage;
     std::array<std::pair<gla::CollisionRect*, gla::Sprite*>, 4> const* pieces{};
+    gla::Timer& timer;
 };
 
 using BurgerStateMachine = StateMachine<Context, Idle, Falling, Finished>;
 
 struct Idle final
 {
+    bool hasReset{};
+
     static void OnEnter(Context const& context);
-    static void Update(BurgerStateMachine& machine, Context const& context);
+    void Update(BurgerStateMachine& machine, Context const& context);
 
 private:
     static void LockOntoGround(gla::Transform& transform);
@@ -44,6 +48,7 @@ private:
 
 struct Falling final
 {
+    static void OnEnter(Context const& context);
     static void Update(BurgerStateMachine& machine, Context const& context);
 
 private:

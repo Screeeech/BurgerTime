@@ -189,7 +189,7 @@ void Stage::SpawnBurgerParts(json const& burgerPartList, std::shared_ptr<gla::Te
         auto const xPosition = 16.f + static_cast<float>(xIndex * 48);
         auto const yPosition = static_cast<float>(yIndex) * tileHeight;
 
-        auto* partObject = m_pOwner->CreateChild(xPosition, yPosition, std::format("BurgerPart{}", i));
+        auto* partObject = m_pOwner->CreateChild(xPosition, yPosition, std::format("BurgerPart: {}, {}", key, i));
         partObject->AddComponent<BurgerPart>(this, type, spriteSheetTexture);
     }
 }
