@@ -14,6 +14,7 @@ class CollisionRect;
 
 namespace bt
 {
+class BurgerPart;
 class Stage;
 
 namespace burgerpartstates
@@ -25,12 +26,11 @@ struct Finished;
 
 struct Context final
 {
+    BurgerPart& part;
     gla::Transform& transform;
-    int& steppedPieces;
-    float deltaTime{};
-    Stage& stage;
-    std::array<std::pair<gla::CollisionRect*, gla::Sprite*>, 4> const* pieces{};
     gla::Timer& timer;
+    Stage& stage;
+    float deltaTime{};
 };
 
 using BurgerStateMachine = StateMachine<Context, Idle, Falling, Finished>;
@@ -39,8 +39,8 @@ struct Idle final
 {
     bool hasReset{};
 
-    static void OnEnter(Context const& context);
-    void Update(BurgerStateMachine& machine, Context const& context);
+    static void OnEnter(Context const& ctx);
+    void Update(BurgerStateMachine& machine, Context const& ctx);
 
 private:
     static void LockOntoGround(gla::Transform& transform);
@@ -48,8 +48,11 @@ private:
 
 struct Falling final
 {
-    static void OnEnter(Context const& context);
-    static void Update(BurgerStateMachine& machine, Context const& context);
+    bool hasResetCollider{};
+
+    static void OnEnter(Context const& ctx);
+    void Update(BurgerStateMachine& machine, Context const& ctx);
+    static void OnExit(Context const& ctx);
 
 private:
     static auto IsOnPlatform(gla::Transform const& transform, Stage const& stage) -> bool;
@@ -57,8 +60,8 @@ private:
 
 struct Finished final
 {
-    // static void OnEnter(Context const& context);
-    static void Update(BurgerStateMachine& machine, Context const& context);
+    // static void OnEnter(Context const& ctx);
+    static void Update(BurgerStateMachine& machine, Context const& ctx);
 };
 
 

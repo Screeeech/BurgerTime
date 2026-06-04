@@ -25,7 +25,7 @@ class Player final : public gla::Component
 public:
     explicit Player(gla::GameObject* pPlayer, Stage* pStage, Pepper* pPepper, int playerIndex);
 
-    void OnDamage(gla::Collider const& collider);
+    void OnDamage(gla::Collider const& collider, gla::Collider const& other);
 
     int const m_playerIndex;
 

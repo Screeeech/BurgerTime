@@ -4,10 +4,13 @@
 
 #include "Commands/MoveCommand.hpp"
 #include "Components/Animation.hpp"
+#include "Components/BurgerPart.hpp"
 #include "Components/CollisionRect.hpp"
 #include "Components/MoveComponent.hpp"
 #include "Components/Timer.hpp"
+#include "Events.hpp"
 #include "GameObject.hpp"
+#include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Utils.hpp"
 
@@ -16,16 +19,28 @@ namespace bt
 
 Enemy::Enemy(gla::GameObject* pOwner, Stage* pStage, int playerIndex)
     : Component(pOwner)
-    , m_playerIndex(playerIndex)
+    , m_entityIndex(playerIndex)
     , m_pMoveComponent(pOwner->AddComponent<MoveComponent>(pStage, 0.6f, 0.5f))
     , m_pTimer(pOwner->AddComponent<gla::Timer>())
     , m_pAnimation(pOwner->GetComponent<gla::Animation>())
-    , m_pHitBox(pOwner->AddComponent<gla::CollisionRect>(
-          static_cast<uint32_t>(gla::Collider::Bits::Layer1),
-          static_cast<uint32_t>(gla::Collider::Bits::Layer2),
-          std::vector<gla::CollisionCallback>{ std::bind_front(&Enemy::OnPeppered, this) },
+    , m_pPlayerHitBox(pOwner->AddComponent<gla::CollisionRect>(
+          gla::Collider::Bits::Layer1,
+          0,
+          "OnPepper"_h,
           glm::vec2{},
           glm::vec2{ 16.f, 16.f }))
+    , m_pHeadHurtBox(pOwner->AddComponent<gla::CollisionRect>(
+          gla::Collider::Bits::Layer5,
+          0,
+          "OnSquish"_h,
+          glm::vec2{},
+          glm::vec2{ 16.f, 4.f }))
+    , m_pFeetHurtBox(pOwner->AddComponent<gla::CollisionRect>(
+          gla::Collider::Bits::Layer6,
+          0,
+          "OnDrop"_h,
+          glm::vec2{ 0.f, 12.f },
+          glm::vec2{ 16.f, 4.f }))
     , m_stateMachine({ .animation = m_pAnimation })
 {
     assert(m_pAnimation and "GameObject with Enemy component must have a valid Animation component first");
@@ -36,6 +51,7 @@ void Enemy::FixedUpdate(float /*fixedDeltaTime*/)
         .animation = m_pAnimation,
         .timer = m_pTimer,
         .moveComponent = m_pMoveComponent,
+        .entityIndex = m_entityIndex,
     };
     m_stateMachine.Update(context);
 }
@@ -43,18 +59,19 @@ void Enemy::FixedUpdate(float /*fixedDeltaTime*/)
 void Enemy::OnActivate()
 {
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
-    inputManager.BindAction<MoveCommand>("moveUp"_h, m_playerIndex, m_pOwner, glm::vec2{ 0, -1 });
-    inputManager.BindAction<MoveCommand>("moveLeft"_h, m_playerIndex, m_pOwner, glm::vec2{ -1, 0 });
-    inputManager.BindAction<MoveCommand>("moveDown"_h, m_playerIndex, m_pOwner, glm::vec2{ 0, 1 });
-    inputManager.BindAction<MoveCommand>("moveRight"_h, m_playerIndex, m_pOwner, glm::vec2{ 1, 0 });
+    inputManager.BindAction<MoveCommand>("moveUp"_h, m_entityIndex, m_pOwner, glm::vec2{ 0, -1 });
+    inputManager.BindAction<MoveCommand>("moveLeft"_h, m_entityIndex, m_pOwner, glm::vec2{ -1, 0 });
+    inputManager.BindAction<MoveCommand>("moveDown"_h, m_entityIndex, m_pOwner, glm::vec2{ 0, 1 });
+    inputManager.BindAction<MoveCommand>("moveRight"_h, m_entityIndex, m_pOwner, glm::vec2{ 1, 0 });
 }
+
 void Enemy::OnDeactivate()
 {
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
-    inputManager.UnbindAction("moveUp"_h, m_playerIndex);
-    inputManager.UnbindAction("moveLeft"_h, m_playerIndex);
-    inputManager.UnbindAction("moveDown"_h, m_playerIndex);
-    inputManager.UnbindAction("moveRight"_h, m_playerIndex);
+    inputManager.UnbindAction("moveUp"_h, m_entityIndex);
+    inputManager.UnbindAction("moveLeft"_h, m_entityIndex);
+    inputManager.UnbindAction("moveDown"_h, m_entityIndex);
+    inputManager.UnbindAction("moveRight"_h, m_entityIndex);
 }
 
 void Enemy::OnDeath()
@@ -70,6 +87,22 @@ void Enemy::OnPeppered(gla::Collider const& /*collider*/)
         m_stateMachine.TransitionTo<StunnedWalking>({ .animation = m_pAnimation, .timer = m_pTimer });
     else if (m_stateMachine.IsActive<Climbing>())
         m_stateMachine.TransitionTo<StunnedClimbing>({ .animation = m_pAnimation, .timer = m_pTimer });
+}
+
+void Enemy::OnSquish(gla::Collider const& /*collider*/)
+{
+    m_stateMachine.TransitionTo<enemystates::Dying>({ .animation = m_pAnimation, .timer = m_pTimer });
+}
+
+void Enemy::OnDrop(gla::Collider const& collider)
+{
+    m_stateMachine.TransitionTo<enemystates::Falling>({ .animation = m_pAnimation, .timer = m_pTimer });
+    collider.m_pOwner->GetComponent<BurgerPart>()->AcquireEnemy(*m_pOwner, *this);
+}
+
+void Enemy::LandOnPlatform()
+{
+    m_stateMachine.TransitionTo<enemystates::StandingIdle>({ .animation = m_pAnimation });
 }
 
 void Enemy::DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)

@@ -1,7 +1,9 @@
 #include "States/BurgerPartStates.hpp"
 
+#include <array>
 #include <cassert>
 #include <glm/vec2.hpp>
+#include <print>
 
 #include "Components/BurgerPart.hpp"
 #include "Components/CollisionRect.hpp"
@@ -12,31 +14,27 @@
 namespace bt
 {
 
-void burgerpartstates::Idle::OnEnter(Context const& context)
+void burgerpartstates::Idle::OnEnter(Context const& ctx)
 {
-    LockOntoGround(context.transform);
-    context.steppedPieces = 0;
-     context.timer.Start(BurgerPart::resetTime);
+    std::println("Burger entered Idle state");
 
-    if (context.pieces)
-        for (auto const& sprite : *context.pieces | std::views::values)
-            sprite->m_offset.y = 0;
+    LockOntoGround(ctx.transform);
+    ctx.part.SetSteppedPieces(0);
+    ctx.timer.Start(BurgerPart::resetTime);
 }
 
-void burgerpartstates::Idle::Update(BurgerStateMachine& machine, Context const& context)
+void burgerpartstates::Idle::Update(BurgerStateMachine& machine, Context const& ctx)
 {
-    assert(context.pieces);
-
-    if (context.timer.IsFinished() and not hasReset)
+    if (ctx.timer.IsFinished() and not hasReset)
     {
-        for (auto const& collider : *context.pieces | std::views::keys)
+        for (auto const& collider : ctx.part.GetPieces() | std::views::keys)
             collider->m_collisionLayers |= gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4;
 
         hasReset = true;
     }
 
-    if (context.steppedPieces >= BurgerPart::pieceCount)
-        machine.TransitionTo<Falling>(context);
+    if (ctx.part.GetSteppedPieces() >= BurgerPart::pieceCount)
+        machine.TransitionTo<Falling>(ctx);
 }
 
 void burgerpartstates::Idle::LockOntoGround(gla::Transform& transform)
@@ -51,19 +49,50 @@ void burgerpartstates::Idle::LockOntoGround(gla::Transform& transform)
     transform.SetLocalPosition({ bottomBurgerPos.x, bottomBurgerPos.y + bump - BurgerPart::pieceSize });
 }
 
-void burgerpartstates::Falling::OnEnter(Context const& context)
+void burgerpartstates::Falling::OnEnter(Context const& ctx)
 {
-    for (auto const& collider : *context.pieces | std::views::keys)
-        collider->m_collisionLayers = 0;
+    std::println("Burger entered Falling state");
+
+    for (auto const& collider : ctx.part.GetPieces() | std::views::keys)
+    {
+        // Turn off player and burger collision layer
+        collider->m_collisionLayers &= ~(gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4);
+
+        // Turn on enemy feet collision mask
+        collider->m_collisionMasks |= gla::Collider::Bits::Layer6;
+    }
 }
 
-void burgerpartstates::Falling::Update(BurgerStateMachine& machine, Context const& context)
+void burgerpartstates::Falling::Update(BurgerStateMachine& machine, Context const& ctx)
 {
-    auto const& [transform, steppedPieces, deltaTime, stage, pieces, timer] = context;
+    if (not hasResetCollider)
+    {
+        for (auto const& collider : ctx.part.GetPieces() | std::views::keys)
+            // Turn off enemy feet collision mask
+            collider->m_collisionMasks &= ~gla::Collider::Bits::Layer6;
 
-    transform.ChangeLocalPosition({ 0.f, BurgerPart::fallingSpeed * deltaTime });
-    if (IsOnPlatform(transform, stage))
-        machine.TransitionTo<Idle>(context);
+        hasResetCollider = true;
+    }
+
+    ctx.transform.ChangeLocalPosition({ 0.f, BurgerPart::fallingSpeed * ctx.deltaTime });
+    if (IsOnPlatform(ctx.transform, ctx.stage))
+        machine.TransitionTo<Idle>(ctx);
+}
+
+void burgerpartstates::Falling::OnExit(Context const& ctx)
+{
+    std::println("Burger exited Falling state");
+
+    for (auto const& [collider, sprite] : ctx.part.GetPieces())
+    {
+        // Turn off falling collider
+        collider->m_collisionMasks &= ~gla::Collider::Bits::Layer6;
+
+        // Reset sprite y offset
+        sprite->m_offset.y = 0;
+    }
+
+    ctx.part.ReleaseEnemies();
 }
 
 auto burgerpartstates::Falling::IsOnPlatform(gla::Transform const& transform, Stage const& stage) -> bool
@@ -82,6 +111,6 @@ auto burgerpartstates::Falling::IsOnPlatform(gla::Transform const& transform, St
     return false;
 }
 
-void burgerpartstates::Finished::Update(BurgerStateMachine& /*machine*/, Context const& /*context*/) {}
+void burgerpartstates::Finished::Update(BurgerStateMachine& /*machine*/, Context const& /*ctx*/) {}
 
 }  // namespace bt

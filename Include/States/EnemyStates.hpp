@@ -1,5 +1,6 @@
 #ifndef BURGERTIME_ENEMYSTATES_HPP
 #define BURGERTIME_ENEMYSTATES_HPP
+#include <any>
 #include <glm/vec2.hpp>
 
 #include "StateMachine.hpp"
@@ -19,80 +20,134 @@ class Stage;
 namespace enemystates
 {
 
+static constexpr float stunTime{ 3.f };
+
 struct StandingIdle;
 struct Walking;
 struct Climbing;
 struct ClimbingIdle;
 struct StunnedWalking;
 struct StunnedClimbing;
+struct Falling;
 struct Dying;
 
 struct Context final
 {
     gla::Animation* animation{};
     gla::Timer* timer{};
-    //Enemy* enemy{};
+    // Enemy* enemy{};
     MoveComponent* moveComponent{};
+    int entityIndex{};
 };
 
-using EnemyStateMachine = StateMachine<Context, StandingIdle, Walking, Climbing, ClimbingIdle, Dying, StunnedWalking, StunnedClimbing>;
+using EnemyStateMachine = StateMachine<Context, StandingIdle, Walking, Climbing, ClimbingIdle, StunnedWalking, StunnedClimbing, Falling, Dying>;
 
-struct StandingIdle final
+struct ReactiveState
 {
-    static void OnEnter(Context const& context);
-    static void Update(EnemyStateMachine& machine, Context const& context);
-    // void OnExit(Context const& context);
+    ReactiveState() = default;
+    ReactiveState(ReactiveState const&) = default;
+    ReactiveState(ReactiveState&&) = default;
+    auto operator=(ReactiveState const&) -> ReactiveState& = default;
+    auto operator=(ReactiveState&&) -> ReactiveState& = default;
+    virtual ~ReactiveState() = default;
+
+    int entityIndex{};
+
+    virtual void OnEnter(Context const& ctx);
+    virtual void OnExit(Context const& ctx);
+
+private:
+    virtual void OnPepper(std::any const& collisionEvent) = 0;
 };
 
-struct Walking final
+struct StandingIdle final : ReactiveState
 {
-    //static void OnEnter(Context const& context);
-    static void Update(EnemyStateMachine& machine, Context const& context);
-    // void OnExit(Context const& context);
+    int entityIndex;
+
+    void OnEnter(Context const& ctx) override;
+    static void Update(EnemyStateMachine& machine, Context const& ctx);
+    //void OnExit(Context const& ctx) override;
+
+private:
+    void OnPepper(std::any const& collisionEvent) override;
 };
 
-struct Climbing final
+struct Walking final : ReactiveState
 {
-    static void OnEnter(Context const& context);
-    static void Update(EnemyStateMachine& machine, Context const& context);
+    int entityIndex;
+
+    static void Update(EnemyStateMachine& machine, Context const& ctx);
+
+private:
+    void OnPepper(std::any const& collisionEvent) override;
 };
 
-struct ClimbingIdle final
+struct Climbing final : ReactiveState
 {
-    //static void OnEnter(Context const& context);
-    static void Update(EnemyStateMachine& machine, Context const& context);
+    int entityIndex;
+
+    void OnEnter(Context const& ctx) override;
+    static void Update(EnemyStateMachine& machine, Context const& ctx);
+
+private:
+    void OnPepper(std::any const& collisionEvent) override;
+};
+
+struct ClimbingIdle final : ReactiveState
+{
+    int entityIndex;
+
+    void OnEnter(Context const& ctx) override;
+    static void Update(EnemyStateMachine& machine, Context const& ctx);
+
+private:
+    void OnPepper(std::any const& collisionEvent) override;
+};
+
+struct StunnedWalking final : ReactiveState
+{
+    int entityIndex;
+
+    void OnEnter(Context const& ctx) override;
+    static void Update(EnemyStateMachine& machine, Context const& ctx);
+
+private:
+    void OnPepper(std::any const& collisionEvent) override;
+};
+
+struct StunnedClimbing final : ReactiveState
+{
+    int entityIndex;
+
+    void OnEnter(Context const& ctx) override;
+    static void Update(EnemyStateMachine& machine, Context const& ctx);
+
+private:
+    void OnPepper(std::any const& collisionEvent) override;
 };
 
 struct Falling final
 {
-    static void OnEnter(Context const& context);
-    static void Update(EnemyStateMachine& machine, Context& context);
-    // void OnExit(Context const& context);
-};
+    int entityIndex;
 
-struct StunnedWalking final
-{
-    static constexpr float stunTime{ 3.f };
+    static void OnEnter(Context const& ctx);
+    static void Update(EnemyStateMachine& machine, Context& ctx);
+    void OnExit(Context const& ctx);
 
-    static void OnEnter(Context const& context);
-    static void Update(EnemyStateMachine& machine, Context const& context);
-    // void OnExit(Context const& context);
-};
-
-struct StunnedClimbing final
-{
-    static constexpr float stunTime{ 3.f };
-
-    static void OnEnter(Context const& context);
-    static void Update(EnemyStateMachine& machine, Context const& context);
-    // void OnExit(Context const& context);
+private:
+    void OnPepper(std::any const& collisionEvent);
 };
 
 struct Dying final
 {
-    static void OnEnter(Context const& context);
-    static void Update(EnemyStateMachine& machine, Context& context);
-    // void OnExit(Context const& context);
+    int entityIndex;
+
+    void OnEnter(Context const& ctx);
+    static void Update(EnemyStateMachine& machine, Context& ctx);
+    void OnExit(Context const& ctx);
+
+private:
+    void OnPepper(std::any const& collisionEvent);
 };
 
 }  // namespace enemystates

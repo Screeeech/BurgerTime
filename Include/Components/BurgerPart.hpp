@@ -4,6 +4,7 @@
 
 #include <array>
 #include <memory>
+#include <vector>
 
 #include "Component.hpp"
 #include "States/BurgerPartStates.hpp"
@@ -19,6 +20,8 @@ class Animation;
 }  // namespace gla
 namespace bt
 {
+
+class Enemy;
 class MoveComponent;
 class Stage;
 
@@ -34,24 +37,35 @@ public:
         Tomato,
         Lettuce,
     };
-
-    explicit BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
-
     static constexpr float resetTime{ 0.5f };
     static constexpr float pieceStepOffset{ 2.f };
     static constexpr float pieceSize{ 8.f };
-    static constexpr float fallingSpeed{ 50.f };
+    static constexpr float fallingSpeed{ 20.f };
     static constexpr int pieceCount{ 4 };
+    using Pieces = std::array<std::pair<gla::CollisionRect*, gla::Sprite*>, pieceCount>;
+
+
+    explicit BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
+
+    void AcquireEnemy(gla::GameObject& enemyObject, Enemy& enemy);
+    void ReleaseEnemies();
+
+    auto GetSteppedPieces() const -> int;
+    void SetSteppedPieces(int steppedPieces);
+
+    auto GetPieces() -> Pieces&;
 protected:
     void FixedUpdate(float fixedDeltaTime) override;
+    void OnActivate() override;
+    void OnDeactivate() override;
 
 private:
-
     static auto GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect;
-    void OnPieceStep(gla::Collider const& collider, gla::Timer& timer, long index);
+    void OnPieceStep(long index);
 
     gla::Timer* m_pResetTimer{};
-    std::array<std::pair<gla::CollisionRect*, gla::Sprite*>, pieceCount> m_pieces{};
+    Pieces m_pieces{};
+    std::vector<Enemy*> m_fallingEnemies;
     int m_steppedPieces{};
     Stage* m_pStage;
     burgerpartstates::BurgerStateMachine m_stateMachine;

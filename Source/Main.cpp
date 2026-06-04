@@ -114,7 +114,7 @@ void load()
 
     // Mr Hotdog
     {
-        auto* enemy = stageObject->CreateChild(50, 174, "Mr. Hotdog");
+        auto* enemy = stageObject->CreateChild(50, -2, "Mr. Hotdog");
         bt::Enemy::DefineAnimations(*enemy->AddComponent<gla::Animation>(bt::layers::enemies), spriteSheetTexture);
         enemy->AddComponent<bt::Enemy>(stage);
 

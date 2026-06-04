@@ -21,6 +21,9 @@ class Enemy final : public gla::Component
 public:
     explicit Enemy(gla::GameObject* pOwner, Stage* pStage, int playerIndex = 2);
 
+    void LandOnPlatform();
+
+    int const m_entityIndex;
 protected:
     void FixedUpdate(float fixedDeltaTime) override;
 
@@ -29,16 +32,19 @@ protected:
 
 private:
     static constexpr glm::vec2 spriteFeetOffset{ 8.f, 15.f };
-    int m_playerIndex;
 
     MoveComponent* m_pMoveComponent;
     gla::Timer* m_pTimer;
-    gla::Animation* m_pAnimation;
-    gla::CollisionRect* m_pHitBox;
+    gla::Animation* m_pAnimation{};
+    gla::CollisionRect* m_pPlayerHitBox;
+    gla::CollisionRect* m_pHeadHurtBox;
+    gla::CollisionRect* m_pFeetHurtBox{};
     enemystates::EnemyStateMachine m_stateMachine;
 
     void OnDeath();
     void OnPeppered(gla::Collider const& collider);
+    void OnSquish(gla::Collider const& collider);
+    void OnDrop(gla::Collider const& collider);
 
 public:
     // Helper functions
