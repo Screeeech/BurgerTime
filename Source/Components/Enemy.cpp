@@ -38,7 +38,7 @@ Enemy::Enemy(gla::GameObject* pOwner, Stage* pStage, int playerIndex)
     , m_pFeetHurtBox(pOwner->AddComponent<gla::CollisionRect>(
           gla::Collider::Bits::Layer6,
           0,
-          "OnDrop"_h,
+          [this](auto& /*collider*/, auto& otherCollider)-> void{ OnDrop(otherCollider);},
           glm::vec2{ 0.f, 12.f },
           glm::vec2{ 16.f, 4.f }))
     , m_stateMachine({ .animation = m_pAnimation })
