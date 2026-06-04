@@ -37,10 +37,12 @@ using BurgerStateMachine = StateMachine<Context, Idle, Falling, Finished>;
 
 struct Idle final
 {
+    BurgerStateMachine* machine;
+
     bool hasReset{};
 
     static void OnEnter(Context const& ctx);
-    void Update(BurgerStateMachine& machine, Context const& ctx);
+    void Update(Context const& ctx);
 
 private:
     static void LockOntoGround(gla::Transform& transform);
@@ -48,10 +50,12 @@ private:
 
 struct Falling final
 {
+    BurgerStateMachine* machine;
+
     bool hasResetCollider{};
 
     static void OnEnter(Context const& ctx);
-    void Update(BurgerStateMachine& machine, Context const& ctx);
+    void Update(Context const& ctx);
     static void OnExit(Context const& ctx);
 
 private:
@@ -60,8 +64,10 @@ private:
 
 struct Finished final
 {
+    BurgerStateMachine* machine;
+
     // static void OnEnter(Context const& ctx);
-    static void Update(BurgerStateMachine& machine, Context const& ctx);
+    static void Update(Context const& ctx);
 };
 
 

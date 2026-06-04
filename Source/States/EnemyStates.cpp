@@ -25,20 +25,6 @@ struct Dying;
 namespace
 {
 
-void UnbindAllEvents(void* instance)
-{
-    auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.UnbindEvents(instance);
-}
-
-// template<typename T>
-// void BindPepperEvent(T* instance, int entityIndex)
-//{
-//     instance->entityIndex = entityIndex;
-//     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-//     eventManager.BindEvent("OnPepper"_h, instance, &T::OnPepper);
-// }
-
 auto IsCorrectCollider(int entityIndex, gla::Collider& collider) -> bool
 {
     auto const* otherEnemy = collider.m_pOwner->GetComponent<Enemy>();
@@ -54,12 +40,22 @@ void ReactiveState::OnEnter(Context const& ctx)
     entityIndex = ctx.entityIndex;
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("OnPepper"_h, this, &ReactiveState::OnPepper);
+    eventManager.BindEvent("OnSquish"_h, this, &ReactiveState::OnPepper);
+    eventManager.BindEvent("OnDrop"_h, this, &ReactiveState::OnPepper);
+
 }
 
 void ReactiveState::OnExit(Context const& /*ctx*/)
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.UnbindEvents(this);
+}
+
+void ReactiveState::OnSquish(std::any const& /*collisionEvent*/) {}
+
+void ReactiveState::OnDrop(std::any const& /*collisionEvent*/)
+{
+
 }
 
 
@@ -75,20 +71,20 @@ void StandingIdle::OnEnter(Context const& ctx)
         ctx.moveComponent->LockOntoGround();
 }
 
-void StandingIdle::Update(EnemyStateMachine& machine, Context const& ctx)
+void StandingIdle::Update(Context const& ctx) const
 {
     assert(ctx.moveComponent and "MoveComponent cannot be null");
 
     if ((ctx.moveComponent->GetDirection().y < 0 and ctx.moveComponent->CanClimbUp()) or
         (ctx.moveComponent->GetDirection().y > 0 and ctx.moveComponent->CanClimbDown()))
     {
-        machine.TransitionTo<Climbing>();
+        machine->TransitionTo<Climbing>(ctx);
         return;
     }
 
     if ((ctx.moveComponent->GetDirection().x != 0.f and ctx.moveComponent->CanWalk()))
     {
-        machine.TransitionTo<Walking>(ctx);
+        machine->TransitionTo<Walking>(ctx);
         return;
     }
 }
@@ -101,7 +97,7 @@ void StandingIdle::OnPepper(std::any const& collisionEvent)
 }
 
 // ==================== WALKING ====================
-void Walking::Update(EnemyStateMachine& machine, Context const& ctx)
+void Walking::Update(Context const& ctx) const
 {
     assert(ctx.animation and "Animation cannot be null");
     assert(ctx.moveComponent and "MoveComponent cannot be null");
@@ -115,12 +111,12 @@ void Walking::Update(EnemyStateMachine& machine, Context const& ctx)
     if ((ctx.moveComponent->GetDirection().y < 0.f and ctx.moveComponent->CanClimbUp()) or
         (ctx.moveComponent->GetDirection().y > 0.f and ctx.moveComponent->CanClimbDown()))
     {
-        machine.TransitionTo<Climbing>(ctx);
+        machine->TransitionTo<Climbing>(ctx);
         return;
     }
     if (ctx.moveComponent->GetDirection().x == 0.f or not ctx.moveComponent->CanWalk())
     {
-        machine.TransitionTo<StandingIdle>(ctx);
+        machine->TransitionTo<StandingIdle>(ctx);
         return;
     }
 
@@ -139,7 +135,7 @@ void Climbing::OnEnter(Context const& ctx)
         ctx.moveComponent->LockOntoLadder();
 }
 
-void Climbing::Update(EnemyStateMachine& machine, Context const& ctx)
+void Climbing::Update(Context const& ctx) const
 {
     assert(ctx.animation and "Animation cannot be null");
     assert(ctx.moveComponent and "MoveComponent cannot be null");
@@ -150,14 +146,14 @@ void Climbing::Update(EnemyStateMachine& machine, Context const& ctx)
         (ctx.moveComponent->GetDirection().y < 0 and not ctx.moveComponent->CanClimbUp()) or
         (ctx.moveComponent->GetDirection().y > 0 and not ctx.moveComponent->CanClimbDown())))
     {
-        machine.TransitionTo<StandingIdle>(ctx);
+        machine->TransitionTo<StandingIdle>(ctx);
         return;
     }
     // clang-format on
 
     if (ctx.moveComponent->GetDirection().y == 0)
     {
-        machine.TransitionTo<ClimbingIdle>(ctx);
+        machine->TransitionTo<ClimbingIdle>(ctx);
         return;
     }
 
@@ -185,12 +181,12 @@ void StunnedWalking::OnEnter(Context const& ctx)
     ctx.timer->Start(stunTime);
 }
 
-void StunnedWalking::Update(EnemyStateMachine& machine, Context const& ctx)
+void StunnedWalking::Update(Context const& ctx) const
 {
     assert(ctx.timer and "Timer cannot be null");
 
     if (ctx.timer->IsFinished())
-        machine.TransitionTo<StandingIdle>(ctx);
+        machine->TransitionTo<StandingIdle>(ctx);
 }
 
 void StunnedWalking::OnPepper(std::any const& /*collisionEvent*/) {}
@@ -208,12 +204,12 @@ void StunnedClimbing::OnEnter(Context const& ctx)
     ctx.timer->Start(stunTime);
 }
 
-void StunnedClimbing::Update(EnemyStateMachine& machine, Context const& ctx)
+void StunnedClimbing::Update(Context const& ctx) const
 {
     assert(ctx.timer and "Timer cannot be null");
 
     if (ctx.timer->IsFinished())
-        machine.TransitionTo<ClimbingIdle>(ctx);
+        machine->TransitionTo<ClimbingIdle>(ctx);
 }
 
 void StunnedClimbing::OnPepper(std::any const& /*collisionEvent*/) {}
@@ -225,14 +221,7 @@ void Dying::OnEnter(Context const& ctx)
     assert(ctx.animation and "Animation cannot be null");
     // ctx.animation->SetAnimation("dying"_h, true);
 }
-
-void Dying::Update([[maybe_unused]] EnemyStateMachine& machine, [[maybe_unused]] Context& ctx) {}
-
-void Dying::OnExit(Context const& /*ctx*/)
-{
-    UnbindAllEvents(this);
-}
-
+void Dying::Update(Context& /*ctx*/) {}
 void Dying::OnPepper(std::any const& /*collisionEvent*/) {}
 
 
@@ -244,12 +233,12 @@ void ClimbingIdle::OnEnter(Context const& ctx)
     assert(ctx.animation and "Animation cannot be null");
     ctx.animation->SetAnimation("idle"_h);
 }
-void ClimbingIdle::Update(EnemyStateMachine& machine, Context const& ctx)
+void ClimbingIdle::Update(Context const& ctx)
 {
     assert(ctx.moveComponent and "MoveComponent cannot be null");
 
     if (ctx.moveComponent->GetDirection().y != 0)
-        machine.TransitionTo<Climbing>(ctx);
+        machine->TransitionTo<Climbing>(ctx);
 }
 void ClimbingIdle::OnPepper(std::any const& /*collisionEvent*/) {}
 
@@ -260,12 +249,7 @@ void Falling::OnEnter(Context const& ctx)
     assert(ctx.animation and "Animation cannot be null");
     ctx.animation->SetAnimation("idle"_h, true);
 }
-void Falling::Update(EnemyStateMachine& /*machine*/, Context& /*ctx*/) {}
-void Falling::OnExit(Context const& /*ctx*/)
-{
-    UnbindAllEvents(this);
-}
-
+void Falling::Update(Context& /*ctx*/) {}
 void Falling::OnPepper(std::any const& /*collisionEvent*/) {}
 
 }  // namespace bt::enemystates

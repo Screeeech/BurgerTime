@@ -41,9 +41,11 @@ struct Context final
 };
 
 using EnemyStateMachine = StateMachine<Context, StandingIdle, Walking, Climbing, ClimbingIdle, StunnedWalking, StunnedClimbing, Falling, Dying>;
+//using EnemyStateMachine = StateMachine<Context, Dying>;
 
 struct ReactiveState
 {
+    EnemyStateMachine* machine{};
     ReactiveState() = default;
     ReactiveState(ReactiveState const&) = default;
     ReactiveState(ReactiveState&&) = default;
@@ -58,14 +60,17 @@ struct ReactiveState
 
 private:
     virtual void OnPepper(std::any const& collisionEvent) = 0;
+    void OnSquish(std::any const& collisionEvent);
+    void OnDrop(std::any const& collisionEvent);
 };
 
 struct StandingIdle final : ReactiveState
 {
+    EnemyStateMachine* machine;
     int entityIndex;
 
     void OnEnter(Context const& ctx) override;
-    static void Update(EnemyStateMachine& machine, Context const& ctx);
+    void Update(Context const& ctx) const;
     //void OnExit(Context const& ctx) override;
 
 private:
@@ -74,9 +79,10 @@ private:
 
 struct Walking final : ReactiveState
 {
+    EnemyStateMachine* machine;
     int entityIndex;
 
-    static void Update(EnemyStateMachine& machine, Context const& ctx);
+    void Update(Context const& ctx) const;
 
 private:
     void OnPepper(std::any const& collisionEvent) override;
@@ -84,10 +90,11 @@ private:
 
 struct Climbing final : ReactiveState
 {
+    EnemyStateMachine* machine;
     int entityIndex;
 
     void OnEnter(Context const& ctx) override;
-    static void Update(EnemyStateMachine& machine, Context const& ctx);
+    void Update(Context const& ctx) const;
 
 private:
     void OnPepper(std::any const& collisionEvent) override;
@@ -95,10 +102,11 @@ private:
 
 struct ClimbingIdle final : ReactiveState
 {
+    EnemyStateMachine* machine;
     int entityIndex;
 
     void OnEnter(Context const& ctx) override;
-    static void Update(EnemyStateMachine& machine, Context const& ctx);
+    void Update(Context const& ctx);
 
 private:
     void OnPepper(std::any const& collisionEvent) override;
@@ -106,10 +114,11 @@ private:
 
 struct StunnedWalking final : ReactiveState
 {
+    EnemyStateMachine* machine;
     int entityIndex;
 
     void OnEnter(Context const& ctx) override;
-    static void Update(EnemyStateMachine& machine, Context const& ctx);
+    void Update(Context const& ctx) const;
 
 private:
     void OnPepper(std::any const& collisionEvent) override;
@@ -117,10 +126,11 @@ private:
 
 struct StunnedClimbing final : ReactiveState
 {
+    EnemyStateMachine* machine;
     int entityIndex;
 
     void OnEnter(Context const& ctx) override;
-    static void Update(EnemyStateMachine& machine, Context const& ctx);
+    void Update(Context const& ctx) const;
 
 private:
     void OnPepper(std::any const& collisionEvent) override;
@@ -128,11 +138,11 @@ private:
 
 struct Falling final
 {
+    EnemyStateMachine* machine;
     int entityIndex;
 
-    static void OnEnter(Context const& ctx);
-    static void Update(EnemyStateMachine& machine, Context& ctx);
-    void OnExit(Context const& ctx);
+    void OnEnter(Context const& ctx);
+    void Update(Context& ctx);
 
 private:
     void OnPepper(std::any const& collisionEvent);
@@ -140,14 +150,14 @@ private:
 
 struct Dying final
 {
+    EnemyStateMachine* machine;
     int entityIndex;
 
-    void OnEnter(Context const& ctx);
-    static void Update(EnemyStateMachine& machine, Context& ctx);
-    void OnExit(Context const& ctx);
+    static void OnEnter(Context const& ctx);
+    static void Update(Context& ctx);
 
 private:
-    void OnPepper(std::any const& collisionEvent);
+    static void OnPepper(std::any const& collisionEvent);
 };
 
 }  // namespace enemystates

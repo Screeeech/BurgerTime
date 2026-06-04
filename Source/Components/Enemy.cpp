@@ -79,21 +79,6 @@ void Enemy::OnDeath()
     m_stateMachine.TransitionTo<enemystates::Dying>({ .animation = m_pAnimation, .timer = m_pTimer });
 }
 
-void Enemy::OnPeppered(gla::Collider const& /*collider*/)
-{
-    using namespace enemystates;
-
-    if (m_stateMachine.IsActive<Walking>())
-        m_stateMachine.TransitionTo<StunnedWalking>({ .animation = m_pAnimation, .timer = m_pTimer });
-    else if (m_stateMachine.IsActive<Climbing>())
-        m_stateMachine.TransitionTo<StunnedClimbing>({ .animation = m_pAnimation, .timer = m_pTimer });
-}
-
-void Enemy::OnSquish(gla::Collider const& /*collider*/)
-{
-    m_stateMachine.TransitionTo<enemystates::Dying>({ .animation = m_pAnimation, .timer = m_pTimer });
-}
-
 void Enemy::OnDrop(gla::Collider const& collider)
 {
     m_stateMachine.TransitionTo<enemystates::Falling>({ .animation = m_pAnimation, .timer = m_pTimer });

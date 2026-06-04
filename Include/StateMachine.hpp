@@ -21,9 +21,14 @@ struct PackIsUnique<T, Rest...> : std::bool_constant<(not std::is_same_v<T, Rest
 {
 };
 
-template<typename State, typename StateMachine, typename Context>
-concept IsValidState = requires(State state, StateMachine& machine, Context& context) {
-    { state.Update(machine, context) } -> std::same_as<void>;
+template<typename State, typename Context>
+concept HasValidUpdateFunction = requires(State state, Context& context) {
+    { state.Update(context) } -> std::same_as<void>;
+};
+
+template<typename State, typename StateMachine>
+concept HasStateMachinePointer = requires(State state) {
+    requires std::same_as<decltype(state.machine), StateMachine*>;
 };
 
 template<typename T, typename Context>
@@ -39,13 +44,15 @@ concept HasOnExit = requires(T state, Context context) {
 template<typename Context, typename... States>
 class StateMachine final
 {
-    static_assert((IsValidState<States, StateMachine, Context> and ...), "Every state should have a valid Update function");
+    static_assert((HasValidUpdateFunction<States, Context> and ...), "States must have a valid Update function");
+    static_assert((HasStateMachinePointer<States, StateMachine> and ...), "States must have a valid StateMachine pointer as a member");
     static_assert(PackIsUnique<States...>::value, "Duplicate states are not allowed");
 
 public:
     explicit StateMachine(Context const& context = {})
         : m_currentState(std::tuple_element_t<0, std::tuple<States...>>{})
     {
+        std::get<std::tuple_element_t<0, std::tuple<States...>>>(m_currentState).machine = this;
         CallOnEnter(context);
     }
     ~StateMachine() noexcept = default;
@@ -55,10 +62,9 @@ public:
     StateMachine(StateMachine&&) = delete;
     auto operator=(StateMachine&&) -> StateMachine& = delete;
 
-    template<typename... Args>
-    void Update(Args&&... args)
+    void Update(std::decay_t<Context> context)
     {
-        std::visit([&](auto& state) -> void { state.Update(*this, std::forward<Args>(args)...); }, m_currentState);
+        std::visit([&](auto& state) -> void { state.Update(context); }, m_currentState);
     }
 
     template<typename NewState>
@@ -70,6 +76,7 @@ public:
         CallOnExit(context);
         // What is this syntax C++??
         m_currentState.template emplace<NewState>();
+        std::get<NewState>(m_currentState).machine = this;
         CallOnEnter(context);
     }
 

@@ -40,7 +40,7 @@ void StandingIdle::OnEnter(Context const& context)
         moveComponent->LockOntoGround();
 }
 
-void StandingIdle::Update(PlayerStateMachine& machine, Context const& context) const
+void StandingIdle::Update(Context const& context) const
 {
     auto const& [direction, animation, moveComponent, deltaTime] = context;
     assert(animation != nullptr and "Animation cannot be null");
@@ -54,17 +54,17 @@ void StandingIdle::Update(PlayerStateMachine& machine, Context const& context) c
 
     if (direction.x != 0.f and moveComponent->CanWalk())
     {
-        machine.TransitionTo<Walking>(context);
+        machine->TransitionTo<Walking>(context);
         return;
     }
     if (direction.y > 0.f and moveComponent->CanClimbDown())
     {
-        machine.TransitionTo<Walking>(context);
+        machine->TransitionTo<Walking>(context);
         return;
     }
     if (direction.y < 0.f and moveComponent->CanClimbUp())
     {
-        machine.TransitionTo<Climbing>(context);
+        machine->TransitionTo<Climbing>(context);
         return;
     }
 }
@@ -111,7 +111,7 @@ void Walking::OnEnter(Context const& context)
     ChangeAnimation(context);
 }
 
-void Walking::Update(PlayerStateMachine& machine, Context& context)
+void Walking::Update(Context& context)
 {
     auto& [direction, animation, moveComponent, deltaTime] = context;
     assert(animation != nullptr and "Animation cannot be null!");
@@ -128,12 +128,12 @@ void Walking::Update(PlayerStateMachine& machine, Context& context)
     {
         auto newContext = context;
         newContext.direction.x = previousXDirection;
-        machine.TransitionTo<StandingIdle>(newContext);
+        machine->TransitionTo<StandingIdle>(newContext);
         return;
     }
     if ((direction.y < 0.f and moveComponent->CanClimbUp()) or (direction.y > 0.f and moveComponent->CanClimbDown()))
     {
-        machine.TransitionTo<Climbing>(context);
+        machine->TransitionTo<Climbing>(context);
         return;
     }
 
@@ -199,7 +199,7 @@ void ClimbingIdle::OnEnter(Context const& context)
     ChangeAnimation(context);
 }
 
-void ClimbingIdle::Update(PlayerStateMachine& machine, Context& context) const
+void ClimbingIdle::Update(Context& context) const
 {
     auto const& [direction, animation, moveComponent, deltaTime] = context;
 
@@ -212,7 +212,7 @@ void ClimbingIdle::Update(PlayerStateMachine& machine, Context& context) const
     }
 
     if (direction.y != 0)
-        machine.TransitionTo<Climbing>(context);
+        machine->TransitionTo<Climbing>(context);
 }
 
 void ClimbingIdle::OnExit(Context const& /*context*/)
@@ -223,7 +223,7 @@ void ClimbingIdle::OnExit(Context const& /*context*/)
 
 void ClimbingIdle::OnPepper(std::any const& eventArgs)
 {
-    [[maybe_unused]] auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
+    auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, previousYDirection });
     remainingPepperDuration = 1.f;
@@ -279,7 +279,7 @@ void Climbing::OnEnter(Context const& context)
     moveComponent->LockOntoLadder();
 }
 
-void Climbing::Update(PlayerStateMachine& machine, Context& context)
+void Climbing::Update(Context& context)
 {
     auto& [direction, animation, moveComponent, deltaTime] = context;
     assert(animation != nullptr and "Animation cannot be null!");
@@ -296,7 +296,7 @@ void Climbing::Update(PlayerStateMachine& machine, Context& context)
         (direction.y < 0 and not moveComponent->CanClimbUp()) or
         (direction.y > 0 and not moveComponent->CanClimbDown())))
     {
-        machine.TransitionTo<StandingIdle>(context);
+        machine->TransitionTo<StandingIdle>(context);
         return;
     }
     // clang-format on
@@ -305,7 +305,7 @@ void Climbing::Update(PlayerStateMachine& machine, Context& context)
     {
         auto newContext = context;
         newContext.direction.y = previousYDirection;
-        machine.TransitionTo<ClimbingIdle>(newContext);
+        machine->TransitionTo<ClimbingIdle>(newContext);
         return;
     }
 
@@ -359,7 +359,7 @@ void Dying::OnEnter(Context const& context)
     context.animation->SetAnimation("death"_h, true);
 }
 
-void Dying::Update(PlayerStateMachine& /*machine*/, Context const& context)
+void Dying::Update(Context const& context)
 {
     wait += context.deltaTime;
     if (wait >= totalTime)

@@ -24,6 +24,7 @@ public:
     void LandOnPlatform();
 
     int const m_entityIndex;
+
 protected:
     void FixedUpdate(float fixedDeltaTime) override;
 
@@ -42,8 +43,6 @@ private:
     enemystates::EnemyStateMachine m_stateMachine;
 
     void OnDeath();
-    void OnPeppered(gla::Collider const& collider);
-    void OnSquish(gla::Collider const& collider);
     void OnDrop(gla::Collider const& collider);
 
 public:

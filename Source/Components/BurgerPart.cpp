@@ -94,7 +94,7 @@ void BurgerPart::FixedUpdate(float fixedDeltaTime)
         .deltaTime = fixedDeltaTime,
     };
 
-    m_stateMachine->Update(context);
+    m_stateMachine.Update(context);
 }
 // void BurgerPart::Render()
 //{
@@ -105,12 +105,6 @@ void BurgerPart::FixedUpdate(float fixedDeltaTime)
 //     renderer.DrawRect({ worldPos.x, worldPos.y, 1.f, 1.f });
 // }
 
-void BurgerPart::OnActivate() {}
-
-void BurgerPart::OnDeactivate()
-{
-    Component::OnDeactivate();
-}
 auto BurgerPart::GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect
 {
     float const xIndex{ 14.f + static_cast<float>(index) };

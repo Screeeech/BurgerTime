@@ -56,8 +56,6 @@ public:
     auto GetPieces() -> Pieces&;
 protected:
     void FixedUpdate(float fixedDeltaTime) override;
-    void OnActivate() override;
-    void OnDeactivate() override;
 
 private:
     static auto GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect;

@@ -23,7 +23,7 @@ void burgerpartstates::Idle::OnEnter(Context const& ctx)
     ctx.timer.Start(BurgerPart::resetTime);
 }
 
-void burgerpartstates::Idle::Update(BurgerStateMachine& machine, Context const& ctx)
+void burgerpartstates::Idle::Update(Context const& ctx)
 {
     if (ctx.timer.IsFinished() and not hasReset)
     {
@@ -34,7 +34,7 @@ void burgerpartstates::Idle::Update(BurgerStateMachine& machine, Context const& 
     }
 
     if (ctx.part.GetSteppedPieces() >= BurgerPart::pieceCount)
-        machine.TransitionTo<Falling>(ctx);
+        machine->TransitionTo<Falling>(ctx);
 }
 
 void burgerpartstates::Idle::LockOntoGround(gla::Transform& transform)
@@ -63,7 +63,7 @@ void burgerpartstates::Falling::OnEnter(Context const& ctx)
     }
 }
 
-void burgerpartstates::Falling::Update(BurgerStateMachine& machine, Context const& ctx)
+void burgerpartstates::Falling::Update(Context const& ctx)
 {
     if (not hasResetCollider)
     {
@@ -76,7 +76,7 @@ void burgerpartstates::Falling::Update(BurgerStateMachine& machine, Context cons
 
     ctx.transform.ChangeLocalPosition({ 0.f, BurgerPart::fallingSpeed * ctx.deltaTime });
     if (IsOnPlatform(ctx.transform, ctx.stage))
-        machine.TransitionTo<Idle>(ctx);
+        machine->TransitionTo<Idle>(ctx);
 }
 
 void burgerpartstates::Falling::OnExit(Context const& ctx)
@@ -111,6 +111,6 @@ auto burgerpartstates::Falling::IsOnPlatform(gla::Transform const& transform, St
     return false;
 }
 
-void burgerpartstates::Finished::Update(BurgerStateMachine& /*machine*/, Context const& /*ctx*/) {}
+void burgerpartstates::Finished::Update(Context const& /*ctx*/) {}
 
 }  // namespace bt
