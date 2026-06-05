@@ -35,58 +35,51 @@ struct Context final
 using PlayerStateMachine = StateMachine<Context, StandingIdle, Walking, ClimbingIdle, Climbing, Dying>;
 using PlayerState = HelperState<Context, PlayerStateMachine>;
 
-struct StandingIdle final : PlayerState
+struct PepperableState : PlayerState
 {
-    float previousXDirection{};
-
-    void OnEnter();
-    void Update() override;
-    void OnExit();
-    void OnPepper(std::any const& eventArgs);
-
-private:
-    void ChangeAnimation(Context const& ctx) const;
+    virtual void OnEnter();
+    virtual void OnExit();
+    virtual void OnPepper(std::any const& eventArgs) = 0;
 };
 
-struct Walking final : PlayerState
+struct StandingIdle final : PepperableState
 {
-    float previousXDirection{};
-
-    void OnEnter();
+    void OnEnter() override;
     void Update() override;
-    void OnExit();
-    void OnPepper(std::any const& eventArgs);
+    void OnExit() override;
+    void OnPepper(std::any const& eventArgs) override;
 
 private:
-    static void ChangeAnimation(Context const& ctx);
+    void ChangeAnimation() const;
 };
 
-struct ClimbingIdle final : PlayerState
+struct Walking final : PepperableState
 {
-    float previousYDirection{};
-
-    void OnEnter();
     void Update() override;
-    void OnExit();
-    void OnPepper(std::any const& eventArgs);
+    void OnPepper(std::any const& eventArgs) override;
 
 private:
-    void ChangeAnimation(Context const& ctx) const;
+    void ChangeAnimation() const;
 };
 
-struct Climbing final : PlayerState
+struct ClimbingIdle final : PepperableState
 {
-    PlayerStateMachine* machine{};
-    int wait{};
-    float previousYDirection{};
-
-    void OnEnter();
+    void OnEnter() override;
     void Update() override;
-    void OnExit();
-    void OnPepper(std::any const& eventArgs);
+    void OnPepper(std::any const& eventArgs) override;
 
 private:
-    void ChangeAnimation(Context const& ctx) const;
+    void ChangeAnimation() const;
+};
+
+struct Climbing final : PepperableState
+{
+    void OnEnter() override;
+    void Update() override;
+    void OnPepper(std::any const& eventArgs) override;
+
+private:
+    void ChangeAnimation() const;
 };
 
 struct Dying final : PlayerState
