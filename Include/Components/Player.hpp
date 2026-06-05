@@ -36,13 +36,13 @@ protected:
     void OnDeactivate() override;
 
 private:
-    static constexpr float hitDelay{ 3.f };
+    static constexpr float pepperCooldown{ 1.f };
 
     Pepper* m_pPepper;
     MoveComponent* m_pMoveComponent;
     gla::Animation* m_pAnimation;
     gla::CollisionRect* m_pHitBox{};
-    //gla::Timer* m_pTime{};
+    gla::Timer* m_pPepperCooldownTimer{};
 
     playerstates::PlayerStateMachine m_finiteStateMachine;
 

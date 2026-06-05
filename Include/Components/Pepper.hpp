@@ -25,7 +25,7 @@ protected:
     void Update(float deltaTime) override;
 
 private:
-    static constexpr float pepperDuration{ 1.f };
+    static constexpr float pepperDuration{ .75f };
     gla::Timer* m_pTimer;
     gla::Animation* m_pAnimation{};
     gla::CollisionRect* m_pHitbox{};

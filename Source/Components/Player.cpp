@@ -36,7 +36,7 @@ Player::Player(gla::GameObject* pPlayer, Stage* pStage, Pepper* pPepper, int pla
           std::bind_front(&Player::OnDamage, this),
           glm::vec2{ 3.f, 0.f },
           glm::vec2{ 10.f, 16.f }))
-    //, m_pTime(pPlayer->AddComponent<gla::Timer>())
+    , m_pPepperCooldownTimer(pPlayer->AddComponent<gla::Timer>())
     , m_finiteStateMachine({ .animation = m_pAnimation })
 {
 }
@@ -74,7 +74,11 @@ void Player::OnActivate()
         m_playerIndex,
         [this] -> void
         {
-            std::println("Attacking!");
+            if (m_pPepperCooldownTimer->IsRunning())
+                return;
+
+            m_pPepperCooldownTimer->Start(pepperCooldown);
+
             gla::Locator::Get<gla::EventManager>().InvokeEvent(
                 PepperEvent("pepper"_h, m_playerIndex, m_pMoveComponent->GetDirection(), m_pMoveComponent->GetSpritePosition(), m_pPepper));
         });
