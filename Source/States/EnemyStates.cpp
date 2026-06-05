@@ -40,7 +40,7 @@ void PepperEventState::OnEnter(Context const& ctx)
 {
     entityIndex = ctx.entityIndex;
     animation = ctx.animation;
-    timer = ctx.timer;
+    stunTimer = ctx.stunTimer;
 
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("OnPepper"_h, this, &PepperEventState::OnPepper);
@@ -58,6 +58,9 @@ void IdleStanding::OnEnter(Context const& ctx)
     PepperEventState::OnEnter(ctx);
 
     assert(ctx.animation and "Animation cannot be null");
+    assert(ctx.stunTimer and "Timer cannot be null");
+
+    if (ctx.stunTimer->IsRunning())
     ctx.animation->SetAnimation("idle"_h, true);
 
     if (ctx.moveComponent)
@@ -88,7 +91,7 @@ void IdleStanding::OnPepper(std::any const& collisionEvent)
     if (not IsCorrectCollider(entityIndex, *args.pCollider))
         return;
 
-    machine->TransitionTo<StunnedStanding>({ .animation = animation, .timer = timer, .entityIndex = entityIndex });
+    machine->TransitionTo<StunnedStanding>({ .animation = animation, .stunTimer = stunTimer, .entityIndex = entityIndex });
 }
 
 // ==================== WALKING ====================
@@ -124,7 +127,7 @@ void Walking::OnPepper(std::any const& collisionEvent)
     if (not IsCorrectCollider(entityIndex, *args.pCollider))
         return;
 
-    machine->TransitionTo<StunnedStanding>({ .animation = animation, .timer = timer, .entityIndex = entityIndex });
+    machine->TransitionTo<StunnedStanding>({ .animation = animation, .stunTimer = stunTimer, .entityIndex = entityIndex });
 }
 
 
@@ -174,7 +177,7 @@ void Climbing::OnPepper(std::any const& collisionEvent)
     if (not IsCorrectCollider(entityIndex, *args.pCollider))
         return;
 
-    machine->TransitionTo<StunnedClimbing>({ .animation = animation, .timer = timer, .entityIndex = entityIndex });
+    machine->TransitionTo<StunnedClimbing>({ .animation = animation, .stunTimer = stunTimer, .entityIndex = entityIndex });
 }
 
 
@@ -184,15 +187,15 @@ void StunnedStanding::OnEnter(Context const& ctx)
     assert(ctx.animation and "Animation cannot be null");
     ctx.animation->SetAnimation("stunned"_h, true);
 
-    assert(ctx.timer and "Timer cannot be null");
-    ctx.timer->Start(stunTime);
+    assert(ctx.stunTimer and "Timer cannot be null");
+    ctx.stunTimer->Start(stunTime);
 }
 
 void StunnedStanding::Update(Context const& ctx)
 {
-    assert(ctx.timer and "Timer cannot be null");
+    assert(ctx.stunTimer and "Timer cannot be null");
 
-    if (ctx.timer->IsFinished())
+    if (ctx.stunTimer->IsFinished())
         machine->TransitionTo<IdleStanding>(ctx);
 }
 
@@ -203,15 +206,15 @@ void StunnedClimbing::OnEnter(Context const& ctx)
     assert(ctx.animation and "Animation cannot be null");
     ctx.animation->SetAnimation("stunned"_h, true);
 
-    assert(ctx.timer and "Timer cannot be null");
-    ctx.timer->Start(stunTime);
+    assert(ctx.stunTimer and "Timer cannot be null");
+    ctx.stunTimer->Start(stunTime);
 }
 
 void StunnedClimbing::Update(Context const& ctx)
 {
-    assert(ctx.timer and "Timer cannot be null");
+    assert(ctx.stunTimer and "Timer cannot be null");
 
-    if (ctx.timer->IsFinished())
+    if (ctx.stunTimer->IsFinished())
         machine->TransitionTo<IdleClimbing>(ctx);
 }
 
@@ -246,7 +249,7 @@ void IdleClimbing::OnPepper(std::any const& collisionEvent)
     if (not IsCorrectCollider(entityIndex, *args.pCollider))
         return;
 
-    machine->TransitionTo<StunnedClimbing>({ .animation = animation, .timer = timer, .entityIndex = entityIndex });
+    machine->TransitionTo<StunnedClimbing>({ .animation = animation, .stunTimer = stunTimer, .entityIndex = entityIndex });
 }
 
 
@@ -254,9 +257,22 @@ void IdleClimbing::OnPepper(std::any const& collisionEvent)
 void Falling::OnEnter(Context const& ctx)
 {
     assert(ctx.animation and "Animation cannot be null");
-    ctx.animation->SetAnimation("idle"_h, true);
+    assert(ctx.stunTimer and "Timer cannot be null");
+
+    if (ctx.stunTimer->IsRunning())
+        ctx.animation->SetAnimation("stunned"_h, true);
+    else
+        ctx.animation->SetAnimation("idle"_h, true);
 }
-void Falling::Update(Context const& /*ctx*/) {}
+
+void Falling::Update(Context const& ctx)
+{
+    assert(ctx.animation and "Animation cannot be null");
+    assert(ctx.stunTimer and "Timer cannot be null");
+
+    if (ctx.stunTimer->IsFinished())
+        ctx.animation->SetAnimation("idle"_h, true);
+}
 
 
 }  // namespace bt::enemystates

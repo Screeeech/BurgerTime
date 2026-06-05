@@ -33,7 +33,7 @@ struct Dying;
 struct Context final
 {
     gla::Animation* animation{};
-    gla::Timer* timer{};
+    gla::Timer* stunTimer{};
     // Enemy* enemy{};
     MoveComponent* moveComponent{};
     int entityIndex{};
@@ -53,7 +53,7 @@ struct PepperEventState : EnemyState
 
     int entityIndex{};
     gla::Animation* animation{};
-    gla::Timer* timer{};
+    gla::Timer* stunTimer{};
 
     virtual void OnEnter(Context const& ctx);
     virtual void OnExit(Context const& ctx);

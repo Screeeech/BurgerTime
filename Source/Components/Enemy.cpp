@@ -37,7 +37,7 @@ Enemy::Enemy(gla::GameObject* pOwner, Stage* pStage, int entityIndex)
           [this](auto& /*collider*/, auto& otherCollider) -> void { OnDrop(otherCollider); },
           glm::vec2{ 0.f, 12.f },
           glm::vec2{ 16.f, 4.f }))
-    , m_stateMachine({ .animation = m_pAnimation, .timer = m_pTimer, .entityIndex = m_entityIndex })
+    , m_stateMachine({ .animation = m_pAnimation, .stunTimer = m_pTimer, .entityIndex = m_entityIndex })
 {
     assert(m_pAnimation and "GameObject with Enemy component must have a valid Animation component first");
 }
@@ -45,7 +45,7 @@ void Enemy::FixedUpdate(float /*fixedDeltaTime*/)
 {
     enemystates::Context const context{
         .animation = m_pAnimation,
-        .timer = m_pTimer,
+        .stunTimer = m_pTimer,
         .moveComponent = m_pMoveComponent,
         .entityIndex = m_entityIndex,
     };
@@ -75,23 +75,25 @@ void Enemy::OnDeactivate()
 
 void Enemy::OnDeath()
 {
-    m_stateMachine.TransitionTo<enemystates::Dying>({ .animation = m_pAnimation, .timer = m_pTimer });
+    m_stateMachine.TransitionTo<enemystates::Dying>({ .animation = m_pAnimation, .stunTimer = m_pTimer, .entityIndex = m_entityIndex });
 }
 
 void Enemy::OnDrop(gla::Collider const& collider)
 {
-    m_stateMachine.TransitionTo<enemystates::Falling>({ .animation = m_pAnimation, .timer = m_pTimer });
+    m_stateMachine.TransitionTo<enemystates::Falling>({ .animation = m_pAnimation, .stunTimer = m_pTimer, .entityIndex = m_entityIndex });
     collider.m_pOwner->GetComponent<BurgerPart>()->AcquireEnemy(*m_pOwner, *this);
 }
 
 void Enemy::LandOnPlatform()
 {
-    m_stateMachine.TransitionTo<enemystates::IdleStanding>({ .animation = m_pAnimation });
-}
+    using namespace enemystates;
 
-void Enemy::OnPepper(std::any const&)
-{
-    std::println("Enemy peppereeeeeddd");
+    Context const ctx{ .animation = m_pAnimation, .stunTimer = m_pTimer, .entityIndex = m_entityIndex };
+
+    if (m_pTimer->IsRunning())
+        m_stateMachine.TransitionTo<StunnedStanding>(ctx);
+    else
+        m_stateMachine.TransitionTo<IdleStanding>(ctx);
 }
 
 void Enemy::DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
