@@ -19,9 +19,10 @@ class Stage;
 class Enemy final : public gla::Component
 {
 public:
-    explicit Enemy(gla::GameObject* pOwner, Stage* pStage, int playerIndex = 2);
+    explicit Enemy(gla::GameObject* pOwner, Stage* pStage, int entityIndex = 2);
 
     void LandOnPlatform();
+    void OnPepper(std::any const& args);
 
     int const m_entityIndex;
 

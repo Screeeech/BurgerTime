@@ -22,9 +22,9 @@ static float remainingPepperDuration{};
 
 
 // ==================== STANDING IDLE ====================
-void StandingIdle::OnEnter(Context const& context)
+void StandingIdle::OnEnter(Context const& ctx)
 {
-    auto const& [direction, animation, moveComponent, deltaTime] = context;
+    auto const& [direction, animation, moveComponent, deltaTime] = ctx;
 
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("pepper"_h, this, &StandingIdle::OnPepper);
@@ -40,36 +40,36 @@ void StandingIdle::OnEnter(Context const& context)
         moveComponent->LockOntoGround();
 }
 
-void StandingIdle::Update(Context const& context) const
+void StandingIdle::Update(Context const& ctx) const
 {
-    auto const& [direction, animation, moveComponent, deltaTime] = context;
+    auto const& [direction, animation, moveComponent, deltaTime] = ctx;
     assert(animation != nullptr and "Animation cannot be null");
 
     if (remainingPepperDuration > 0.f)
     {
         remainingPepperDuration -= deltaTime;
         remainingPepperDuration = std::max(remainingPepperDuration, 0.f);
-        ChangeAnimation(context);
+        ChangeAnimation(ctx);
     }
 
     if (direction.x != 0.f and moveComponent->CanWalk())
     {
-        machine->TransitionTo<Walking>(context);
+        machine->TransitionTo<Walking>(ctx);
         return;
     }
     if (direction.y > 0.f and moveComponent->CanClimbDown())
     {
-        machine->TransitionTo<Walking>(context);
+        machine->TransitionTo<Walking>(ctx);
         return;
     }
     if (direction.y < 0.f and moveComponent->CanClimbUp())
     {
-        machine->TransitionTo<Climbing>(context);
+        machine->TransitionTo<Climbing>(ctx);
         return;
     }
 }
 
-void StandingIdle::OnExit(Context const& /*context*/)
+void StandingIdle::OnExit(Context const& /*ctx*/)
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.UnbindEvent("pepper"_h, this);
@@ -83,37 +83,37 @@ void StandingIdle::OnPepper(std::any const& eventArgs)
     remainingPepperDuration = 1.f;
 }
 
-void StandingIdle::ChangeAnimation(Context const& context) const
+void StandingIdle::ChangeAnimation(Context const& ctx) const
 {
     if (remainingPepperDuration > 0.f)
     {
         if (previousXDirection >= 0)  // Right
-            context.animation->SetAnimation("pepperRight"_h);
+            ctx.animation->SetAnimation("pepperRight"_h);
         else if (previousXDirection < 0)  // Left
-            context.animation->SetAnimation("pepperLeft"_h);
+            ctx.animation->SetAnimation("pepperLeft"_h);
     }
     else
     {
-        context.animation->SetAnimation("idle"_h);
+        ctx.animation->SetAnimation("idle"_h);
     }
 }
 
 
 // ==================== WALKING ====================
-void Walking::OnEnter(Context const& context)
+void Walking::OnEnter(Context const& ctx)
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("pepper"_h, this, &Walking::OnPepper);
 
-    previousXDirection = context.direction.x;
+    previousXDirection = ctx.direction.x;
 
     // std::println("Entered Walking state");
-    ChangeAnimation(context);
+    ChangeAnimation(ctx);
 }
 
-void Walking::Update(Context& context)
+void Walking::Update(Context& ctx)
 {
-    auto& [direction, animation, moveComponent, deltaTime] = context;
+    auto& [direction, animation, moveComponent, deltaTime] = ctx;
     assert(animation != nullptr and "Animation cannot be null!");
 
     if (remainingPepperDuration > 0.f)
@@ -126,25 +126,25 @@ void Walking::Update(Context& context)
 
     if (direction.x == 0.f or not moveComponent->CanWalk())
     {
-        auto newContext = context;
+        auto newContext = ctx;
         newContext.direction.x = previousXDirection;
         machine->TransitionTo<StandingIdle>(newContext);
         return;
     }
     if ((direction.y < 0.f and moveComponent->CanClimbUp()) or (direction.y > 0.f and moveComponent->CanClimbDown()))
     {
-        machine->TransitionTo<Climbing>(context);
+        machine->TransitionTo<Climbing>(ctx);
         return;
     }
 
-    previousXDirection = context.direction.x;
+    previousXDirection = ctx.direction.x;
 
-    ChangeAnimation(context);
+    ChangeAnimation(ctx);
 
     moveComponent->Walk();
 }
 
-void Walking::OnExit(Context const& /*context*/)
+void Walking::OnExit(Context const& /*ctx*/)
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.UnbindEvent("pepper"_h, this);
@@ -158,12 +158,12 @@ void Walking::OnPepper(std::any const& eventArgs)
     remainingPepperDuration = 1.f;
 }
 
-void Walking::ChangeAnimation(Context const& context)
+void Walking::ChangeAnimation(Context const& ctx)
 {
-    assert(context.animation != nullptr and "Animation cannot be null!");
+    assert(ctx.animation != nullptr and "Animation cannot be null!");
 
-    auto const& direction = context.direction;
-    auto const& animation = context.animation;
+    auto const& direction = ctx.direction;
+    auto const& animation = ctx.animation;
 
     if (direction.x > 0.f)
     {
@@ -183,39 +183,36 @@ void Walking::ChangeAnimation(Context const& context)
 
 
 // ==================== CLIMBING IDLE ====================
-void ClimbingIdle::OnEnter(Context const& context)
+void ClimbingIdle::OnEnter(Context const& ctx)
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("pepper"_h, this, &ClimbingIdle::OnPepper);
 
-    previousYDirection = context.direction.y;
+    previousYDirection = ctx.direction.y;
 
     // std::println("Entered Climbing Idle state");
 
-    auto const& [direction, animation, moveComponent, deltaTime] = context;
-    assert(animation != nullptr and "Animation cannot be null!");
-    assert(direction.y != 0 and "Previous direction cannot be 0 when entering climbing idle state");
+    assert(ctx.animation != nullptr and "Animation cannot be null!");
+    assert(ctx.direction.y != 0 and "Previous direction cannot be 0 when entering climbing idle state");
 
-    ChangeAnimation(context);
+    ChangeAnimation(ctx);
 }
 
-void ClimbingIdle::Update(Context& context) const
+void ClimbingIdle::Update(Context& ctx) const
 {
-    auto const& [direction, animation, moveComponent, deltaTime] = context;
-
     if (remainingPepperDuration > 0.f)
     {
-        remainingPepperDuration -= deltaTime;
+        remainingPepperDuration -= ctx.deltaTime;
         if (remainingPepperDuration <= 0.f)
             remainingPepperDuration = 0.f;
-        ChangeAnimation(context);
+        ChangeAnimation(ctx);
     }
 
-    if (direction.y != 0)
-        machine->TransitionTo<Climbing>(context);
+    if (ctx.direction.y != 0)
+        machine->TransitionTo<Climbing>(ctx);
 }
 
-void ClimbingIdle::OnExit(Context const& /*context*/)
+void ClimbingIdle::OnExit(Context const& /*ctx*/)
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.UnbindEvent("pepper"_h, this);
@@ -229,19 +226,19 @@ void ClimbingIdle::OnPepper(std::any const& eventArgs)
     remainingPepperDuration = 1.f;
 }
 
-void ClimbingIdle::ChangeAnimation(Context const& context) const
+void ClimbingIdle::ChangeAnimation(Context const& ctx) const
 {
     // Up
     if (previousYDirection < 0)
     {
         if (remainingPepperDuration > 0.f)
         {
-            context.animation->SetAnimation("pepperUp"_h);
+            ctx.animation->SetAnimation("pepperUp"_h);
         }
         else
         {
-            context.animation->SetAnimation("walkUp"_h);
-            context.animation->SetFrame(1, false);  // Idle frame
+            ctx.animation->SetAnimation("walkUp"_h);
+            ctx.animation->SetFrame(1, false);  // Idle frame
         }
     }
     // Down
@@ -249,29 +246,29 @@ void ClimbingIdle::ChangeAnimation(Context const& context) const
     {
         if (remainingPepperDuration > 0.f)
         {
-            context.animation->SetAnimation("pepperDown"_h);
+            ctx.animation->SetAnimation("pepperDown"_h);
         }
         else
         {
-            context.animation->SetAnimation("walkDown"_h);
-            context.animation->SetFrame(1, false);  // Idle frame
+            ctx.animation->SetAnimation("walkDown"_h);
+            ctx.animation->SetFrame(1, false);  // Idle frame
         }
     }
 }
 
 
 // ==================== CLIMBING ====================
-void Climbing::OnEnter(Context const& context)
+void Climbing::OnEnter(Context const& ctx)
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("pepper"_h, this, &Climbing::OnPepper);
 
-    auto& [direction, animation, moveComponent, deltaTime] = context;
+    auto& [direction, animation, moveComponent, deltaTime] = ctx;
     assert(animation != nullptr and "Animation cannot be null!");
     assert(direction.y != 0.f and "Y input direction cannot be 0 when entering climbing state");
 
     // std::println("Entered Climbing state");
-    ChangeAnimation(context);
+    ChangeAnimation(ctx);
 
     previousYDirection = direction.y;
 
@@ -279,9 +276,9 @@ void Climbing::OnEnter(Context const& context)
     moveComponent->LockOntoLadder();
 }
 
-void Climbing::Update(Context& context)
+void Climbing::Update(Context& ctx)
 {
-    auto& [direction, animation, moveComponent, deltaTime] = context;
+    auto& [direction, animation, moveComponent, deltaTime] = ctx;
     assert(animation != nullptr and "Animation cannot be null!");
 
     if (remainingPepperDuration > 0.f)
@@ -296,27 +293,27 @@ void Climbing::Update(Context& context)
         (direction.y < 0 and not moveComponent->CanClimbUp()) or
         (direction.y > 0 and not moveComponent->CanClimbDown())))
     {
-        machine->TransitionTo<StandingIdle>(context);
+        machine->TransitionTo<StandingIdle>(ctx);
         return;
     }
     // clang-format on
 
     if (direction.y == 0)
     {
-        auto newContext = context;
+        auto newContext = ctx;
         newContext.direction.y = previousYDirection;
         machine->TransitionTo<ClimbingIdle>(newContext);
         return;
     }
 
-    ChangeAnimation(context);
+    ChangeAnimation(ctx);
 
     previousYDirection = direction.y;
 
     moveComponent->Climb();
 }
 
-void Climbing::OnExit(Context const& /*context*/)
+void Climbing::OnExit(Context const& /*ctx*/)
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.UnbindEvent("pepper"_h, this);
@@ -330,9 +327,9 @@ void Climbing::OnPepper(std::any const& eventArgs)
     remainingPepperDuration = 1.f;
 }
 
-void Climbing::ChangeAnimation(Context const& context) const
+void Climbing::ChangeAnimation(Context const& ctx) const
 {
-    auto const& animation = context.animation;
+    auto const& animation = ctx.animation;
 
     if (previousYDirection < 0.f)
     {
@@ -352,20 +349,20 @@ void Climbing::ChangeAnimation(Context const& context) const
 
 
 // ==================== DYING ====================
-void Dying::OnEnter(Context const& context)
+void Dying::OnEnter(Context const& ctx)
 {
-    assert(context.animation and "Animation cannot be null");
+    assert(ctx.animation and "Animation cannot be null");
 
-    context.animation->SetAnimation("death"_h, true);
+    ctx.animation->SetAnimation("death"_h, true);
 }
 
-void Dying::Update(Context const& context)
+void Dying::Update(Context const& ctx)
 {
-    wait += context.deltaTime;
+    wait += ctx.deltaTime;
     if (wait >= totalTime)
         gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "reset"_h });
     if (wait >= animationWait)
-        context.animation->SetAnimation("dying"_h, true);
+        ctx.animation->SetAnimation("dying"_h, true);
 }
 
 }  // namespace bt::playerstates

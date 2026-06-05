@@ -41,13 +41,13 @@ struct StandingIdle final
     PlayerStateMachine* machine{};
     float previousXDirection{};
 
-    void OnEnter(Context const& context);
-    void Update(Context const& context) const;
-    void OnExit(Context const& context);
+    void OnEnter(Context const& ctx);
+    void Update(Context const& ctx) const;
+    void OnExit(Context const& ctx);
     void OnPepper(std::any const& eventArgs);
 
 private:
-    void ChangeAnimation(Context const& context) const;
+    void ChangeAnimation(Context const& ctx) const;
 };
 
 struct Walking final
@@ -55,13 +55,13 @@ struct Walking final
     PlayerStateMachine* machine{};
     float previousXDirection{};
 
-    void OnEnter(Context const& context);
-    void Update(Context& context);
-    void OnExit(Context const& context);
+    void OnEnter(Context const& ctx);
+    void Update(Context& ctx);
+    void OnExit(Context const& ctx);
     void OnPepper(std::any const& eventArgs);
 
 private:
-    static void ChangeAnimation(Context const& context);
+    static void ChangeAnimation(Context const& ctx);
 };
 
 struct ClimbingIdle final
@@ -69,13 +69,13 @@ struct ClimbingIdle final
     PlayerStateMachine* machine{};
     float previousYDirection{};
 
-    void OnEnter(Context const& context);
-    void Update(Context& context) const;
-    void OnExit(Context const& context);
+    void OnEnter(Context const& ctx);
+    void Update(Context& ctx) const;
+    void OnExit(Context const& ctx);
     void OnPepper(std::any const& eventArgs);
 
 private:
-    void ChangeAnimation(Context const& context) const;
+    void ChangeAnimation(Context const& ctx) const;
 };
 
 struct Climbing final
@@ -84,13 +84,13 @@ struct Climbing final
     int wait{};
     float previousYDirection{};
 
-    void OnEnter(Context const& context);
-    void Update(Context& context);
-    void OnExit(Context const& context);
+    void OnEnter(Context const& ctx);
+    void Update(Context& ctx);
+    void OnExit(Context const& ctx);
     void OnPepper(std::any const& eventArgs);
 
 private:
-    void ChangeAnimation(Context const& context) const;
+    void ChangeAnimation(Context const& ctx) const;
 };
 
 struct Dying final
@@ -100,8 +100,8 @@ struct Dying final
     static constexpr float animationWait{ 1.8f };
     static constexpr float totalTime{ 6.f };
 
-    static void OnEnter(Context const& context);
-    void Update(Context const& context);
+    static void OnEnter(Context const& ctx);
+    void Update(Context const& ctx);
 };
 
 

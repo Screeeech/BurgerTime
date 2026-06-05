@@ -27,9 +27,7 @@ concept HasValidUpdateFunction = requires(State state, Context& context) {
 };
 
 template<typename State, typename StateMachine>
-concept HasStateMachinePointer = requires(State state) {
-    requires std::same_as<decltype(state.machine), StateMachine*>;
-};
+concept HasStateMachinePointer = requires(State state) { requires std::same_as<decltype(state.machine), StateMachine*>; };
 
 template<typename T, typename Context>
 concept HasOnEnter = requires(T state, Context context) {
@@ -116,6 +114,22 @@ private:
             m_currentState);
     }
 };
+
+template<typename Context, typename StateMachine>
+struct HelperState
+{
+    HelperState() = default;
+    HelperState(HelperState const&) = default;
+    HelperState(HelperState&&) = default;
+    auto operator=(HelperState const&) -> HelperState& = default;
+    auto operator=(HelperState&&) -> HelperState& = default;
+    virtual ~HelperState() = default;
+
+    StateMachine* machine;
+
+    virtual void Update(Context const& ctx) = 0;
+};
+
 
 }  // namespace bt
 
