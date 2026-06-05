@@ -28,7 +28,7 @@ void burgerpartstates::Idle::Update(Context const& ctx)
     if (ctx.timer.IsFinished() and not hasReset)
     {
         for (auto const& collider : ctx.part.GetPieces() | std::views::keys)
-            collider->CombineCollisionLayer(gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4);
+            collider->EnableCollisionLayers(gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4);
 
         hasReset = true;
     }
@@ -56,10 +56,10 @@ void burgerpartstates::Falling::OnEnter(Context const& ctx)
     for (auto const& collider : ctx.part.GetPieces() | std::views::keys)
     {
         // Turn off player and burger collision layer
-        collider->ClearCollisionLayer(gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4);
+        collider->DisableCollisionLayers(gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4);
 
         // Turn on enemy feet collision mask
-        collider->CombineCollisionMask(gla::Collider::Bits::Layer6);
+        collider->EnableCollisionMasks(gla::Collider::Bits::Layer6);
     }
 }
 
@@ -69,7 +69,7 @@ void burgerpartstates::Falling::Update(Context const& ctx)
     {
         for (auto const& collider : ctx.part.GetPieces() | std::views::keys)
             // Turn off enemy feet collision mask
-            collider->ClearCollisionMask(gla::Collider::Bits::Layer6);
+            collider->DisableCollisionMasks(gla::Collider::Bits::Layer6);
 
         hasResetCollider = true;
     }
@@ -86,7 +86,7 @@ void burgerpartstates::Falling::OnExit(Context const& ctx)
     for (auto const& [collider, sprite] : ctx.part.GetPieces())
     {
         // Turn off falling collider
-        collider->ClearCollisionMask(gla::Collider::Bits::Layer6);
+        collider->DisableCollisionMasks(gla::Collider::Bits::Layer6);
 
         // Reset sprite y offset
         sprite->m_offset.y = 0;
