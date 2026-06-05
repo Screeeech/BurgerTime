@@ -33,18 +33,30 @@ Enemy::Enemy(gla::GameObject* pOwner, Stage* pStage, int entityIndex)
           [this](auto& /*collider*/, auto& otherCollider) -> void { OnDrop(otherCollider); },
           glm::vec2{ 0.f, 12.f },
           glm::vec2{ 16.f, 4.f }))
-    , m_pStateMachine(pOwner->AddComponent<enemystates::EnemyStateMachine>(
-          enemystates::Context{
-              .animation = *m_pAnimation,
-              .stunTimer = *m_pTimer,
-              .moveComponent = *m_pMoveComponent,
-              .playerHitbox = *m_pPlayerHitBox,
-              .headBurtBox = *m_pHeadHurtBox,
-              .feetHurtBox = *m_pFeetHurtBox,
-              .entityIndex = m_entityIndex,
-          }))
+    , m_pStateMachine(pOwner->AddComponent<enemystates::EnemyStateMachine>(enemystates::Context{
+          .animation = *m_pAnimation,
+          .stunTimer = *m_pTimer,
+          .moveComponent = *m_pMoveComponent,
+          .playerHitbox = *m_pPlayerHitBox,
+          .headBurtBox = *m_pHeadHurtBox,
+          .feetHurtBox = *m_pFeetHurtBox,
+          .entityIndex = m_entityIndex,
+      }))
 {
     assert(m_pAnimation and "GameObject with Enemy component must have a valid Animation component first");
+}
+
+void Enemy::LandOnPlatform() const
+{
+    using namespace enemystates;
+
+    // Re-enable feet hurtbox for next
+    m_pFeetHurtBox->EnableCollisionLayers(gla::Collider::Bits::Layer6);
+
+    if (m_pTimer->IsRunning())
+        m_pStateMachine->TransitionTo<StunnedStanding>();
+    else
+        m_pStateMachine->TransitionTo<IdleStanding>();
 }
 
 void Enemy::OnActivate()
@@ -75,21 +87,14 @@ void Enemy::OnDeath() const
 
 void Enemy::OnDrop(gla::Collider const& collider)
 {
-    m_pStateMachine->TransitionTo<enemystates::Falling>();
     collider.m_pOwner->GetComponent<BurgerPart>()->AcquireEnemy(*m_pOwner, *this);
+
+    // When falling we disable the feet hurt box so no 2nd burger parts can be triggered
+    m_pFeetHurtBox->DisableCollisionLayers(gla::Collider::Bits::Layer6);
+
+    m_pStateMachine->TransitionTo<enemystates::Falling>();
 }
-
-void Enemy::LandOnPlatform() const
-{
-    using namespace enemystates;
-
-    if (m_pTimer->IsRunning())
-        m_pStateMachine->TransitionTo<StunnedStanding>();
-    else
-        m_pStateMachine->TransitionTo<IdleStanding>();
-}
-
-void Enemy::DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
+void Enemy::DefineAnimationsHotDog(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
 {
     auto const size{ spriteSheetTexture->GetSize() };
     auto const cols{ static_cast<int>(size.x / 16.f) };
@@ -170,6 +175,89 @@ void Enemy::DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Tex
 
     animation.SetAnimation("idle"_h, true);
 }
+
+void Enemy::DefineAnimationsEgg(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
+{
+    auto const size{ spriteSheetTexture->GetSize() };
+    auto const cols{ static_cast<int>(size.x / 16.f) };
+    auto const rows{ static_cast<int>(size.y / 16.f) };
+    auto& spriteSheet = animation.AddSpriteSheet(spriteSheetTexture, cols, rows);
+
+    animation.AddAnimation(
+        "idle"_h,
+        spriteSheet,
+        {
+            { .colIdx = 0, .rowIdx = 6 },
+        });
+    animation.AddAnimation(
+        "walkUp"_h,
+        spriteSheet,
+        {
+            { .colIdx = 4, .rowIdx = 6, .duration = 6.f / 60.f },
+            { .colIdx = 5, .rowIdx = 6, .duration = 6.f / 60.f },
+        });
+    animation.AddAnimation(
+        "walkDown"_h,
+        spriteSheet,
+        {
+            { .colIdx = 0, .rowIdx = 6, .duration = 6.f / 60.f },
+            { .colIdx = 1, .rowIdx = 6, .duration = 6.f / 60.f },
+        });
+    animation.AddAnimation(
+        "walkLeft"_h,
+        spriteSheet,
+        {
+            { .colIdx = 2, .rowIdx = 6, .duration = 6.f / 60.f },
+            { .colIdx = 3, .rowIdx = 6, .duration = 6.f / 60.f },
+        });
+    animation.AddAnimation(
+        "walkRight"_h,
+        spriteSheet,
+        {
+            { .colIdx = 2, .rowIdx = 6, .duration = 6.f / 60.f, .flipX = true },
+            { .colIdx = 3, .rowIdx = 6, .duration = 6.f / 60.f, .flipX = true },
+        });
+    animation.AddAnimation(
+        "stunned"_h,
+        spriteSheet,
+        {
+            { .colIdx = 4, .rowIdx = 7, .duration = 12.f / 60.f, .flipX = true },
+            { .colIdx = 5, .rowIdx = 7, .duration = 12.f / 60.f, .flipX = true },
+        });
+    animation.AddAnimation(
+        "dying"_h,
+        spriteSheet,
+        {
+            {
+                .colIdx = 0,
+                .rowIdx = 7,
+                .duration = 15.f / 60.f,
+            },
+            {
+                .colIdx = 1,
+                .rowIdx = 7,
+                .duration = 15.f / 60.f,
+            },
+            {
+                .colIdx = 2,
+                .rowIdx = 7,
+                .duration = 15.f / 60.f,
+            },
+            {
+                .colIdx = 3,
+                .rowIdx = 7,
+                .duration = 15.f / 60.f,
+            },
+            {
+                .colIdx = 6,
+                .rowIdx = 7,
+                .duration = 15.f / 60.f,
+            },
+        });
+
+    animation.SetAnimation("idle"_h, true);
+}
+
 
 
 }  // namespace bt

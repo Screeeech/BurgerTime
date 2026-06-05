@@ -74,6 +74,11 @@ void BurgerPart::ReleaseEnemies()
     m_fallingEnemies.clear();
 }
 
+auto BurgerPart::GetEnemyCount() const -> int
+{
+    return m_fallingEnemies.size();
+}
+
 auto BurgerPart::GetSteppedPieces() const -> int
 {
     return m_steppedPieces;
@@ -120,13 +125,6 @@ void BurgerPart::OnPieceStep(long index)
 
     sprite->m_offset.y = pieceStepOffset;
     ++m_steppedPieces;
-
-    //// If burger collision
-    // if (collider.m_collisionMasks & gla::Collider::Bits::Layer4)
-    //{
-    //     // Turn off burger collisions temporarily
-    //     hitbox->m_collisionLayers &= ~gla::Collider::Bits::Layer4;
-    // }
 }
 
 

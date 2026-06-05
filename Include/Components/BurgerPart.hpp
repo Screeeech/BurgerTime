@@ -44,26 +44,28 @@ public:
     static constexpr int pieceCount{ 4 };
     using Pieces = std::array<std::pair<gla::CollisionRect*, gla::Sprite*>, pieceCount>;
 
-
     explicit BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
 
     void AcquireEnemy(gla::GameObject& enemyObject, Enemy& enemy);
     void ReleaseEnemies();
+    auto GetEnemyCount() const -> int;
 
     auto GetSteppedPieces() const -> int;
     void SetSteppedPieces(int steppedPieces);
 
     auto GetPieces() -> Pieces&;
 
+    int m_dropCount{};
+    bool m_firstFall{};
 private:
     static auto GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect;
     void OnPieceStep(long index);
 
     gla::Timer* m_pResetTimer{};
     Pieces m_pieces{};
-    std::vector<Enemy*> m_fallingEnemies;
     int m_steppedPieces{};
     Stage* m_pStage;
+    std::vector<Enemy*> m_fallingEnemies;
     burgerpartstates::BurgerStateMachine* m_pStateMachine;
 };
 

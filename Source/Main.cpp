@@ -112,11 +112,23 @@ void load()
         inputManager.RegisterInput(SDL_SCANCODE_E, gla::Input::Type::released, "attack"_h, 0);
     }
 
+    // Mr Egg
+    {
+        auto* enemy = stageObject->CreateChild(50, -2, "Mr. Egg");
+        bt::Enemy::DefineAnimationsEgg(*enemy->AddComponent<gla::Animation>(bt::layers::enemies), spriteSheetTexture);
+        enemy->AddComponent<bt::Enemy>(stage, 3);
+
+        inputManager.RegisterInput(SDL_SCANCODE_K, gla::Input::Type::held, "moveUp"_h, 3);
+        inputManager.RegisterInput(SDL_SCANCODE_H, gla::Input::Type::held, "moveLeft"_h, 3);
+        inputManager.RegisterInput(SDL_SCANCODE_J, gla::Input::Type::held, "moveDown"_h, 3);
+        inputManager.RegisterInput(SDL_SCANCODE_L, gla::Input::Type::held, "moveRight"_h, 3);
+    }
+
     // Mr Hotdog
     {
         auto* enemy = stageObject->CreateChild(50, -2, "Mr. Hotdog");
-        bt::Enemy::DefineAnimations(*enemy->AddComponent<gla::Animation>(bt::layers::enemies), spriteSheetTexture);
-        enemy->AddComponent<bt::Enemy>(stage);
+        bt::Enemy::DefineAnimationsHotDog(*enemy->AddComponent<gla::Animation>(bt::layers::enemies), spriteSheetTexture);
+        enemy->AddComponent<bt::Enemy>(stage, 2);
 
         inputManager.RegisterInput(SDL_SCANCODE_UP, gla::Input::Type::held, "moveUp"_h, 2);
         inputManager.RegisterInput(SDL_SCANCODE_LEFT, gla::Input::Type::held, "moveLeft"_h, 2);

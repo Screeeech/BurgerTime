@@ -23,6 +23,7 @@ namespace burgerpartstates
 
 struct Idle;
 struct Falling;
+struct Waiting;
 struct Finished;
 
 struct Context final
@@ -33,7 +34,7 @@ struct Context final
     Stage& stage;
 };
 
-using BurgerStateMachine = StateMachine<Context, Idle, Falling, Finished>;
+using BurgerStateMachine = StateMachine<Context, Idle, Falling, Waiting, Finished>;
 using BurgerState = HelperState<Context, BurgerStateMachine>;
 
 struct Idle final : BurgerState
@@ -59,9 +60,16 @@ private:
     static auto IsOnPlatform(gla::Transform const& transform, Stage const& stage) -> bool;
 };
 
+struct Waiting final : BurgerState
+{
+    static constexpr float waitTime{ .5f };
+
+    void OnEnter() const;
+    void Update() override;
+};
+
 struct Finished final : BurgerState
 {
-    // void OnEnter();
     void Update() override;
 };
 

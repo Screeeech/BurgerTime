@@ -45,7 +45,8 @@ private:
 
 public:
     // Helper functions
-    static void DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
+    static void DefineAnimationsHotDog(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
+    static void DefineAnimationsEgg(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
 };
 
 }  // namespace bt

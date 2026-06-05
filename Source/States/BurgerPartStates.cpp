@@ -58,13 +58,26 @@ void burgerpartstates::Falling::OnEnter() const
         // Turn on enemy feet and head collision mask
         collider->EnableCollisionMasks(gla::Collider::Bits::Layer5 | gla::Collider::Bits::Layer6);
     }
+
+    // If this isn't the first time we're falling, set first fall
+    if (not ctx->part.m_firstFall and ctx->part.GetEnemyCount() == 0)
+        ctx->part.m_firstFall = true;
 }
 
 void burgerpartstates::Falling::Update()
 {
+    auto& part = ctx->part;
+
     if (not hasResetCollider)
     {
-        for (auto const& collider : ctx->part.GetPieces() | std::views::keys)
+        if (part.m_firstFall and part.GetEnemyCount() > 0)
+        {
+            part.m_dropCount = part.GetEnemyCount();
+            part.m_firstFall = false;
+        }
+
+
+        for (auto const& collider : part.GetPieces() | std::views::keys)
             // Turn off enemy feet collision mask
             collider->DisableCollisionMasks(gla::Collider::Bits::Layer6);
 
@@ -73,7 +86,12 @@ void burgerpartstates::Falling::Update()
 
     ctx->transform.ChangeLocalPosition({ 0.f, BurgerPart::fallingSpeed * gla::Time::Get().FixedDeltaTime() });
     if (IsOnPlatform(ctx->transform, ctx->stage))
-        machine->TransitionTo<Idle>();
+    {
+        if (part.m_dropCount > 0)
+            machine->TransitionTo<Waiting>();
+        else
+            machine->TransitionTo<Idle>();
+    }
 }
 
 void burgerpartstates::Falling::OnExit() const
@@ -87,7 +105,8 @@ void burgerpartstates::Falling::OnExit() const
         sprite->m_offset.y = 0;
     }
 
-    ctx->part.ReleaseEnemies();
+    if (ctx->part.m_dropCount == 0)
+        ctx->part.ReleaseEnemies();
 }
 
 auto burgerpartstates::Falling::IsOnPlatform(gla::Transform const& transform, Stage const& stage) -> bool
@@ -104,6 +123,18 @@ auto burgerpartstates::Falling::IsOnPlatform(gla::Transform const& transform, St
     }
 
     return false;
+}
+
+void burgerpartstates::Waiting::OnEnter() const
+{
+    ctx->timer.Start(waitTime);
+    ctx->part.m_dropCount--;
+}
+
+void burgerpartstates::Waiting::Update()
+{
+    if (ctx->timer.IsFinished())
+        machine->TransitionTo<Falling>();
 }
 
 void burgerpartstates::Finished::Update() {}
