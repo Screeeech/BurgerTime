@@ -56,11 +56,15 @@ void IdleStanding::OnEnter()
     std::println("Enemy entered idle standing state");
 
     ctx->animation.SetAnimation("idle"_h, true);
-    ctx->moveComponent.LockOntoGround();
 }
 
 void IdleStanding::Update()
 {
+    if (nextFrame)
+        ctx->moveComponent.LockOntoGround();
+    else
+        nextFrame = true;
+
 
     if ((ctx->moveComponent.GetDirection().y < 0 and ctx->moveComponent.CanClimbUp()) or
         (ctx->moveComponent.GetDirection().y > 0 and ctx->moveComponent.CanClimbDown()))

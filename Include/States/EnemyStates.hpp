@@ -65,6 +65,8 @@ private:
 
 struct IdleStanding final : PepperEventState
 {
+    bool nextFrame{};
+
     void OnEnter() override;
     void Update() override;
     // void OnExit() override;
