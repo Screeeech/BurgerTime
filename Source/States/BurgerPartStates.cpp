@@ -81,7 +81,7 @@ void burgerpartstates::Falling::OnExit() const
     for (auto const& [collider, sprite] : ctx->part.GetPieces())
     {
         // Turn off falling collider
-        collider->DisableCollisionMasks(gla::Collider::Bits::Layer6);
+        collider->DisableCollisionMasks(gla::Collider::Bits::Layer5 | gla::Collider::Bits::Layer6);
 
         // Reset sprite y offset
         sprite->m_offset.y = 0;

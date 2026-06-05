@@ -37,7 +37,9 @@ struct Context final
     gla::Timer& stunTimer;
     // Enemy* enemy{};
     MoveComponent& moveComponent;
-    gla::Collider& hitBox;
+    gla::Collider& playerHitbox;
+    gla::Collider& headBurtBox;
+    gla::Collider& feetHurtBox;
     int entityIndex;
 };
 

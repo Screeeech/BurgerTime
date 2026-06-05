@@ -34,7 +34,7 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, s
 
                   hitbox = pOwner->AddComponent<gla::CollisionRect>(
                       gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4,
-                      gla::Collider::Bits::Layer4 | gla::Collider::Bits::Layer5,
+                      gla::Collider::Bits::Layer4,
                       [this, i](gla::Collider&, gla::Collider&) -> void { OnPieceStep(i); },
                       glm::vec2{ xOffset, 0.f },
                       glm::vec2(pieceSize));

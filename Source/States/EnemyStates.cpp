@@ -134,8 +134,8 @@ void Climbing::OnEnter()
 
 void Climbing::Update()
 {
-    //assert(ctx->animation and "Animation cannot be null");
-    //assert(ctx->moveComponent and "MoveComponent cannot be null");
+    // assert(ctx->animation and "Animation cannot be null");
+    // assert(ctx->moveComponent and "MoveComponent cannot be null");
 
     // clang-format off
     if (ctx->moveComponent.IsOnGround() and
@@ -178,19 +178,19 @@ void StunnedStanding::OnEnter() const
 {
     std::println("Enemy entered stunned standing state");
 
-    //assert(ctx->animation and "Animation cannot be null");
+    // assert(ctx->animation and "Animation cannot be null");
     ctx->animation.SetAnimation("stunned"_h, true);
 
-    //assert(ctx->stunTimer and "Timer cannot be null");
+    // assert(ctx->stunTimer and "Timer cannot be null");
     ctx->stunTimer.Start(stunTime);
 
-    //assert(ctx->hitBox and "HitBox cannot be null");
-    ctx->hitBox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
+    // assert(ctx->hitBox and "HitBox cannot be null");
+    ctx->playerHitbox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
 }
 
 void StunnedStanding::Update()
 {
-    //assert(ctx->stunTimer and "Timer cannot be null");
+    // assert(ctx->stunTimer and "Timer cannot be null");
 
     if (ctx->stunTimer.IsFinished())
         machine->TransitionTo<IdleStanding>();
@@ -198,8 +198,8 @@ void StunnedStanding::Update()
 
 void StunnedStanding::OnExit() const
 {
-    //assert(ctx->hitBox and "HitBox cannot be null");
-    ctx->hitBox.EnableCollisionMasks(gla::Collider::Bits::Layer2);
+    // assert(ctx->hitBox and "HitBox cannot be null");
+    ctx->playerHitbox.EnableCollisionMasks(gla::Collider::Bits::Layer2);
 }
 
 
@@ -208,19 +208,19 @@ void StunnedClimbing::OnEnter() const
 {
     std::println("Enemy entered stunned climbing state");
 
-    //assert(ctx->animation and "Animation cannot be null");
+    // assert(ctx->animation and "Animation cannot be null");
     ctx->animation.SetAnimation("stunned"_h, true);
 
-    //assert(ctx->stunTimer and "Timer cannot be null");
+    // assert(ctx->stunTimer and "Timer cannot be null");
     ctx->stunTimer.Start(stunTime);
 
-    //assert(ctx->hitBox and "HitBox cannot be null");
-    ctx->hitBox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
+    // assert(ctx->hitBox and "HitBox cannot be null");
+    ctx->playerHitbox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
 }
 
 void StunnedClimbing::Update()
 {
-    //assert(ctx->stunTimer and "Timer cannot be null");
+    // assert(ctx->stunTimer and "Timer cannot be null");
 
     if (ctx->stunTimer.IsFinished())
         machine->TransitionTo<IdleClimbing>();
@@ -228,38 +228,35 @@ void StunnedClimbing::Update()
 
 void StunnedClimbing::OnExit() const
 {
-    //assert(ctx->hitBox and "HitBox cannot be null");
-    ctx->hitBox.EnableCollisionMasks(gla::Collider::Bits::Layer2);
+    // assert(ctx->hitBox and "HitBox cannot be null");
+    ctx->playerHitbox.EnableCollisionMasks(gla::Collider::Bits::Layer2);
 }
 
 
 // ==================== DYING ====================
 void Dying::OnEnter() const
 {
-    std::println("Enemy entered dying state");
-
-    //assert(ctx->animation and "Animation cannot be null");
     ctx->animation.SetAnimation("dying"_h, true, false);
 
-    //assert(ctx->hitBox and "HitBox cannot be null");
-    ctx->hitBox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
+    // Disable all collisions
+    ctx->playerHitbox.SetCollisionLayers(0);
+    ctx->playerHitbox.SetCollisionMasks(0);
+    ctx->headBurtBox.SetCollisionLayers(0);
+    ctx->headBurtBox.SetCollisionMasks(0);
+    ctx->feetHurtBox.SetCollisionLayers(0);
+    ctx->feetHurtBox.SetCollisionMasks(0);
 }
 void Dying::Update() {}
 
 // ==================== CLIMBING IDLE ====================
 void IdleClimbing::OnEnter()
 {
-    std::println("Enemy entered idle climbing state");
-
     PepperEventState::OnEnter();
 
-    //assert(ctx->animation and "Animation cannot be null");
     ctx->animation.SetAnimation("idle"_h);
 }
 void IdleClimbing::Update()
 {
-    //assert(ctx->moveComponent and "MoveComponent cannot be null");
-
     if (ctx->moveComponent.GetDirection().y != 0)
         machine->TransitionTo<Climbing>();
 }
@@ -279,11 +276,7 @@ void Falling::OnEnter() const
 {
     std::println("Enemy entered falling state");
 
-    //assert(ctx->animation and "Animation cannot be null");
-    //assert(ctx->stunTimer and "Timer cannot be null");
-    //assert(ctx->hitBox and "HitBox cannot be null");
-
-    ctx->hitBox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
+    ctx->playerHitbox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
 
     if (ctx->stunTimer.IsRunning())
         ctx->animation.SetAnimation("stunned"_h, true);
@@ -293,17 +286,13 @@ void Falling::OnEnter() const
 
 void Falling::Update()
 {
-    //assert(ctx->animation and "Animation cannot be null");
-    //assert(ctx->stunTimer and "Timer cannot be null");
-
     if (ctx->stunTimer.IsFinished())
         ctx->animation.SetAnimation("idle"_h, true);
 }
 
 void Falling::OnExit() const
 {
-    //assert(ctx->hitBox and "HitBox cannot be null");
-    ctx->hitBox.EnableCollisionMasks(gla::Collider::Bits::Layer2);
+    ctx->playerHitbox.EnableCollisionMasks(gla::Collider::Bits::Layer2);
 }
 
 

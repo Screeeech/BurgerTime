@@ -38,7 +38,9 @@ Enemy::Enemy(gla::GameObject* pOwner, Stage* pStage, int entityIndex)
               .animation = *m_pAnimation,
               .stunTimer = *m_pTimer,
               .moveComponent = *m_pMoveComponent,
-              .hitBox = *m_pPlayerHitBox,
+              .playerHitbox = *m_pPlayerHitBox,
+              .headBurtBox = *m_pHeadHurtBox,
+              .feetHurtBox = *m_pFeetHurtBox,
               .entityIndex = m_entityIndex,
           }))
 {
