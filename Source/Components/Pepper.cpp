@@ -19,7 +19,7 @@ Pepper::Pepper(gla::GameObject* pOwner, int zIndex)
     , m_pAnimation(pOwner->AddComponent<gla::Animation>(zIndex))
     , m_pHitbox(pOwner->AddComponent<gla::CollisionRect>(
           0,
-          static_cast<uint32_t>(gla::Collider::Bits::Layer1),
+          gla::Collider::Bits::Layer1,
           gla::CollisionCallback{},
           glm::vec2{},
           glm::vec2{ 16.f, 16.f },

@@ -61,6 +61,7 @@ void IdleStanding::OnEnter()
 
 void IdleStanding::Update()
 {
+
     if ((ctx->moveComponent.GetDirection().y < 0 and ctx->moveComponent.CanClimbUp()) or
         (ctx->moveComponent.GetDirection().y > 0 and ctx->moveComponent.CanClimbDown()))
     {
@@ -78,7 +79,7 @@ void IdleStanding::Update()
 void IdleStanding::OnPepper(std::any const& collisionEvent)
 {
     auto const& args = std::any_cast<gla::CollisionEvent const&>(collisionEvent);
-    if (not IsCorrectCollider(entityIndex, *args.pCollider))
+    if (not IsCorrectCollider(ctx->entityIndex, *args.pCollider))
         return;
 
     machine->TransitionTo<StunnedStanding>();
@@ -87,9 +88,6 @@ void IdleStanding::OnPepper(std::any const& collisionEvent)
 // ==================== WALKING ====================
 void Walking::Update()
 {
-    // assert(ctx->animation and "Animation cannot be null");
-    // assert(ctx->moveComponent and "MoveComponent cannot be null");
-
     if (ctx->moveComponent.GetDirection().x < 0)
         ctx->animation.SetAnimation("walkLeft"_h, true);
     if (ctx->moveComponent.GetDirection().x > 0)
@@ -114,7 +112,7 @@ void Walking::Update()
 void Walking::OnPepper(std::any const& collisionEvent)
 {
     auto const& args = std::any_cast<gla::CollisionEvent const&>(collisionEvent);
-    if (not IsCorrectCollider(entityIndex, *args.pCollider))
+    if (not IsCorrectCollider(ctx->entityIndex, *args.pCollider))
         return;
 
     machine->TransitionTo<StunnedStanding>();
@@ -128,15 +126,11 @@ void Climbing::OnEnter()
 
     std::println("Enemy entered climbing state");
 
-    // if (ctx->moveComponent)
     ctx->moveComponent.LockOntoLadder();
 }
 
 void Climbing::Update()
 {
-    // assert(ctx->animation and "Animation cannot be null");
-    // assert(ctx->moveComponent and "MoveComponent cannot be null");
-
     // clang-format off
     if (ctx->moveComponent.IsOnGround() and
         ((ctx->moveComponent.GetDirection().y == 0) or
@@ -166,7 +160,7 @@ void Climbing::Update()
 void Climbing::OnPepper(std::any const& collisionEvent)
 {
     auto const& args = std::any_cast<gla::CollisionEvent const&>(collisionEvent);
-    if (not IsCorrectCollider(entityIndex, *args.pCollider))
+    if (not IsCorrectCollider(ctx->entityIndex, *args.pCollider))
         return;
 
     machine->TransitionTo<StunnedClimbing>();
@@ -264,7 +258,7 @@ void IdleClimbing::Update()
 void IdleClimbing::OnPepper(std::any const& collisionEvent)
 {
     auto const& args = std::any_cast<gla::CollisionEvent const&>(collisionEvent);
-    if (not IsCorrectCollider(entityIndex, *args.pCollider))
+    if (not IsCorrectCollider(ctx->entityIndex, *args.pCollider))
         return;
 
     machine->TransitionTo<StunnedClimbing>();

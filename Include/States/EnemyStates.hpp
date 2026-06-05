@@ -35,7 +35,6 @@ struct Context final
 {
     gla::Animation& animation;
     gla::Timer& stunTimer;
-    // Enemy* enemy{};
     MoveComponent& moveComponent;
     gla::Collider& playerHitbox;
     gla::Collider& headBurtBox;
@@ -54,11 +53,6 @@ struct PepperEventState : EnemyState
     auto operator=(PepperEventState const&) -> PepperEventState& = default;
     auto operator=(PepperEventState&&) -> PepperEventState& = default;
     ~PepperEventState() override = default;
-
-    int entityIndex{};
-    gla::Animation* animation{};
-    gla::Timer* stunTimer{};
-    gla::Collider* hitBox{};
 
     virtual void OnEnter();
     virtual void OnExit();

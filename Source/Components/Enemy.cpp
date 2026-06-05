@@ -68,7 +68,7 @@ void Enemy::OnDeactivate()
     inputManager.UnbindAction("moveRight"_h, m_entityIndex);
 }
 
-void Enemy::OnDeath()
+void Enemy::OnDeath() const
 {
     m_pStateMachine->TransitionTo<enemystates::Dying>();
 }
@@ -79,7 +79,7 @@ void Enemy::OnDrop(gla::Collider const& collider)
     collider.m_pOwner->GetComponent<BurgerPart>()->AcquireEnemy(*m_pOwner, *this);
 }
 
-void Enemy::LandOnPlatform()
+void Enemy::LandOnPlatform() const
 {
     using namespace enemystates;
 

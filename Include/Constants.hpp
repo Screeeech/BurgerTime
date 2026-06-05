@@ -24,8 +24,8 @@ namespace layers
 {
 
 inline constexpr int stage{ 0 };
-inline constexpr int enemies{ 1 };
-inline constexpr int burgerParts{ 2 };
+inline constexpr int burgerParts{ 1 };
+inline constexpr int enemies{ 2 };
 inline constexpr int player{ 3 };
 inline constexpr int text{ 10 };
 
