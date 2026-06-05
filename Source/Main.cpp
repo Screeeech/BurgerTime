@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <print>
 
+#include "Services/SceneManager.hpp"
 #include "AchievementManager.hpp"
 #include "Commands/VolumeCommand.hpp"
 #include "Components/Animation.hpp"
@@ -18,7 +19,6 @@
 #include "Galena.hpp"
 #include "Locator.hpp"
 #include "Scene.hpp"
-#include "SceneManager.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/ISound.hpp"

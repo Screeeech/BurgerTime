@@ -54,8 +54,6 @@ public:
     void SetSteppedPieces(int steppedPieces);
 
     auto GetPieces() -> Pieces&;
-protected:
-    void FixedUpdate(float fixedDeltaTime) override;
 
 private:
     static auto GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect;
@@ -66,7 +64,7 @@ private:
     std::vector<Enemy*> m_fallingEnemies;
     int m_steppedPieces{};
     Stage* m_pStage;
-    burgerpartstates::BurgerStateMachine m_stateMachine;
+    burgerpartstates::BurgerStateMachine* m_pStateMachine;
 };
 
 }  // namespace bt

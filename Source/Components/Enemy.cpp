@@ -24,32 +24,25 @@ Enemy::Enemy(gla::GameObject* pOwner, Stage* pStage, int entityIndex)
     , m_pTimer(pOwner->AddComponent<gla::Timer>())
     , m_pAnimation(pOwner->GetComponent<gla::Animation>())
     , m_pPlayerHitBox(pOwner->AddComponent<gla::CollisionRect>(
-          gla::Collider::Bits::Layer1,
-          0,
-          "OnPepper"_h,
-          //[](auto& /*collider*/, auto& /*otherCollider*/) { std::println("Enemy peppered"); },
-          glm::vec2{},
-          glm::vec2{ 16.f, 16.f }))
-    , m_pHeadHurtBox(pOwner->AddComponent<gla::CollisionRect>(gla::Collider::Bits::Layer5, 0, "OnSquish"_h, glm::vec2{}, glm::vec2{ 16.f, 4.f }))
+          gla::Collider::Bits::Layer1, gla::Collider::Bits::Layer2, "OnPepper"_h, glm::vec2{}, glm::vec2{ 16.f, 16.f }))
+    , m_pHeadHurtBox(pOwner->AddComponent<gla::CollisionRect>(
+          gla::Collider::Bits::Layer5, 0, [this](auto&, auto&) { OnDeath(); }, glm::vec2{}, glm::vec2{ 16.f, 4.f }))
     , m_pFeetHurtBox(pOwner->AddComponent<gla::CollisionRect>(
           gla::Collider::Bits::Layer6,
           0,
           [this](auto& /*collider*/, auto& otherCollider) -> void { OnDrop(otherCollider); },
           glm::vec2{ 0.f, 12.f },
           glm::vec2{ 16.f, 4.f }))
-    , m_stateMachine({ .animation = m_pAnimation, .stunTimer = m_pTimer, .entityIndex = m_entityIndex })
+    , m_pStateMachine(pOwner->AddComponent<enemystates::EnemyStateMachine>(
+          enemystates::Context{
+              .animation = *m_pAnimation,
+              .stunTimer = *m_pTimer,
+              .moveComponent = *m_pMoveComponent,
+              .hitBox = *m_pPlayerHitBox,
+              .entityIndex = m_entityIndex,
+          }))
 {
     assert(m_pAnimation and "GameObject with Enemy component must have a valid Animation component first");
-}
-void Enemy::FixedUpdate(float /*fixedDeltaTime*/)
-{
-    enemystates::Context const context{
-        .animation = m_pAnimation,
-        .stunTimer = m_pTimer,
-        .moveComponent = m_pMoveComponent,
-        .entityIndex = m_entityIndex,
-    };
-    m_stateMachine.Update(context);
 }
 
 void Enemy::OnActivate()
@@ -75,12 +68,12 @@ void Enemy::OnDeactivate()
 
 void Enemy::OnDeath()
 {
-    m_stateMachine.TransitionTo<enemystates::Dying>({ .animation = m_pAnimation, .stunTimer = m_pTimer, .entityIndex = m_entityIndex });
+    m_pStateMachine->TransitionTo<enemystates::Dying>();
 }
 
 void Enemy::OnDrop(gla::Collider const& collider)
 {
-    m_stateMachine.TransitionTo<enemystates::Falling>({ .animation = m_pAnimation, .stunTimer = m_pTimer, .entityIndex = m_entityIndex });
+    m_pStateMachine->TransitionTo<enemystates::Falling>();
     collider.m_pOwner->GetComponent<BurgerPart>()->AcquireEnemy(*m_pOwner, *this);
 }
 
@@ -88,12 +81,10 @@ void Enemy::LandOnPlatform()
 {
     using namespace enemystates;
 
-    Context const ctx{ .animation = m_pAnimation, .stunTimer = m_pTimer, .entityIndex = m_entityIndex };
-
     if (m_pTimer->IsRunning())
-        m_stateMachine.TransitionTo<StunnedStanding>(ctx);
+        m_pStateMachine->TransitionTo<StunnedStanding>();
     else
-        m_stateMachine.TransitionTo<IdleStanding>(ctx);
+        m_pStateMachine->TransitionTo<IdleStanding>();
 }
 
 void Enemy::DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
@@ -143,6 +134,36 @@ void Enemy::DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Tex
         {
             { .colIdx = 4, .rowIdx = 3, .duration = 12.f / 60.f, .flipX = true },
             { .colIdx = 5, .rowIdx = 3, .duration = 12.f / 60.f, .flipX = true },
+        });
+    animation.AddAnimation(
+        "dying"_h,
+        spriteSheet,
+        {
+            {
+                .colIdx = 0,
+                .rowIdx = 3,
+                .duration = 15.f / 60.f,
+            },
+            {
+                .colIdx = 1,
+                .rowIdx = 3,
+                .duration = 15.f / 60.f,
+            },
+            {
+                .colIdx = 2,
+                .rowIdx = 3,
+                .duration = 15.f / 60.f,
+            },
+            {
+                .colIdx = 3,
+                .rowIdx = 3,
+                .duration = 15.f / 60.f,
+            },
+            {
+                .colIdx = 6,
+                .rowIdx = 3,
+                .duration = 15.f / 60.f,
+            },
         });
 
     animation.SetAnimation("idle"_h, true);

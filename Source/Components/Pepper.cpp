@@ -93,7 +93,7 @@ void Pepper::SpawnPepper(glm::vec2 position, glm::vec2 direction) const
     }
 }
 
-void Pepper::Update(float /*deltaTime*/)
+void Pepper::Update()
 {
     if (m_pTimer->IsFinished())
     {

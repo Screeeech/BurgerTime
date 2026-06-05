@@ -33,7 +33,7 @@ public:
 
 
 protected:
-    void LateUpdate(float deltaTime) override;
+    void LateUpdate() override;
 
 private:
 

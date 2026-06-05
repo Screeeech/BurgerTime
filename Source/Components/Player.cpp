@@ -13,10 +13,11 @@
 #include "GameEvents.hpp"
 #include "GameObject.hpp"
 #include "Locator.hpp"
-#include "SceneManager.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/ISound.hpp"
+#include "Services/SceneManager.hpp"
+#include "Time.hpp"
 #include "Utils.hpp"
 
 namespace bt
@@ -37,29 +38,22 @@ Player::Player(gla::GameObject* pPlayer, Stage* pStage, Pepper* pPepper, int pla
           glm::vec2{ 3.f, 0.f },
           glm::vec2{ 10.f, 16.f }))
     , m_pPepperCooldownTimer(pPlayer->AddComponent<gla::Timer>())
-    , m_finiteStateMachine({ .animation = m_pAnimation })
+    , m_pStateMachine(pPlayer->AddComponent<playerstates::PlayerStateMachine>(playerstates::Context{
+        .animation = *m_pAnimation,
+        .moveComponent = *m_pMoveComponent,
+    }))
+
 {
 }
 
 void Player::OnDamage(gla::Collider const& /*collider*/, gla::Collider const& /*other*/)
 {
-    m_finiteStateMachine.TransitionTo<playerstates::Dying>({ .animation = m_pAnimation });
+    m_pStateMachine->TransitionTo<playerstates::Dying>();
     m_pHitBox->Disable();
 
     std::println("Player hit!");
 
     gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
-}
-
-void Player::FixedUpdate(float deltaTime)
-{
-    playerstates::Context context{
-        .direction = m_pMoveComponent->GetDirection(),
-        .animation = m_pAnimation,
-        .moveComponent = m_pMoveComponent,
-        .deltaTime = deltaTime,
-    };
-    m_finiteStateMachine.Update(context);
 }
 
 void Player::OnActivate()

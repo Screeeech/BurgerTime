@@ -116,6 +116,7 @@ auto MoveComponent::CanClimbUp() const -> bool
             return false;
     }
 }
+
 auto MoveComponent::IsOnGround() const -> bool
 {
     int const yOffsetIntoTile = static_cast<int>(GetSpritePosition().y) % static_cast<int>(Stage::tileHeight);
@@ -135,7 +136,7 @@ auto MoveComponent::IsOnGround() const -> bool
 }
 
 
-void MoveComponent::LateUpdate(float /*deltaTime*/)
+void MoveComponent::LateUpdate()
 {
     m_direction = {};
 }

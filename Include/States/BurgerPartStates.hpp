@@ -6,6 +6,7 @@
 
 namespace gla
 {
+class Collider;
 class Timer;
 class Sprite;
 class Transform;
@@ -30,44 +31,38 @@ struct Context final
     gla::Transform& transform;
     gla::Timer& timer;
     Stage& stage;
-    float deltaTime{};
 };
 
 using BurgerStateMachine = StateMachine<Context, Idle, Falling, Finished>;
+using BurgerState = HelperState<Context, BurgerStateMachine>;
 
-struct Idle final
+struct Idle final : BurgerState
 {
-    BurgerStateMachine* machine;
-
     bool hasReset{};
 
-    static void OnEnter(Context const& ctx);
-    void Update(Context const& ctx);
+    void OnEnter() const;
+    void Update() override;
 
 private:
     static void LockOntoGround(gla::Transform& transform);
 };
 
-struct Falling final
+struct Falling final : BurgerState
 {
-    BurgerStateMachine* machine;
-
     bool hasResetCollider{};
 
-    static void OnEnter(Context const& ctx);
-    void Update(Context const& ctx);
-    static void OnExit(Context const& ctx);
+    void OnEnter() const;
+    void Update() override;
+    void OnExit() const;
 
 private:
     static auto IsOnPlatform(gla::Transform const& transform, Stage const& stage) -> bool;
 };
 
-struct Finished final
+struct Finished final : BurgerState
 {
-    BurgerStateMachine* machine;
-
-    // static void OnEnter(Context const& ctx);
-    static void Update(Context const& ctx);
+    // void OnEnter();
+    void Update() override;
 };
 
 

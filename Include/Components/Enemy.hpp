@@ -26,8 +26,6 @@ public:
     int const m_entityIndex;
 
 protected:
-    void FixedUpdate(float fixedDeltaTime) override;
-
     void OnActivate() override;
     void OnDeactivate() override;
 
@@ -40,7 +38,7 @@ private:
     gla::CollisionRect* m_pPlayerHitBox;
     gla::CollisionRect* m_pHeadHurtBox;
     gla::CollisionRect* m_pFeetHurtBox{};
-    enemystates::EnemyStateMachine m_stateMachine;
+    enemystates::EnemyStateMachine* m_pStateMachine;
 
     void OnDeath();
     void OnDrop(gla::Collider const& collider);

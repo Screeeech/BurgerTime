@@ -8,6 +8,7 @@
 
 namespace gla
 {
+class Collider;
 class Timer;
 class Animation;
 }  // namespace gla
@@ -32,11 +33,12 @@ struct Dying;
 
 struct Context final
 {
-    gla::Animation* animation{};
-    gla::Timer* stunTimer{};
+    gla::Animation& animation;
+    gla::Timer& stunTimer;
     // Enemy* enemy{};
-    MoveComponent* moveComponent{};
-    int entityIndex{};
+    MoveComponent& moveComponent;
+    gla::Collider& hitBox;
+    int entityIndex;
 };
 
 using EnemyStateMachine = StateMachine<Context, IdleStanding, Walking, Climbing, IdleClimbing, StunnedStanding, StunnedClimbing, Falling, Dying>;
@@ -54,9 +56,10 @@ struct PepperEventState : EnemyState
     int entityIndex{};
     gla::Animation* animation{};
     gla::Timer* stunTimer{};
+    gla::Collider* hitBox{};
 
-    virtual void OnEnter(Context const& ctx);
-    virtual void OnExit(Context const& ctx);
+    virtual void OnEnter();
+    virtual void OnExit();
 
 private:
     virtual void OnPepper(std::any const& collisionEvent) = 0;
@@ -66,9 +69,9 @@ private:
 
 struct IdleStanding final : PepperEventState
 {
-    void OnEnter(Context const& ctx) override;
-    void Update(Context const& ctx) override;
-    // void OnExit(Context const& ctx) override;
+    void OnEnter() override;
+    void Update() override;
+    // void OnExit() override;
 
 private:
     void OnPepper(std::any const& collisionEvent) override;
@@ -76,7 +79,7 @@ private:
 
 struct Walking final : PepperEventState
 {
-    void Update(Context const& ctx) override;
+    void Update() override;
 
 private:
     void OnPepper(std::any const& collisionEvent) override;
@@ -84,8 +87,8 @@ private:
 
 struct Climbing final : PepperEventState
 {
-    void OnEnter(Context const& ctx) override;
-    void Update(Context const& ctx) override;
+    void OnEnter() override;
+    void Update() override;
 
 private:
     void OnPepper(std::any const& collisionEvent) override;
@@ -93,8 +96,8 @@ private:
 
 struct IdleClimbing final : PepperEventState
 {
-    void OnEnter(Context const& ctx) override;
-    void Update(Context const& ctx) override;
+    void OnEnter() override;
+    void Update() override;
 
 private:
     void OnPepper(std::any const& collisionEvent) override;
@@ -102,26 +105,29 @@ private:
 
 struct StunnedStanding final : EnemyState
 {
-    static void OnEnter(Context const& ctx);
-    void Update(Context const& ctx) override;
+    void OnEnter() const;
+    void Update() override;
+    void OnExit() const;
 };
 
 struct StunnedClimbing final : EnemyState
 {
-    static void OnEnter(Context const& ctx);
-    void Update(Context const& ctx) override;
+    void OnEnter() const;
+    void Update() override;
+    void OnExit() const;
 };
 
 struct Falling final : EnemyState
 {
-    static void OnEnter(Context const& ctx);
-    void Update(Context const& ctx) override;
+    void OnEnter() const;
+    void Update() override;
+    void OnExit() const;
 };
 
 struct Dying final : EnemyState
 {
-    static void OnEnter(Context const& ctx);
-    void Update(Context const& ctx) override;
+    void OnEnter() const;
+    void Update() override;
 };
 
 }  // namespace enemystates

@@ -46,7 +46,12 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, s
               return pieces;
           }())
     , m_pStage(pStage)
-    , m_stateMachine({ .part = *this, .transform = m_pOwner->GetTransform(), .timer = *m_pResetTimer, .stage = *m_pStage, .deltaTime = {} })
+    , m_pStateMachine(pOwner->AddComponent<burgerpartstates::BurgerStateMachine>(burgerpartstates::Context{
+        .part = *this,
+        .transform = pOwner->GetTransform(),
+        .timer = *m_pResetTimer,
+        .stage = *m_pStage,
+    }))
 {
 }
 
@@ -84,18 +89,6 @@ auto BurgerPart::GetPieces() -> Pieces&
     return m_pieces;
 }
 
-void BurgerPart::FixedUpdate(float fixedDeltaTime)
-{
-    burgerpartstates::Context context{
-        .part = *this,
-        .transform = m_pOwner->GetTransform(),
-        .timer = *m_pResetTimer,
-        .stage = *m_pStage,
-        .deltaTime = fixedDeltaTime,
-    };
-
-    m_stateMachine.Update(context);
-}
 // void BurgerPart::Render()
 //{
 //     auto const& renderer = gla::Locator::Get<gla::Renderer>();

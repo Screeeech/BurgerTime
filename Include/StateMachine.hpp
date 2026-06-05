@@ -1,8 +1,9 @@
 #ifndef BURGERTIME_STATEMACHINE_HPP
 #define BURGERTIME_STATEMACHINE_HPP
 
-#include <optional>
 #include <variant>
+
+#include "Component.hpp"
 
 namespace bt
 {
@@ -21,61 +22,55 @@ struct PackIsUnique<T, Rest...> : std::bool_constant<(not std::is_same_v<T, Rest
 {
 };
 
-template<typename State, typename Context>
-concept HasValidUpdateFunction = requires(State state, Context& context) {
-    { state.Update(context) } -> std::same_as<void>;
+template<typename State>
+concept HasValidUpdateFunction = requires(State state) {
+    { state.Update() } -> std::same_as<void>;
 };
 
 template<typename State, typename StateMachine>
 concept HasStateMachinePointer = requires(State state) { requires std::same_as<decltype(state.machine), StateMachine*>; };
 
-template<typename T, typename Context>
-concept HasOnEnter = requires(T state, Context context) {
-    { state.OnEnter(context) } -> std::same_as<void>;
+template<typename State, typename Context>
+concept HasContextPointer = requires(State state) { requires std::same_as<decltype(state.ctx), Context*>; };
+
+template<typename T>
+concept HasOnEnter = requires(T state) {
+    { state.OnEnter() } -> std::same_as<void>;
 };
 
-template<typename T, typename Context>
-concept HasOnExit = requires(T state, Context context) {
-    { state.OnExit(context) } -> std::same_as<void>;
+template<typename T>
+concept HasOnExit = requires(T state) {
+    { state.OnExit() } -> std::same_as<void>;
 };
 
 template<typename Context, typename... States>
-class StateMachine final
+class StateMachine final : public gla::Component
 {
-    static_assert((HasValidUpdateFunction<States, Context> and ...), "States must have a valid Update function");
+    static_assert((HasValidUpdateFunction<States> and ...), "States must have a valid Update function");
     static_assert((HasStateMachinePointer<States, StateMachine> and ...), "States must have a valid StateMachine pointer as a member");
+    static_assert((HasContextPointer<States, Context> and ...), "States must have a valid Context pointer as a member");
     static_assert(PackIsUnique<States...>::value, "Duplicate states are not allowed");
 
 public:
-    explicit StateMachine(Context const& context = {})
-        : m_currentState(std::tuple_element_t<0, std::tuple<States...>>{})
+    explicit StateMachine(gla::GameObject* pOwner, Context const& context)
+        : Component(pOwner)
+        , m_context(context)
     {
-        std::get<std::tuple_element_t<0, std::tuple<States...>>>(m_currentState).machine = this;
-        CallOnEnter(context);
+        InitNewState<std::tuple_element_t<0, std::tuple<States...>>>();
+        CallOnEnter();
     }
-    ~StateMachine() noexcept = default;
-
-    StateMachine(StateMachine const&) = delete;
-    auto operator=(StateMachine const&) -> StateMachine& = delete;
-    StateMachine(StateMachine&&) = delete;
-    auto operator=(StateMachine&&) -> StateMachine& = delete;
-
-    void Update(std::decay_t<Context> context)
-    {
-        std::visit([&](auto& state) -> void { state.Update(context); }, m_currentState);
-    }
+    ~StateMachine() noexcept override = default;
 
     template<typename NewState>
-    void TransitionTo(Context context = {})
+    void TransitionTo()
     {
         static_assert(IsInPack<NewState, States...> and "NewState must be a valid state of this State Machine");
         // Find a way to model all valid states at compile time
 
-        CallOnExit(context);
+        CallOnExit();
         // What is this syntax C++??
-        m_currentState.template emplace<NewState>();
-        std::get<NewState>(m_currentState).machine = this;
-        CallOnEnter(context);
+        InitNewState<NewState>();
+        CallOnEnter();
     }
 
     template<typename State>
@@ -85,31 +80,47 @@ public:
         return std::holds_alternative<State>(m_currentState);
     }
 
+    template<typename NewState>
+    void InitNewState()
+    {
+        m_currentState.template emplace<NewState>();
+        auto& newState = std::get<NewState>(m_currentState);
+        newState.machine = this;
+        newState.ctx = &m_context;
+    }
+
+protected:
+    void FixedUpdate() override
+    {
+        std::visit([&](auto& state) -> void { state.Update(); }, m_currentState);
+    }
+
 private:
     std::variant<States...> m_currentState;
+    Context m_context;
 
     // I could use this tuple in the future if I needed my states to be stored instead of just constructed
     // For now my states don't need to hold any state (haha) so this is not necessary
     // std::tuple<States...> m_allStates;
 
-    void CallOnEnter(Context context = {})
+    void CallOnEnter()
     {
         std::visit(
             [&]<typename T>(T& state) -> void
             {
-                if constexpr (HasOnEnter<std::decay_t<T>, Context>)
-                    state.OnEnter(context);
+                if constexpr (HasOnEnter<std::decay_t<T>>)
+                    state.OnEnter();
             },
             m_currentState);
     }
 
-    void CallOnExit(Context context = {})
+    void CallOnExit()
     {
         std::visit(
             [&]<typename T>(T& state) -> void
             {
-                if constexpr (HasOnExit<std::decay_t<T>, Context>)
-                    state.OnExit(context);
+                if constexpr (HasOnExit<std::decay_t<T>>)
+                    state.OnExit();
             },
             m_currentState);
     }
@@ -126,8 +137,9 @@ struct HelperState
     virtual ~HelperState() = default;
 
     StateMachine* machine;
+    Context* ctx;
 
-    virtual void Update(Context const& ctx) = 0;
+    virtual void Update() = 0;
 };
 
 

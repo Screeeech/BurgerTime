@@ -30,8 +30,6 @@ public:
     int const m_playerIndex;
 
 protected:
-    void FixedUpdate(float deltaTime) override;
-
     void OnActivate() override;
     void OnDeactivate() override;
 
@@ -44,7 +42,7 @@ private:
     gla::CollisionRect* m_pHitBox{};
     gla::Timer* m_pPepperCooldownTimer{};
 
-    playerstates::PlayerStateMachine m_finiteStateMachine;
+    playerstates::PlayerStateMachine* m_pStateMachine;
 
 public:
     static void DefineAnimations(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);

@@ -10,7 +10,7 @@ namespace gla
 {
 class Timer;
 class Animation;
-}
+}  // namespace gla
 namespace bt
 {
 class MoveComponent;
@@ -28,80 +28,75 @@ struct Climbing;
 // Some data that we want to be passed to the states
 struct Context final
 {
-    glm::vec2 direction{};
-    gla::Animation* animation{};
-    MoveComponent* moveComponent{};
-    float deltaTime{};
+    gla::Animation& animation;
+    MoveComponent& moveComponent;
 };
 
 using PlayerStateMachine = StateMachine<Context, StandingIdle, Walking, ClimbingIdle, Climbing, Dying>;
+using PlayerState = HelperState<Context, PlayerStateMachine>;
 
-struct StandingIdle final
+struct StandingIdle final : PlayerState
 {
-    PlayerStateMachine* machine{};
     float previousXDirection{};
 
-    void OnEnter(Context const& ctx);
-    void Update(Context const& ctx) const;
-    void OnExit(Context const& ctx);
+    void OnEnter();
+    void Update() override;
+    void OnExit();
     void OnPepper(std::any const& eventArgs);
 
 private:
     void ChangeAnimation(Context const& ctx) const;
 };
 
-struct Walking final
+struct Walking final : PlayerState
 {
-    PlayerStateMachine* machine{};
     float previousXDirection{};
 
-    void OnEnter(Context const& ctx);
-    void Update(Context& ctx);
-    void OnExit(Context const& ctx);
+    void OnEnter();
+    void Update() override;
+    void OnExit();
     void OnPepper(std::any const& eventArgs);
 
 private:
     static void ChangeAnimation(Context const& ctx);
 };
 
-struct ClimbingIdle final
+struct ClimbingIdle final : PlayerState
 {
-    PlayerStateMachine* machine{};
     float previousYDirection{};
 
-    void OnEnter(Context const& ctx);
-    void Update(Context& ctx) const;
-    void OnExit(Context const& ctx);
+    void OnEnter();
+    void Update() override;
+    void OnExit();
     void OnPepper(std::any const& eventArgs);
 
 private:
     void ChangeAnimation(Context const& ctx) const;
 };
 
-struct Climbing final
+struct Climbing final : PlayerState
 {
     PlayerStateMachine* machine{};
     int wait{};
     float previousYDirection{};
 
-    void OnEnter(Context const& ctx);
-    void Update(Context& ctx);
-    void OnExit(Context const& ctx);
+    void OnEnter();
+    void Update() override;
+    void OnExit();
     void OnPepper(std::any const& eventArgs);
 
 private:
     void ChangeAnimation(Context const& ctx) const;
 };
 
-struct Dying final
+struct Dying final : PlayerState
 {
-    PlayerStateMachine* machine{};
     float wait{};
     static constexpr float animationWait{ 1.8f };
     static constexpr float totalTime{ 6.f };
 
-    static void OnEnter(Context const& ctx);
-    void Update(Context const& ctx);
+    void OnEnter() const;
+    void Update() override;
 };
 
 

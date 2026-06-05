@@ -10,31 +10,30 @@
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
 #include "Components/Timer.hpp"
+#include "Time.hpp"
 
 namespace bt
 {
 
-void burgerpartstates::Idle::OnEnter(Context const& ctx)
+void burgerpartstates::Idle::OnEnter() const
 {
-    std::println("Burger entered Idle state");
-
-    LockOntoGround(ctx.transform);
-    ctx.part.SetSteppedPieces(0);
-    ctx.timer.Start(BurgerPart::resetTime);
+    LockOntoGround(ctx->transform);
+    ctx->part.SetSteppedPieces(0);
+    ctx->timer.Start(BurgerPart::resetTime);
 }
 
-void burgerpartstates::Idle::Update(Context const& ctx)
+void burgerpartstates::Idle::Update()
 {
-    if (ctx.timer.IsFinished() and not hasReset)
+    if (ctx->timer.IsFinished() and not hasReset)
     {
-        for (auto const& collider : ctx.part.GetPieces() | std::views::keys)
+        for (auto const& collider : ctx->part.GetPieces() | std::views::keys)
             collider->EnableCollisionLayers(gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4);
 
         hasReset = true;
     }
 
-    if (ctx.part.GetSteppedPieces() >= BurgerPart::pieceCount)
-        machine->TransitionTo<Falling>(ctx);
+    if (ctx->part.GetSteppedPieces() >= BurgerPart::pieceCount)
+        machine->TransitionTo<Falling>();
 }
 
 void burgerpartstates::Idle::LockOntoGround(gla::Transform& transform)
@@ -49,41 +48,37 @@ void burgerpartstates::Idle::LockOntoGround(gla::Transform& transform)
     transform.SetLocalPosition({ bottomBurgerPos.x, bottomBurgerPos.y + bump - BurgerPart::pieceSize });
 }
 
-void burgerpartstates::Falling::OnEnter(Context const& ctx)
+void burgerpartstates::Falling::OnEnter() const
 {
-    std::println("Burger entered Falling state");
-
-    for (auto const& collider : ctx.part.GetPieces() | std::views::keys)
+    for (auto const& collider : ctx->part.GetPieces() | std::views::keys)
     {
         // Turn off player and burger collision layer
         collider->DisableCollisionLayers(gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4);
 
-        // Turn on enemy feet collision mask
-        collider->EnableCollisionMasks(gla::Collider::Bits::Layer6);
+        // Turn on enemy feet and head collision mask
+        collider->EnableCollisionMasks(gla::Collider::Bits::Layer5 | gla::Collider::Bits::Layer6);
     }
 }
 
-void burgerpartstates::Falling::Update(Context const& ctx)
+void burgerpartstates::Falling::Update()
 {
     if (not hasResetCollider)
     {
-        for (auto const& collider : ctx.part.GetPieces() | std::views::keys)
+        for (auto const& collider : ctx->part.GetPieces() | std::views::keys)
             // Turn off enemy feet collision mask
             collider->DisableCollisionMasks(gla::Collider::Bits::Layer6);
 
         hasResetCollider = true;
     }
 
-    ctx.transform.ChangeLocalPosition({ 0.f, BurgerPart::fallingSpeed * ctx.deltaTime });
-    if (IsOnPlatform(ctx.transform, ctx.stage))
-        machine->TransitionTo<Idle>(ctx);
+    ctx->transform.ChangeLocalPosition({ 0.f, BurgerPart::fallingSpeed * gla::Time::Get().FixedDeltaTime() });
+    if (IsOnPlatform(ctx->transform, ctx->stage))
+        machine->TransitionTo<Idle>();
 }
 
-void burgerpartstates::Falling::OnExit(Context const& ctx)
+void burgerpartstates::Falling::OnExit() const
 {
-    std::println("Burger exited Falling state");
-
-    for (auto const& [collider, sprite] : ctx.part.GetPieces())
+    for (auto const& [collider, sprite] : ctx->part.GetPieces())
     {
         // Turn off falling collider
         collider->DisableCollisionMasks(gla::Collider::Bits::Layer6);
@@ -92,7 +87,7 @@ void burgerpartstates::Falling::OnExit(Context const& ctx)
         sprite->m_offset.y = 0;
     }
 
-    ctx.part.ReleaseEnemies();
+    ctx->part.ReleaseEnemies();
 }
 
 auto burgerpartstates::Falling::IsOnPlatform(gla::Transform const& transform, Stage const& stage) -> bool
@@ -111,6 +106,6 @@ auto burgerpartstates::Falling::IsOnPlatform(gla::Transform const& transform, St
     return false;
 }
 
-void burgerpartstates::Finished::Update(Context const& /*ctx*/) {}
+void burgerpartstates::Finished::Update() {}
 
 }  // namespace bt

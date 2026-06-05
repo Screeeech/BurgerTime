@@ -22,7 +22,7 @@ public:
     void SpawnPepper(glm::vec2 position, glm::vec2 direction) const;
 
 protected:
-    void Update(float deltaTime) override;
+    void Update() override;
 
 private:
     static constexpr float pepperDuration{ .75f };
