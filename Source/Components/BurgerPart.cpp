@@ -123,7 +123,7 @@ void BurgerPart::OnPieceStep(long index)
     auto& [hitbox, sprite] = m_pieces.at(index);
 
     // Turn off player stepping collisions
-    hitbox->m_collisionLayers &= ~gla::Collider::Bits::Layer3;
+    hitbox->ClearCollisionLayer(gla::Collider::Bits::Layer3);
 
     sprite->m_offset.y = pieceStepOffset;
     ++m_steppedPieces;
