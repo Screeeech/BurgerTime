@@ -22,19 +22,7 @@ struct StunnedStanding;
 struct Dying;
 
 
-namespace
-{
 constexpr float stunTime{ 3.f };
-
-auto IsCorrectCollider(int entityIndex, gla::Collider const& collider) -> bool
-{
-    auto const* enemy = collider.m_pOwner->GetComponent<Enemy>();
-    assert(enemy and "The collider's GameObject must also have a valid Enemy component");
-
-    return enemy->m_entityIndex == entityIndex;
-}
-
-}  // namespace
 
 void PepperEventState::OnEnter()
 {
@@ -52,8 +40,6 @@ void PepperEventState::OnExit()
 void IdleStanding::OnEnter()
 {
     PepperEventState::OnEnter();
-
-    std::println("Enemy entered idle standing state");
 
     ctx->animation.SetAnimation("idle"_h, true);
 }
@@ -80,10 +66,9 @@ void IdleStanding::Update()
     }
 }
 
-void IdleStanding::OnPepper(std::any const& collisionEvent)
+void IdleStanding::OnPepper(std::any const& playerEvent)
 {
-    auto const& args = std::any_cast<gla::CollisionEvent const&>(collisionEvent);
-    if (not IsCorrectCollider(ctx->entityIndex, *args.pCollider))
+    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
         return;
 
     machine->TransitionTo<StunnedStanding>();
@@ -113,10 +98,9 @@ void Walking::Update()
     ctx->moveComponent.Walk();
 }
 
-void Walking::OnPepper(std::any const& collisionEvent)
+void Walking::OnPepper(std::any const& playerEvent)
 {
-    auto const& args = std::any_cast<gla::CollisionEvent const&>(collisionEvent);
-    if (not IsCorrectCollider(ctx->entityIndex, *args.pCollider))
+    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
         return;
 
     machine->TransitionTo<StunnedStanding>();
@@ -127,8 +111,6 @@ void Walking::OnPepper(std::any const& collisionEvent)
 void Climbing::OnEnter()
 {
     PepperEventState::OnEnter();
-
-    std::println("Enemy entered climbing state");
 
     ctx->moveComponent.LockOntoLadder();
 }
@@ -161,10 +143,9 @@ void Climbing::Update()
     ctx->moveComponent.Climb();
 }
 
-void Climbing::OnPepper(std::any const& collisionEvent)
+void Climbing::OnPepper(std::any const& playerEvent)
 {
-    auto const& args = std::any_cast<gla::CollisionEvent const&>(collisionEvent);
-    if (not IsCorrectCollider(ctx->entityIndex, *args.pCollider))
+    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
         return;
 
     machine->TransitionTo<StunnedClimbing>();
@@ -174,29 +155,19 @@ void Climbing::OnPepper(std::any const& collisionEvent)
 // ==================== STUNNED WALKING ====================
 void StunnedStanding::OnEnter() const
 {
-    std::println("Enemy entered stunned standing state");
-
-    // assert(ctx->animation and "Animation cannot be null");
     ctx->animation.SetAnimation("stunned"_h, true);
-
-    // assert(ctx->stunTimer and "Timer cannot be null");
     ctx->stunTimer.Start(stunTime);
-
-    // assert(ctx->hitBox and "HitBox cannot be null");
     ctx->playerHitbox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
 }
 
 void StunnedStanding::Update()
 {
-    // assert(ctx->stunTimer and "Timer cannot be null");
-
     if (ctx->stunTimer.IsFinished())
         machine->TransitionTo<IdleStanding>();
 }
 
 void StunnedStanding::OnExit() const
 {
-    // assert(ctx->hitBox and "HitBox cannot be null");
     ctx->playerHitbox.EnableCollisionMasks(gla::Collider::Bits::Layer2);
 }
 
@@ -204,15 +175,8 @@ void StunnedStanding::OnExit() const
 // ==================== STUNNED CLIMBING ====================
 void StunnedClimbing::OnEnter() const
 {
-    std::println("Enemy entered stunned climbing state");
-
-    // assert(ctx->animation and "Animation cannot be null");
     ctx->animation.SetAnimation("stunned"_h, true);
-
-    // assert(ctx->stunTimer and "Timer cannot be null");
     ctx->stunTimer.Start(stunTime);
-
-    // assert(ctx->hitBox and "HitBox cannot be null");
     ctx->playerHitbox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
 }
 
@@ -259,10 +223,9 @@ void IdleClimbing::Update()
         machine->TransitionTo<Climbing>();
 }
 
-void IdleClimbing::OnPepper(std::any const& collisionEvent)
+void IdleClimbing::OnPepper(std::any const& playerEvent)
 {
-    auto const& args = std::any_cast<gla::CollisionEvent const&>(collisionEvent);
-    if (not IsCorrectCollider(ctx->entityIndex, *args.pCollider))
+    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
         return;
 
     machine->TransitionTo<StunnedClimbing>();
@@ -270,9 +233,9 @@ void IdleClimbing::OnPepper(std::any const& collisionEvent)
 
 
 // ==================== FALLING ====================
-void Falling::OnEnter() const
+void Falling::OnEnter()
 {
-    std::println("Enemy entered falling state");
+    gla::Locator::Get<gla::EventManager>().BindEvent("OnLanding"_h, this, &Falling::OnLanding);
 
     ctx->playerHitbox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
 
@@ -290,7 +253,22 @@ void Falling::Update()
 
 void Falling::OnExit() const
 {
+    gla::Locator::Get<gla::EventManager>().UnbindEvent("OnLanding"_h, this);
     ctx->playerHitbox.EnableCollisionMasks(gla::Collider::Bits::Layer2);
+}
+
+void Falling::OnLanding(std::any const& playerEvent) const
+{
+    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
+        return;
+
+    // Re-enable feet hurtbox for next
+    ctx->feetHurtBox.EnableCollisionLayers(gla::Collider::Bits::Layer6);
+
+    if (ctx->stunTimer.IsRunning())
+        machine->TransitionTo<StunnedStanding>();
+    else
+        machine->TransitionTo<IdleStanding>();
 }
 
 

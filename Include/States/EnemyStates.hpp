@@ -72,7 +72,7 @@ struct IdleStanding final : PepperEventState
     // void OnExit() override;
 
 private:
-    void OnPepper(std::any const& collisionEvent) override;
+    void OnPepper(std::any const& playerEvent) override;
 };
 
 struct Walking final : PepperEventState
@@ -80,7 +80,7 @@ struct Walking final : PepperEventState
     void Update() override;
 
 private:
-    void OnPepper(std::any const& collisionEvent) override;
+    void OnPepper(std::any const& playerEvent) override;
 };
 
 struct Climbing final : PepperEventState
@@ -89,7 +89,7 @@ struct Climbing final : PepperEventState
     void Update() override;
 
 private:
-    void OnPepper(std::any const& collisionEvent) override;
+    void OnPepper(std::any const& playerEvent) override;
 };
 
 struct IdleClimbing final : PepperEventState
@@ -98,7 +98,7 @@ struct IdleClimbing final : PepperEventState
     void Update() override;
 
 private:
-    void OnPepper(std::any const& collisionEvent) override;
+    void OnPepper(std::any const& playerEvent) override;
 };
 
 struct StunnedStanding final : EnemyState
@@ -117,9 +117,11 @@ struct StunnedClimbing final : EnemyState
 
 struct Falling final : EnemyState
 {
-    void OnEnter() const;
+    void OnEnter();
     void Update() override;
     void OnExit() const;
+
+    void OnLanding(std::any const& playerEvent) const;
 };
 
 struct Dying final : EnemyState

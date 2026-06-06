@@ -34,26 +34,22 @@ Player::Player(gla::GameObject* pPlayer, Stage* pStage, Pepper* pPepper, int pla
     , m_pHitBox(pPlayer->AddComponent<gla::CollisionRect>(
           gla::Collider::Bits::Layer2,
           gla::Collider::Bits::Layer3,
-          std::bind_front(&Player::OnDamage, this),
+          [this](auto&, auto&)
+          {
+              m_pStateMachine->TransitionTo<playerstates::Dying>();
+              m_pHitBox->Disable();
+
+              gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
+          },
           glm::vec2{ 3.f, 0.f },
           glm::vec2{ 10.f, 16.f }))
     , m_pPepperCooldownTimer(pPlayer->AddComponent<gla::Timer>())
     , m_pStateMachine(pPlayer->AddComponent<playerstates::PlayerStateMachine>(playerstates::Context{
-        .animation = *m_pAnimation,
-        .moveComponent = *m_pMoveComponent,
-    }))
+          .animation = *m_pAnimation,
+          .moveComponent = *m_pMoveComponent,
+      }))
 
 {
-}
-
-void Player::OnDamage(gla::Collider const& /*collider*/, gla::Collider const& /*other*/)
-{
-    m_pStateMachine->TransitionTo<playerstates::Dying>();
-    m_pHitBox->Disable();
-
-    std::println("Player hit!");
-
-    gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
 }
 
 void Player::OnActivate()

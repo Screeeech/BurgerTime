@@ -68,7 +68,7 @@ void BurgerPart::ReleaseEnemies()
     for (auto* enemy : m_fallingEnemies)
     {
         enemy->m_pOwner->QueueReparent(*m_pStage->m_pOwner);
-        enemy->LandOnPlatform();
+        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::PlayerEvent{"OnLanding"_h, enemy->m_entityIndex});
     }
 
     m_fallingEnemies.clear();

@@ -24,13 +24,32 @@ Enemy::Enemy(gla::GameObject* pOwner, Stage* pStage, int entityIndex)
     , m_pTimer(pOwner->AddComponent<gla::Timer>())
     , m_pAnimation(pOwner->GetComponent<gla::Animation>())
     , m_pPlayerHitBox(pOwner->AddComponent<gla::CollisionRect>(
-          gla::Collider::Bits::Layer1, gla::Collider::Bits::Layer2, "OnPepper"_h, glm::vec2{}, glm::vec2{ 16.f, 16.f }))
+          gla::Collider::Bits::Layer1,
+          gla::Collider::Bits::Layer2,
+          gla::PlayerEvent("OnPepper"_h, entityIndex),
+          glm::vec2{},
+          glm::vec2{ 16.f, 16.f }))
     , m_pHeadHurtBox(pOwner->AddComponent<gla::CollisionRect>(
-          gla::Collider::Bits::Layer5, 0, [this](auto&, auto&) { OnDeath(); }, glm::vec2{}, glm::vec2{ 16.f, 4.f }))
+          gla::Collider::Bits::Layer5,
+          0,
+          [this](auto&, auto&) -> void { m_pStateMachine->TransitionTo<enemystates::Dying>(); },
+          glm::vec2{},
+          glm::vec2{ 16.f, 4.f }))
     , m_pFeetHurtBox(pOwner->AddComponent<gla::CollisionRect>(
           gla::Collider::Bits::Layer6,
           0,
-          [this](auto& /*collider*/, auto& otherCollider) -> void { OnDrop(otherCollider); },
+          [this](auto&, gla::Collider const& otherCollider) -> void
+          {
+              auto* collidingBurger = otherCollider.m_pOwner->GetComponent<BurgerPart>();
+              assert(collidingBurger != nullptr and "Collider's parent needs to have a BurgerComponent");
+
+              collidingBurger->AcquireEnemy(*m_pOwner, *this);
+
+              // When falling we disable the feet hurt box so no 2nd burger parts can be triggered
+              m_pFeetHurtBox->DisableCollisionLayers(gla::Collider::Bits::Layer6);
+
+              m_pStateMachine->TransitionTo<enemystates::Falling>();
+          },
           glm::vec2{ 0.f, 12.f },
           glm::vec2{ 16.f, 4.f }))
     , m_pStateMachine(pOwner->AddComponent<enemystates::EnemyStateMachine>(enemystates::Context{
@@ -44,19 +63,6 @@ Enemy::Enemy(gla::GameObject* pOwner, Stage* pStage, int entityIndex)
       }))
 {
     assert(m_pAnimation and "GameObject with Enemy component must have a valid Animation component first");
-}
-
-void Enemy::LandOnPlatform() const
-{
-    using namespace enemystates;
-
-    // Re-enable feet hurtbox for next
-    m_pFeetHurtBox->EnableCollisionLayers(gla::Collider::Bits::Layer6);
-
-    if (m_pTimer->IsRunning())
-        m_pStateMachine->TransitionTo<StunnedStanding>();
-    else
-        m_pStateMachine->TransitionTo<IdleStanding>();
 }
 
 void Enemy::OnActivate()
@@ -80,20 +86,6 @@ void Enemy::OnDeactivate()
     inputManager.UnbindAction("moveRight"_h, m_entityIndex);
 }
 
-void Enemy::OnDeath() const
-{
-    m_pStateMachine->TransitionTo<enemystates::Dying>();
-}
-
-void Enemy::OnDrop(gla::Collider const& collider)
-{
-    collider.m_pOwner->GetComponent<BurgerPart>()->AcquireEnemy(*m_pOwner, *this);
-
-    // When falling we disable the feet hurt box so no 2nd burger parts can be triggered
-    m_pFeetHurtBox->DisableCollisionLayers(gla::Collider::Bits::Layer6);
-
-    m_pStateMachine->TransitionTo<enemystates::Falling>();
-}
 void Enemy::DefineAnimationsHotDog(gla::Animation& animation, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
 {
     auto const size{ spriteSheetTexture->GetSize() };
@@ -257,7 +249,6 @@ void Enemy::DefineAnimationsEgg(gla::Animation& animation, std::shared_ptr<gla::
 
     animation.SetAnimation("idle"_h, true);
 }
-
 
 
 }  // namespace bt

@@ -21,10 +21,7 @@ class Enemy final : public gla::Component
 public:
     explicit Enemy(gla::GameObject* pOwner, Stage* pStage, int entityIndex = 2);
 
-    void LandOnPlatform() const;
-
     int const m_entityIndex;
-
 protected:
     void OnActivate() override;
     void OnDeactivate() override;
@@ -39,9 +36,6 @@ private:
     gla::CollisionRect* m_pHeadHurtBox;
     gla::CollisionRect* m_pFeetHurtBox{};
     enemystates::EnemyStateMachine* m_pStateMachine;
-
-    void OnDeath() const;
-    void OnDrop(gla::Collider const& collider);
 
 public:
     // Helper functions
