@@ -295,7 +295,7 @@ void Climbing::ChangeAnimation() const
 // ==================== DYING ====================
 void Dying::OnEnter() const
 {
-    ctx->animation.SetAnimation("death"_h, true);
+    ctx->animation.SetAnimation("death"_h, true, false);
 }
 
 void Dying::Update()
@@ -304,7 +304,7 @@ void Dying::Update()
     if (wait >= totalTime)
         gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "reset"_h });
     if (wait >= animationWait)
-        ctx->animation.SetAnimation("dying"_h, true, false);
+        ctx->animation.SetAnimation("dying"_h, true);
 }
 
 }  // namespace bt::playerstates
