@@ -3,6 +3,7 @@
 #include <SDL3/SDL_rect.h>
 
 #include <array>
+#include <glm/vec2.hpp>
 #include <memory>
 #include <vector>
 
@@ -38,7 +39,7 @@ public:
         Lettuce,
     };
     static constexpr float resetTime{ 0.5f };
-    static constexpr float pieceStepOffset{ 2.f };
+    static constexpr float pieceSpriteStepOffset{ 2.f };
     static constexpr float pieceSize{ 8.f };
     static constexpr float fallingSpeed{ 60.f };
     static constexpr int pieceCount{ 4 };
@@ -52,6 +53,8 @@ public:
 
     auto GetSteppedPieces() const -> int;
     void SetSteppedPieces(int steppedPieces);
+
+    void SettleOntoPlate(int partCount, glm::vec2 platePosition) const;
 
     auto GetPieces() -> Pieces&;
 

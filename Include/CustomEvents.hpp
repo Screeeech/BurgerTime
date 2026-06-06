@@ -5,11 +5,17 @@
 namespace bt
 {
 
-//struct BurgerStepEvent final : gla::Event
-//{
-//    explicit BurgerStepEvent(EventID id, )
-//};
+struct PlateFinishedEvent final : gla::Event
+{
+    explicit PlateFinishedEvent(EventID id, int plateIndex)
+        : Event(id)
+        , plateIndex(plateIndex)
+    {
+    }
 
-}
+    int plateIndex;
+};
+
+}  // namespace bt
 
 #endif  // BURGERTIME_CUSTOMEVENTS_HPP

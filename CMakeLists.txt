@@ -29,6 +29,7 @@ set(SOURCE_FILES
     "Source/Components/Stage.cpp"
     "Source/Components/MoveComponent.cpp"
     "Source/Components/Pepper.cpp"
+    "Source/Components/Plate.cpp"
     "Source/Components/Enemy.cpp"
     "Source/AchievementManager.cpp"
     "Source/States/BurgerPartStates.cpp"

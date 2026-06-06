@@ -34,8 +34,8 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, s
 
                   hitbox = pOwner->AddComponent<gla::CollisionRect>(
                       gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4,
-                      gla::Collider::Bits::Layer4,
-                      [this, i](gla::Collider&, gla::Collider&) -> void { OnPieceStep(i); },
+                      gla::Collider::Bits::Layer7 | gla::Collider::Bits::Layer4,
+                      [this, i](auto&, auto&) -> void { OnPieceStep(i); },
                       glm::vec2{ xOffset, 0.f },
                       glm::vec2(pieceSize));
                   sprite = pOwner->AddComponent<gla::Sprite>(spriteSheetTexture, layers::burgerParts);
@@ -76,7 +76,7 @@ void BurgerPart::ReleaseEnemies()
 
 auto BurgerPart::GetEnemyCount() const -> int
 {
-    return m_fallingEnemies.size();
+    return static_cast<int>(m_fallingEnemies.size());
 }
 
 auto BurgerPart::GetSteppedPieces() const -> int
@@ -87,6 +87,16 @@ auto BurgerPart::GetSteppedPieces() const -> int
 void BurgerPart::SetSteppedPieces(int steppedPieces)
 {
     m_steppedPieces = std::min(steppedPieces, pieceCount);
+}
+
+void BurgerPart::SettleOntoPlate(int partCount, glm::vec2 platePosition) const
+{
+    float const partYPosition{ platePosition.y - (static_cast<float>(partCount - 1) * (pieceSize + 1))};
+
+    auto& transform = m_pOwner->GetTransform();
+    transform.SetLocalPosition(transform.GetLocalPosition().x, partYPosition);
+
+    m_pStateMachine->TransitionTo<burgerpartstates::Finished>();
 }
 
 auto BurgerPart::GetPieces() -> Pieces&
@@ -123,7 +133,7 @@ void BurgerPart::OnPieceStep(long index)
     // Turn off player stepping collisions
     hitbox->DisableCollisionLayers(gla::Collider::Bits::Layer3);
 
-    sprite->m_offset.y = pieceStepOffset;
+    sprite->m_offset.y = pieceSpriteStepOffset;
     ++m_steppedPieces;
 }
 

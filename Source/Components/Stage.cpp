@@ -10,6 +10,7 @@
 #include "Components/BurgerPart.hpp"
 #include "Constants.hpp"
 #include "Locator.hpp"
+#include "Components/Plate.hpp"
 #include "Services/ISound.hpp"
 #include "Services/Renderer.hpp"
 #include "Utils.hpp"
@@ -31,15 +32,49 @@ Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath, std::sha
 
     json const stageData = json::parse(file);
 
-    if (not stageData.contains("tiles"))
+    if (not stageData.contains("Tiles"))
         throw std::runtime_error{ "Invalid stage data file: No \"tiles\" list found" };
-    PopulateTiles(stageData.at("tiles"));
+    PopulateTiles(stageData.at("Tiles"));
 
-    if (not stageData.contains("tiles"))
+    if (not stageData.contains("Parts"))
         throw std::runtime_error{ "Invalid stage data file: No \"parts\" list found" };
-    SpawnBurgerParts(stageData.at("parts"), spriteSheetTexture);
+    SpawnBurgerParts(stageData.at("Parts"), spriteSheetTexture);
+
+    if (not stageData.contains("Plates"))
+        throw std::runtime_error{ "Invalid stage data file: No \"plates\" list found" };
+    SpawnPlates(stageData.at("Plates"));
 
     gla::Locator::Get<gla::ISound>().PlayAudio("game_start"_h);
+}
+
+void Stage::PrintTileType(glm::vec2 position) const
+{
+    switch (GetTileAtPosition(position))
+    {
+        case TileType::Null:
+            std::println("Tile: Null");
+            break;
+        case TileType::Platform:
+            std::println("Tile: Platform");
+            break;
+        case TileType::Ladder:
+            std::println("Tile: Ladder");
+            break;
+        case TileType::LadderPlatform:
+            std::println("Tile: LadderPlatform");
+            break;
+    }
+}
+
+auto Stage::GetTileAtPosition(glm::vec2 stageLocalPosition) const -> TileType
+{
+    if (stageLocalPosition.x < 0.f or stageLocalPosition.y < 0.f)
+        return TileType::Null;
+
+    auto const xIdx{ static_cast<uint32_t>(stageLocalPosition.x / tileWidth) };
+    auto const yIdx{ static_cast<uint32_t>(stageLocalPosition.y / tileHeight) };
+
+    return GetTileAtIndex(xIdx, yIdx);
 }
 
 void Stage::Render()
@@ -88,36 +123,6 @@ void Stage::Render()
     }
 }
 
-void Stage::PrintTileType(glm::vec2 position) const
-{
-    switch (GetTileAtPosition(position))
-    {
-        case TileType::Null:
-            std::println("Tile: Null");
-            break;
-        case TileType::Platform:
-            std::println("Tile: Platform");
-            break;
-        case TileType::Ladder:
-            std::println("Tile: Ladder");
-            break;
-        case TileType::LadderPlatform:
-            std::println("Tile: LadderPlatform");
-            break;
-    }
-}
-
-auto Stage::GetTileAtPosition(glm::vec2 stageLocalPosition) const -> TileType
-{
-    if (stageLocalPosition.x < 0.f or stageLocalPosition.y < 0.f)
-        return TileType::Null;
-
-    auto const xIdx{ static_cast<uint32_t>(stageLocalPosition.x / tileWidth) };
-    auto const yIdx{ static_cast<uint32_t>(stageLocalPosition.y / tileHeight) };
-
-    return GetTileAtIndex(xIdx, yIdx);
-}
-
 auto Stage::GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType
 {
     if (xIdx >= stageWidth or yIdx >= stageHeight)
@@ -143,7 +148,11 @@ void Stage::SpawnBurgerParts(json const& burgerPartList, std::shared_ptr<gla::Te
 {
     for (auto const& [i, part] : burgerPartList | vw::enumerate)
     {
-        ValidateBurgerPart(part);
+        if (not part.is_object())
+            throw std::runtime_error("Invalid parts list: Part is not a valid json object");
+
+        if (part.size() != 1)
+            throw std::runtime_error("Invalid parts list: Part pair must be of size 1");
 
         BurgerPart::Type type{};
         std::string key{};
@@ -194,14 +203,29 @@ void Stage::SpawnBurgerParts(json const& burgerPartList, std::shared_ptr<gla::Te
     }
 }
 
-void Stage::ValidateBurgerPart(json const& burgerPart)
+void Stage::SpawnPlates(json const& plateList)
 {
-    if (not burgerPart.is_object())
-        throw std::runtime_error("Invalid parts list: Part is not a valid json object");
+    for (auto const& [i, plate] : plateList | vw::enumerate)
+    {
+        if (not plate.is_object())
+            throw std::runtime_error("Invalid plates list: Plate is not a valid json object");
+        if (not plate.contains("StackSize"))
+            throw std::runtime_error(R"(Invalid plates list: Plate does not have valid "StackSize" field)");
+        if (not plate.contains("x") or not plate.contains("y"))
+            throw std::runtime_error(R"(Invalid plates list: Plate does not have valid "x" or "y" fields)");
 
-    if (burgerPart.size() != 1)
-        throw std::runtime_error("Invalid parts list: Part pair must be of size 1");
-}
+        int const xIndex = plate.at("x").get<int>();
+        int const yIndex = plate.at("y").get<int>();
+
+        auto const xPosition = 16.f + static_cast<float>(xIndex * 48);
+        auto const yPosition = static_cast<float>(yIndex) * tileHeight;
+
+        int const stackSize = plate.at("StackSize").get<int>();
+
+        auto* plateObject = m_pOwner->CreateChild(xPosition, yPosition, std::format("Plate: {}", i));
+        plateObject->AddComponent<Plate>(stackSize, i);
+    }
+    }
 
 void Stage::DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const& renderer)
 {

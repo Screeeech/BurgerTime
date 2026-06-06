@@ -1,5 +1,6 @@
 #ifndef BURGERTIME_STAGE_HPP
 #define BURGERTIME_STAGE_HPP
+
 #include <SDL3/SDL_pixels.h>
 
 #include <nlohmann/json_fwd.hpp>
@@ -52,7 +53,7 @@ private:
 
     void PopulateTiles(nlohmann::json const& tileList);
     void SpawnBurgerParts(nlohmann::json const& burgerPartList, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
-    static void ValidateBurgerPart(nlohmann::json const& burgerPart);
+    void SpawnPlates(nlohmann::json const& plateList);
 
     static void DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const& renderer);
     static void DrawLadder(glm::vec2 cursor, gla::Renderer const& renderer);
