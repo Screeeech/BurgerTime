@@ -1,11 +1,17 @@
 #include "Components/Pepper.hpp"
 
+#include "Commands/CallbackCommand.hpp"
 #include "Components/Animation.hpp"
 #include "Components/Collider.hpp"
 #include "Components/CollisionRect.hpp"
+#include "Components/Entity.hpp"
+#include "Components/MoveComponent.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Timer.hpp"
 #include "Constants.hpp"
+#include "GameEvents.hpp"
+#include "Services/EventManager.hpp"
+#include "Services/InputManager.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/ResourceManager.hpp"
 #include "Utils.hpp"
@@ -13,17 +19,14 @@
 namespace bt
 {
 
-Pepper::Pepper(gla::GameObject* pOwner, int zIndex)
+Pepper::Pepper(gla::GameObject* pOwner, Entity& player)
     : Component(pOwner)
-    , m_pTimer(pOwner->AddComponent<gla::Timer>())
-    , m_pAnimation(pOwner->AddComponent<gla::Animation>(zIndex))
+    , m_pDurationTimer(pOwner->AddComponent<gla::Timer>())
+    , m_pCoolDownTimer(pOwner->AddComponent<gla::Timer>())
+    , m_pAnimation(pOwner->AddComponent<gla::Animation>(layers::pepper))
     , m_pHitbox(pOwner->AddComponent<gla::CollisionRect>(
-          0,
-          gla::Collider::Bits::Layer1,
-          gla::CollisionCallback{},
-          glm::vec2{},
-          glm::vec2{ 16.f, 16.f },
-          false))
+          0, gla::Collider::Bits::Layer1, gla::CollisionCallback{}, glm::vec2{}, glm::vec2{ 16.f, 16.f }, false))
+    , m_pPlayer(&player)
 {
     auto const spriteSheetTexture{ gla::Locator::Get<gla::ResourceManager>().LoadTexture("Textures/spritesheet.png") };
 
@@ -68,7 +71,7 @@ Pepper::Pepper(gla::GameObject* pOwner, int zIndex)
 
 void Pepper::SpawnPepper(glm::vec2 position, glm::vec2 direction) const
 {
-    m_pTimer->Start(pepperDuration);
+    m_pDurationTimer->Start(pepperDuration);
     m_pHitbox->Enable();
 
     if (direction == glm::vec2{ 0, -1 })  // Up
@@ -95,11 +98,35 @@ void Pepper::SpawnPepper(glm::vec2 position, glm::vec2 direction) const
 
 void Pepper::Update()
 {
-    if (m_pTimer->IsFinished())
+    if (m_pDurationTimer->IsFinished())
     {
         m_pAnimation->SetAnimation("pepperDustNone"_h);
         m_pHitbox->Disable();
     }
+}
+
+void Pepper::OnActivate()
+{
+    auto& inputManager = gla::Locator::Get<gla::InputManager>();
+    inputManager.BindAction<gla::CallbackCommand>(
+        "attack"_h,
+        m_pPlayer->entityIndex,
+        [this] -> void
+        {
+            if (m_pCoolDownTimer->IsRunning())
+                return;
+            m_pCoolDownTimer->Start(pepperCooldown);
+            auto const* pMoveComponent = m_pPlayer->m_pOwner->GetComponent<MoveComponent>();
+
+            gla::Locator::Get<gla::EventManager>().InvokeEvent(
+                PepperEvent("Pepper"_h, m_pPlayer->entityIndex, pMoveComponent->GetDirection(), pMoveComponent->GetSpritePosition(), this));
+        });
+}
+
+void Pepper::OnDeactivate()
+{
+    auto& inputManager = gla::Locator::Get<gla::InputManager>();
+    inputManager.UnbindAction("attack"_h, m_pPlayer->entityIndex);
 }
 
 }  // namespace bt

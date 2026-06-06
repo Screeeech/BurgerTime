@@ -21,6 +21,7 @@ class Animation;
 }  // namespace gla
 namespace bt
 {
+class Entity;
 
 class Enemy;
 class MoveComponent;
@@ -47,7 +48,7 @@ public:
 
     explicit BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture);
 
-    void AcquireEnemy(gla::GameObject& enemyObject, Enemy& enemy);
+    void AcquireEnemy(gla::GameObject& enemyObject, Entity& enemy);
     void ReleaseEnemies();
     auto GetEnemyCount() const -> int;
 
@@ -68,7 +69,7 @@ private:
     Pieces m_pieces{};
     int m_steppedPieces{};
     Stage* m_pStage;
-    std::vector<Enemy*> m_fallingEnemies;
+    std::vector<Entity*> m_fallingEnemies;
     burgerpartstates::BurgerStateMachine* m_pStateMachine;
 };
 

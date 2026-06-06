@@ -1,5 +1,6 @@
 #ifndef BURGERTIME_PLAYERSTATES_HPP
 #define BURGERTIME_PLAYERSTATES_HPP
+
 #include <any>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>

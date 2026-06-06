@@ -4,6 +4,18 @@
 
 namespace bt
 {
+class Pepper;
+
+struct PlateFinishedEvent final : gla::Event
+{
+    explicit PlateFinishedEvent(EventID id, int plateIndex)
+        : Event(id)
+        , plateIndex(plateIndex)
+    {
+    }
+
+    int plateIndex;
+};
 
 struct PepperEvent final : gla::PlayerEvent
 {

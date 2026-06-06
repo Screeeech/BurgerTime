@@ -2,15 +2,13 @@
 #include <filesystem>
 #include <print>
 
-#include "Services/SceneManager.hpp"
 #include "AchievementManager.hpp"
 #include "Commands/VolumeCommand.hpp"
 #include "Components/Animation.hpp"
 #include "Components/BurgerPart.hpp"
-#include "Components/Enemy.hpp"
+#include "Components/Entity.hpp"
 #include "Components/FpsComponent.hpp"
 #include "Components/Pepper.hpp"
-#include "Components/Player.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
 #include "Components/TextComponent.hpp"
@@ -24,6 +22,7 @@
 #include "Services/ISound.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/ResourceManager.hpp"
+#include "Services/SceneManager.hpp"
 #include "Utils.hpp"
 
 
@@ -36,15 +35,9 @@ namespace vw = std::ranges::views;
 
 namespace
 {
-void load()
+
+void LoadSounds()
 {
-    auto& scene = gla::Locator::Get<gla::SceneManager>().CreateScene();
-
-    auto& resourceManager{ gla::Locator::Get<gla::ResourceManager>() };
-    auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
-    // auto& eventManager{ gla::Locator::Get<gla::EventManager>() };
-    auto& renderer{ gla::Locator::Get<gla::Renderer>() };
-
     auto& sound{ gla::Locator::Get<gla::ISound>() };
     sound.LoadAudio("Sounds/bonus_appear.wav", "bonus_appear"_h);
     sound.LoadAudio("Sounds/bonus_obtained.wav", "bonus_obtained"_h);
@@ -63,11 +56,23 @@ void load()
     sound.LoadPersistentAudioTrack("Sounds/bgm.wav", "background");
 
     // Bind commands for global volume control
+    auto& inputManager = gla::Locator::Get<gla::InputManager>();
     inputManager.RegisterInput(SDL_SCANCODE_UP, gla::Input::Type::released, "volumeUp"_h, 0);
     inputManager.RegisterInput(SDL_SCANCODE_DOWN, gla::Input::Type::released, "volumeDown"_h, 0);
     inputManager.BindAction<gla::VolumeCommand>("volumeUp"_h, 0, 0.1f);
     inputManager.BindAction<gla::VolumeCommand>("volumeDown"_h, 0, -0.1f);
+}
 
+void load()
+{
+    auto& scene = gla::Locator::Get<gla::SceneManager>().CreateScene();
+
+    auto& resourceManager{ gla::Locator::Get<gla::ResourceManager>() };
+    auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
+    // auto& eventManager{ gla::Locator::Get<gla::EventManager>() };
+    auto& renderer{ gla::Locator::Get<gla::Renderer>() };
+
+    LoadSounds();
 
     // Set logical resolution to be NES size
     renderer.SetLogicalResolution(256, 240);
@@ -79,7 +84,7 @@ void load()
     auto const smallFont = resourceManager.LoadFont("Fonts/nes.ttf", 8);
 
     auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
-    auto* stage = stageObject->AddComponent<bt::Stage>("Stages/stage1.json", spriteSheetTexture);
+    auto* stage = stageObject->AddComponent<bt::Stage>("Stages/stage1.json");
 
     // FPS display
     auto* go = scene.GetRoot()->CreateChild(10, 10, "FPS Counter");
@@ -95,45 +100,42 @@ void load()
     // Player 0
     {
         // GameObject
-        auto* pepperObject{ stageObject->CreateChild(0, 0, "Pepper") };
-        auto* pepperComponent{ pepperObject->AddComponent<bt::Pepper>(3) };
+        // auto* pepperObject{ stageObject->CreateChild(0, 0, "Pepper") };
+        // auto* pepperComponent{ pepperObject->AddComponent<bt::Pepper>(3) };
 
-        auto* player0{ stageObject->CreateChild(95, -2, "Player 0") };
-        bt::Player::DefineAnimations(*player0->AddComponent<gla::Animation>(bt::layers::player), spriteSheetTexture);
+        int constexpr playerIndex{ 0 };
+        bt::Entity::CreatePlayer(*stage, playerIndex, { 95, -2 });
 
-        player0->AddComponent<bt::Player>(stage, pepperComponent, 0);
+        inputManager.RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, playerIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, playerIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_S, gla::Input::Type::held, "moveDown"_h, playerIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_D, gla::Input::Type::held, "moveRight"_h, playerIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_E, gla::Input::Type::held, "attack"_h, playerIndex);
 
-        inputManager.RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, 0);
-        inputManager.RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, 0);
-        inputManager.RegisterInput(SDL_SCANCODE_S, gla::Input::Type::held, "moveDown"_h, 0);
-        inputManager.RegisterInput(SDL_SCANCODE_D, gla::Input::Type::held, "moveRight"_h, 0);
-
-        inputManager.RegisterInput(SDL_SCANCODE_Q, gla::Input::Type::released, "damage"_h, 0);
-        inputManager.RegisterInput(SDL_SCANCODE_E, gla::Input::Type::released, "attack"_h, 0);
     }
 
     // Mr Egg
     {
-        auto* enemy = stageObject->CreateChild(50, -2, "Mr. Egg");
-        bt::Enemy::DefineAnimationsEgg(*enemy->AddComponent<gla::Animation>(bt::layers::enemies), spriteSheetTexture);
-        enemy->AddComponent<bt::Enemy>(stage, 3);
+        int constexpr enemyIndex{ 1 };
 
-        inputManager.RegisterInput(SDL_SCANCODE_K, gla::Input::Type::held, "moveUp"_h, 3);
-        inputManager.RegisterInput(SDL_SCANCODE_H, gla::Input::Type::held, "moveLeft"_h, 3);
-        inputManager.RegisterInput(SDL_SCANCODE_J, gla::Input::Type::held, "moveDown"_h, 3);
-        inputManager.RegisterInput(SDL_SCANCODE_L, gla::Input::Type::held, "moveRight"_h, 3);
+        bt::Entity::CreateEnemy(*stage, enemyIndex, {50, -2}, bt::Entity::Type::Egg);
+
+        inputManager.RegisterInput(SDL_SCANCODE_I, gla::Input::Type::held, "moveUp"_h, enemyIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_J, gla::Input::Type::held, "moveLeft"_h, enemyIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_K, gla::Input::Type::held, "moveDown"_h, enemyIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_L, gla::Input::Type::held, "moveRight"_h, enemyIndex);
     }
 
     // Mr Hotdog
     {
-        auto* enemy = stageObject->CreateChild(50, -2, "Mr. Hotdog");
-        bt::Enemy::DefineAnimationsHotDog(*enemy->AddComponent<gla::Animation>(bt::layers::enemies), spriteSheetTexture);
-        enemy->AddComponent<bt::Enemy>(stage, 2);
+        int constexpr enemyIndex{ 2 };
 
-        inputManager.RegisterInput(SDL_SCANCODE_UP, gla::Input::Type::held, "moveUp"_h, 2);
-        inputManager.RegisterInput(SDL_SCANCODE_LEFT, gla::Input::Type::held, "moveLeft"_h, 2);
-        inputManager.RegisterInput(SDL_SCANCODE_DOWN, gla::Input::Type::held, "moveDown"_h, 2);
-        inputManager.RegisterInput(SDL_SCANCODE_RIGHT, gla::Input::Type::held, "moveRight"_h, 2);
+        bt::Entity::CreateEnemy(*stage, enemyIndex, {30, -2}, bt::Entity::Type::HotDog);
+
+        inputManager.RegisterInput(SDL_SCANCODE_UP, gla::Input::Type::held, "moveUp"_h, enemyIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_LEFT, gla::Input::Type::held, "moveLeft"_h, enemyIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_DOWN, gla::Input::Type::held, "moveDown"_h, enemyIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_RIGHT, gla::Input::Type::held, "moveRight"_h, enemyIndex);
     }
 
 

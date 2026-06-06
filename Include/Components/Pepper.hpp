@@ -12,23 +12,29 @@ class Animation;
 }
 namespace bt
 {
+class Entity;
 
 class Pepper : public gla::Component
 {
 public:
-    explicit Pepper(gla::GameObject* pOwner, int zIndex = 0);
-    ~Pepper() noexcept override = default;
+    explicit Pepper(gla::GameObject* pOwner, Entity& player);
 
     void SpawnPepper(glm::vec2 position, glm::vec2 direction) const;
 
 protected:
     void Update() override;
+    void OnActivate() override;
+    void OnDeactivate() override;
 
 private:
     static constexpr float pepperDuration{ .75f };
-    gla::Timer* m_pTimer;
+    static constexpr float pepperCooldown{ 1.f };
+
+    gla::Timer* m_pDurationTimer;
+    gla::Timer* m_pCoolDownTimer;
     gla::Animation* m_pAnimation{};
     gla::CollisionRect* m_pHitbox{};
+    Entity* m_pPlayer;
 };
 
 }  // namespace bt

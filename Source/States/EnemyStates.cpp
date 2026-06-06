@@ -4,7 +4,6 @@
 
 #include "Components/Animation.hpp"
 #include "Components/Collider.hpp"
-#include "Components/Enemy.hpp"
 #include "Components/MoveComponent.hpp"
 #include "Components/Stage.hpp"
 #include "Components/Timer.hpp"

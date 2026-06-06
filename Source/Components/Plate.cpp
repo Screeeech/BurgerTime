@@ -5,7 +5,7 @@
 #include "Components/BurgerPart.hpp"
 #include "Components/CollisionRect.hpp"
 #include "Constants.hpp"
-#include "CustomEvents.hpp"
+#include "GameEvents.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/Renderer.hpp"
 #include "Utils.hpp"

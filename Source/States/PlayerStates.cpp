@@ -8,7 +8,6 @@
 #include "Components/Animation.hpp"
 #include "Components/MoveComponent.hpp"
 #include "Components/Pepper.hpp"
-#include "Components/Player.hpp"
 #include "Components/Stage.hpp"
 #include "Constants.hpp"
 #include "GameEvents.hpp"
@@ -27,13 +26,13 @@ static glm::vec2 previousDirection{ 1.f, 1.f };
 void PepperableState::OnEnter()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.BindEvent("pepper"_h, this, &PepperableState::OnPepper);
+    eventManager.BindEvent("Pepper"_h, this, &PepperableState::OnPepper);
 }
 
 void PepperableState::OnExit()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.UnbindEvent("pepper"_h, this);
+    eventManager.UnbindEvent("Pepper"_h, this);
 }
 
 // ==================== STANDING IDLE ====================
@@ -70,7 +69,7 @@ void StandingIdle::Update()
 void StandingIdle::OnExit()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.UnbindEvent("pepper"_h, this);
+    eventManager.UnbindEvent("Pepper"_h, this);
 }
 
 void StandingIdle::OnPepper(std::any const& eventArgs)

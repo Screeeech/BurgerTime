@@ -1,7 +1,6 @@
 #include "Commands/MoveCommand.hpp"
 
 #include "Components/MoveComponent.hpp"
-#include "Components/Player.hpp"
 #include "GameObject.hpp"
 
 namespace bt

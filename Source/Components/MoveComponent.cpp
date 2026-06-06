@@ -8,9 +8,9 @@
 namespace bt
 {
 
-MoveComponent::MoveComponent(gla::GameObject* pOwner, Stage* pStage, float walkModifier, float climbModifier)
+MoveComponent::MoveComponent(gla::GameObject* pOwner, Stage& stage, float walkModifier, float climbModifier)
     : Component(pOwner)
-    , m_pStage(pStage)
+    , m_pStage(&stage)
     , m_walkModifier(walkModifier)
     , m_climbModifier(climbModifier)
 {

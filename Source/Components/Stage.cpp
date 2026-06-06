@@ -8,11 +8,12 @@
 #include <ranges>
 
 #include "Components/BurgerPart.hpp"
+#include "Components/Plate.hpp"
 #include "Constants.hpp"
 #include "Locator.hpp"
-#include "Components/Plate.hpp"
 #include "Services/ISound.hpp"
 #include "Services/Renderer.hpp"
+#include "Services/ResourceManager.hpp"
 #include "Utils.hpp"
 
 using nlohmann::json;
@@ -22,7 +23,7 @@ namespace vw = std::ranges::views;
 namespace bt
 {
 
-Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
+Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
     : Renderable{ pOwner, layers::stage }
     , m_tileArray{}
 {
@@ -38,7 +39,7 @@ Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath, std::sha
 
     if (not stageData.contains("Parts"))
         throw std::runtime_error{ "Invalid stage data file: No \"parts\" list found" };
-    SpawnBurgerParts(stageData.at("Parts"), spriteSheetTexture);
+    SpawnBurgerParts(stageData.at("Parts"));
 
     if (not stageData.contains("Plates"))
         throw std::runtime_error{ "Invalid stage data file: No \"plates\" list found" };
@@ -144,7 +145,7 @@ void Stage::PopulateTiles(json const& tileList)
         m_tileArray.at(i) = tile;
 }
 
-void Stage::SpawnBurgerParts(json const& burgerPartList, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
+void Stage::SpawnBurgerParts(json const& burgerPartList)
 {
     for (auto const& [i, part] : burgerPartList | vw::enumerate)
     {
@@ -199,7 +200,7 @@ void Stage::SpawnBurgerParts(json const& burgerPartList, std::shared_ptr<gla::Te
         auto const yPosition = static_cast<float>(yIndex) * tileHeight;
 
         auto* partObject = m_pOwner->CreateChild(xPosition, yPosition, std::format("BurgerPart: {}, {}", key, i));
-        partObject->AddComponent<BurgerPart>(this, type, spriteSheetTexture);
+        partObject->AddComponent<BurgerPart>(this, type, gla::Locator::Get<gla::ResourceManager>().LoadTexture("Textures/spritesheet.png"));
     }
 }
 

@@ -4,7 +4,7 @@
 
 #include "Components/Collider.hpp"
 #include "Components/CollisionRect.hpp"
-#include "Components/Enemy.hpp"
+#include "Components/Entity.hpp"
 #include "Components/MoveComponent.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
@@ -55,7 +55,7 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, s
 {
 }
 
-void BurgerPart::AcquireEnemy(gla::GameObject& enemyObject, Enemy& enemy)
+void BurgerPart::AcquireEnemy(gla::GameObject& enemyObject, Entity& enemy)
 {
     // Reparent the enemy to the burger so it falls along with the part
     enemyObject.QueueReparent(*m_pOwner);
@@ -68,7 +68,7 @@ void BurgerPart::ReleaseEnemies()
     for (auto* enemy : m_fallingEnemies)
     {
         enemy->m_pOwner->QueueReparent(*m_pStage->m_pOwner);
-        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::PlayerEvent{"OnLanding"_h, enemy->m_entityIndex});
+        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::PlayerEvent{"OnLanding"_h, enemy->entityIndex});
     }
 
     m_fallingEnemies.clear();
