@@ -27,6 +27,21 @@ Entity::Entity(gla::GameObject* pOwner, int entityIndex, Type entityType)
 {
 }
 
+auto Entity::GetScoreForEnemyType(Type type) -> int
+{
+    switch (type)
+    {
+        case Type::HotDog:
+            return 100;
+        case Type::Pickle:
+            return 200;
+        case Type::Egg:
+            return 300;
+        default:
+            return 0;
+    }
+}
+
 void Entity::OnActivate()
 {
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
@@ -149,6 +164,7 @@ void Entity::CreateEnemy(Stage& stage, int entityIndex, glm::vec2 startPosition,
         .headBurtBox = *pHeadHurtBox,
         .feetHurtBox = *pFeetHurtBox,
         .entityIndex = entityIndex,
+        .type = entityType,
     });
 }
 

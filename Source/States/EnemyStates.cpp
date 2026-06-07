@@ -8,6 +8,7 @@
 #include "Components/Stage.hpp"
 #include "Components/Timer.hpp"
 #include "Events.hpp"
+#include "GameEvents.hpp"
 #include "Services/EventManager.hpp"
 #include "States/PlayerStates.hpp"
 #include "Utils.hpp"
@@ -197,6 +198,8 @@ void StunnedClimbing::OnExit() const
 // ==================== DYING ====================
 void Dying::OnEnter() const
 {
+    gla::Locator::Get<gla::EventManager>().InvokeEvent(ScoreEvent("ScoreChange"_h, Entity::GetScoreForEnemyType(ctx->type)));
+
     ctx->animation.SetAnimation("dying"_h, true, false);
 
     // Disable all collisions

@@ -4,6 +4,7 @@
 #include <any>
 #include <glm/vec2.hpp>
 
+#include "Components/Entity.hpp"
 #include "StateMachine.hpp"
 
 namespace gla
@@ -40,6 +41,7 @@ struct Context final
     gla::Collider& headBurtBox;
     gla::Collider& feetHurtBox;
     int entityIndex;
+    Entity::Type type;
 };
 
 using EnemyStateMachine = StateMachine<Context, IdleStanding, Walking, Climbing, IdleClimbing, StunnedStanding, StunnedClimbing, Falling, Dying>;

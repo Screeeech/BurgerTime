@@ -8,7 +8,9 @@
 #include "Components/BurgerPart.hpp"
 #include "Components/Entity.hpp"
 #include "Components/FpsComponent.hpp"
+#include "Components/HighScore.hpp"
 #include "Components/Pepper.hpp"
+#include "Components/Score.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
 #include "Components/TextComponent.hpp"
@@ -78,24 +80,20 @@ void load()
     renderer.SetLogicalResolution(256, 240);
     renderer.SetBackgroundColor(bt::colors::Black);
 
-
-    auto const spriteSheetTexture{ resourceManager.LoadTexture("Textures/spritesheet.png") };
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
-    auto const smallFont = resourceManager.LoadFont("Fonts/nes.ttf", 8);
 
     auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
     auto* stage = stageObject->AddComponent<bt::Stage>("Stages/stage1.json");
 
     // FPS display
-    auto* go = scene.GetRoot()->CreateChild(10, 10, "FPS Counter");
-    go->AddComponent<gla::FpsComponent>(font);
+    //auto* go = scene.GetRoot()->CreateChild(5, 225, "FPS Counter");
+    //go->AddComponent<gla::FpsComponent>(font);
 
-    // Control display
-    go = scene.GetRoot()->CreateChild(10, 205);
-    go->AddComponent<gla::TextComponent>("PLAY SOUND: Q", smallFont, bt::layers::text);
+    auto* go = scene.GetRoot()->CreateChild(100, 15, "Score");
+    go->AddComponent<bt::Score>(font, 0);
 
-    go = scene.GetRoot()->CreateChild(10, 215);
-    go->AddComponent<gla::TextComponent>("VOLUME: UP DOWN", smallFont, bt::layers::text);
+    go = scene.GetRoot()->CreateChild(110, 15, "HighScore");
+    go->AddComponent<bt::HighScore>(font, "Jane Doe", 20'000);
 
     // Player 0
     {

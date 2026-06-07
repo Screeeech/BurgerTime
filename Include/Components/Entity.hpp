@@ -28,6 +28,8 @@ public:
 
     explicit Entity(gla::GameObject* pOwner, int entityIndex, Type entityType);
 
+    static auto GetScoreForEnemyType(Type type) -> int;
+
     Type const entityType;
     int const entityIndex;
 protected:

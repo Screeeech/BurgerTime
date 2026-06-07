@@ -1,10 +1,33 @@
 #ifndef BURGERTIME_EVENTS_HPP
 #define BURGERTIME_EVENTS_HPP
 #include "Events.hpp"
+#include <glm/vec2.hpp>
 
 namespace bt
 {
 class Pepper;
+
+struct HealthEvent : gla::PlayerEvent
+{
+    explicit HealthEvent(EventID id, int playerIndex, int healthChange)
+        : PlayerEvent(id, playerIndex)
+        , healthChange(healthChange)
+    {
+    }
+
+    int healthChange;
+};
+
+struct ScoreEvent : gla::Event
+{
+    explicit ScoreEvent(EventID id, int scoreChange)
+        : Event(id)
+        , score{ scoreChange }
+    {
+    }
+
+    int score;
+};
 
 struct PlateFinishedEvent final : gla::Event
 {
@@ -19,8 +42,6 @@ struct PlateFinishedEvent final : gla::Event
 
 struct PepperEvent final : gla::PlayerEvent
 {
-    ~PepperEvent() override = default;
-
     explicit PepperEvent(EventID id, int playerIndex, glm::vec2 inputDirection, glm::vec2 position, Pepper* pPepper)
         : PlayerEvent(id, playerIndex)
         , inputDirection(inputDirection)
