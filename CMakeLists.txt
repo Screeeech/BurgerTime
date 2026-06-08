@@ -7,9 +7,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(BurgerTime)
 
-if(EMSCRIPTEN)
+if (EMSCRIPTEN)
   message("Using emscripten!")
-endif()
+endif ()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
@@ -29,6 +29,7 @@ set(SOURCE_FILES
     "Source/Components/MoveComponent.cpp"
     "Source/Components/Pepper.cpp"
     "Source/Components/PepperDisplay.cpp"
+    "Source/Components/HealthDisplay.cpp"
     "Source/Components/Plate.cpp"
     "Source/Components/Score.cpp"
     "Source/Components/HighScore.cpp"

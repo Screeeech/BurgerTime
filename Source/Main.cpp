@@ -2,15 +2,16 @@
 #include <filesystem>
 #include <print>
 
-#include "Components/PepperDisplay.hpp"
 #include "AchievementManager.hpp"
 #include "Commands/VolumeCommand.hpp"
 #include "Components/Animation.hpp"
 #include "Components/BurgerPart.hpp"
 #include "Components/Entity.hpp"
 #include "Components/FpsComponent.hpp"
+#include "Components/HealthDisplay.hpp"
 #include "Components/HighScore.hpp"
 #include "Components/Pepper.hpp"
+#include "Components/PepperDisplay.hpp"
 #include "Components/Score.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
@@ -98,6 +99,9 @@ void load()
 
     go = scene.GetRoot()->CreateChild(208, 15, "PepperDisplay");
     go->AddComponent<bt::PepperDisplay>(5);
+
+    go = scene.GetRoot()->CreateChild(240, 15, "Health");
+    go->AddComponent<bt::HealthDisplay>(5);
 
     // Player 0
     {
