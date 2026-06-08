@@ -28,6 +28,7 @@ set(SOURCE_FILES
     "Source/Components/Stage.cpp"
     "Source/Components/MoveComponent.cpp"
     "Source/Components/Pepper.cpp"
+    "Source/Components/PepperDisplay.cpp"
     "Source/Components/Plate.cpp"
     "Source/Components/Score.cpp"
     "Source/Components/HighScore.cpp"

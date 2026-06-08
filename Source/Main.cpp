@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <print>
 
+#include "Components/PepperDisplay.hpp"
 #include "AchievementManager.hpp"
 #include "Commands/VolumeCommand.hpp"
 #include "Components/Animation.hpp"
@@ -86,14 +87,17 @@ void load()
     auto* stage = stageObject->AddComponent<bt::Stage>("Stages/stage1.json");
 
     // FPS display
-    //auto* go = scene.GetRoot()->CreateChild(5, 225, "FPS Counter");
-    //go->AddComponent<gla::FpsComponent>(font);
+    // auto* go = scene.GetRoot()->CreateChild(5, 225, "FPS Counter");
+    // go->AddComponent<gla::FpsComponent>(font);
 
     auto* go = scene.GetRoot()->CreateChild(100, 15, "Score");
     go->AddComponent<bt::Score>(font, 0);
 
     go = scene.GetRoot()->CreateChild(110, 15, "HighScore");
     go->AddComponent<bt::HighScore>(font, "Jane Doe", 20'000);
+
+    go = scene.GetRoot()->CreateChild(208, 15, "PepperDisplay");
+    go->AddComponent<bt::PepperDisplay>(5);
 
     // Player 0
     {
@@ -109,14 +113,13 @@ void load()
         inputManager.RegisterInput(SDL_SCANCODE_S, gla::Input::Type::held, "moveDown"_h, playerIndex);
         inputManager.RegisterInput(SDL_SCANCODE_D, gla::Input::Type::held, "moveRight"_h, playerIndex);
         inputManager.RegisterInput(SDL_SCANCODE_E, gla::Input::Type::held, "attack"_h, playerIndex);
-
     }
 
     // Mr Egg
     {
         int constexpr enemyIndex{ 1 };
 
-        bt::Entity::CreateEnemy(*stage, enemyIndex, {50, -2}, bt::Entity::Type::Egg);
+        bt::Entity::CreateEnemy(*stage, enemyIndex, { 50, -2 }, bt::Entity::Type::Egg);
 
         inputManager.RegisterInput(SDL_SCANCODE_I, gla::Input::Type::held, "moveUp"_h, enemyIndex);
         inputManager.RegisterInput(SDL_SCANCODE_J, gla::Input::Type::held, "moveLeft"_h, enemyIndex);
@@ -128,7 +131,7 @@ void load()
     {
         int constexpr enemyIndex{ 2 };
 
-        bt::Entity::CreateEnemy(*stage, enemyIndex, {30, -2}, bt::Entity::Type::HotDog);
+        bt::Entity::CreateEnemy(*stage, enemyIndex, { 30, -2 }, bt::Entity::Type::HotDog);
 
         inputManager.RegisterInput(SDL_SCANCODE_UP, gla::Input::Type::held, "moveUp"_h, enemyIndex);
         inputManager.RegisterInput(SDL_SCANCODE_LEFT, gla::Input::Type::held, "moveLeft"_h, enemyIndex);

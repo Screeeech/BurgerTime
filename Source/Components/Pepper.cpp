@@ -113,13 +113,15 @@ void Pepper::OnActivate()
         m_pPlayer->entityIndex,
         [this] -> void
         {
+            auto const* pMoveComponent = m_pPlayer->m_pOwner->GetComponent<MoveComponent>();
+
+            // TODO: Move the cooldown timer to a different place
             if (m_pCoolDownTimer->IsRunning())
                 return;
             m_pCoolDownTimer->Start(pepperCooldown);
-            auto const* pMoveComponent = m_pPlayer->m_pOwner->GetComponent<MoveComponent>();
 
             gla::Locator::Get<gla::EventManager>().InvokeEvent(
-                PepperEvent("Pepper"_h, m_pPlayer->entityIndex, pMoveComponent->GetDirection(), pMoveComponent->GetSpritePosition(), this));
+                PepperEvent("TryPepper"_h, m_pPlayer->entityIndex, pMoveComponent->GetDirection(), pMoveComponent->GetSpritePosition(), this));
         });
 }
 
