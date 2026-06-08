@@ -23,6 +23,8 @@ set(GAME_TARGET ${PROJECT_NAME})
 
 set(SOURCE_FILES
     "Source/Main.cpp"
+    "Source/GameScenes.cpp"
+    "Source/Services/GameState.cpp"
     "Source/Commands/MoveCommand.cpp"
     "Source/Components/BurgerPart.cpp"
     "Source/Components/Stage.cpp"
@@ -32,6 +34,7 @@ set(SOURCE_FILES
     "Source/Components/HealthDisplay.cpp"
     "Source/Components/Plate.cpp"
     "Source/Components/Score.cpp"
+    "Source/Components/StartMenu.cpp"
     "Source/Components/HighScore.cpp"
     "Source/Components/Entity.cpp"
     "Source/AchievementManager.cpp"
