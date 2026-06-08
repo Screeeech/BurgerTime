@@ -58,50 +58,29 @@ void LoadSounds()
     sound.LoadAudio("Sounds/round_clear.wav", "round_clear"_h);
     sound.LoadAudio("Sounds/system_sound.wav", "system_sound"_h);
     sound.LoadPersistentAudioTrack("Sounds/bgm.wav", "background");
-
-    // Bind commands for global volume control
-    auto& inputManager = gla::Locator::Get<gla::InputManager>();
-    inputManager.RegisterInput(SDL_SCANCODE_UP, gla::Input::Type::released, "volumeUp"_h, 0);
-    inputManager.RegisterInput(SDL_SCANCODE_DOWN, gla::Input::Type::released, "volumeDown"_h, 0);
-    inputManager.BindAction<gla::VolumeCommand>("volumeUp"_h, 0, 0.1f);
-    inputManager.BindAction<gla::VolumeCommand>("volumeDown"_h, 0, -0.1f);
 }
 
-void load()
+void LoadGameScene(gla::Scene const& scene)
 {
-    auto& scene = gla::Locator::Get<gla::SceneManager>().CreateScene();
-
     auto& resourceManager{ gla::Locator::Get<gla::ResourceManager>() };
     auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
-    // auto& eventManager{ gla::Locator::Get<gla::EventManager>() };
-    auto& renderer{ gla::Locator::Get<gla::Renderer>() };
-
-    LoadSounds();
-
-    // Set logical resolution to be NES size
-    renderer.SetLogicalResolution(256, 240);
-    renderer.SetBackgroundColor(bt::colors::Black);
 
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
 
     auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
     auto* stage = stageObject->AddComponent<bt::Stage>("Stages/stage1.json");
 
-    // FPS display
-    // auto* go = scene.GetRoot()->CreateChild(5, 225, "FPS Counter");
-    // go->AddComponent<gla::FpsComponent>(font);
+    auto* score = scene.GetRoot()->CreateChild(100, 15, "Score");
+    score->AddComponent<bt::Score>(font, 0);
 
-    auto* go = scene.GetRoot()->CreateChild(100, 15, "Score");
-    go->AddComponent<bt::Score>(font, 0);
+    auto* highScore = scene.GetRoot()->CreateChild(110, 15, "HighScore");
+    highScore->AddComponent<bt::HighScore>(font, "Jane Doe", 20'000);
 
-    go = scene.GetRoot()->CreateChild(110, 15, "HighScore");
-    go->AddComponent<bt::HighScore>(font, "Jane Doe", 20'000);
+    auto* pepperDisplay = scene.GetRoot()->CreateChild(208, 15, "PepperDisplay");
+    pepperDisplay->AddComponent<bt::PepperDisplay>(5);
 
-    go = scene.GetRoot()->CreateChild(208, 15, "PepperDisplay");
-    go->AddComponent<bt::PepperDisplay>(5);
-
-    go = scene.GetRoot()->CreateChild(240, 15, "Health");
-    go->AddComponent<bt::HealthDisplay>(5);
+    auto* healthDisplay = scene.GetRoot()->CreateChild(240, 15, "Health");
+    healthDisplay->AddComponent<bt::HealthDisplay>(5);
 
     // Player 0
     {
@@ -142,9 +121,21 @@ void load()
         inputManager.RegisterInput(SDL_SCANCODE_DOWN, gla::Input::Type::held, "moveDown"_h, enemyIndex);
         inputManager.RegisterInput(SDL_SCANCODE_RIGHT, gla::Input::Type::held, "moveRight"_h, enemyIndex);
     }
+}
 
+void load()
+{
+    LoadSounds();
 
-    scene.Load();
+    // Set logical resolution to be NES size
+    auto& renderer{ gla::Locator::Get<gla::Renderer>() };
+    renderer.SetLogicalResolution(256, 240);
+    renderer.SetBackgroundColor(bt::colors::Black);
+
+    auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
+
+    auto& scene = sceneManager.CreateScene(LoadGameScene, "Game Scene");
+    sceneManager.LoadScene(scene);
 }
 
 // void listFiles(const fs::path& path = fs::current_path(), size_t depth = 0)

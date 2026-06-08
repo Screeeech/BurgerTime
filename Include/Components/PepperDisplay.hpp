@@ -28,7 +28,7 @@ protected:
 private:
     int const m_startingPepperCount;
     int m_pepperCount;
-    gla::Sprite* m_pPepperSprite;
+   gla::Sprite* m_pPepperSprite;
     gla::TextComponent* m_pPepperText;
 
 };

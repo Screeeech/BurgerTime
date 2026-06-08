@@ -63,8 +63,6 @@ void Entity::OnDeactivate()
 void Entity::CreatePlayer(Stage& stage, int entityIndex, glm::vec2 startPosition)
 {
     using namespace playerstates;
-    PlayerStateMachine* stateMachine{};
-    gla::CollisionRect* hitBox{};
 
     auto* playerObject = stage.m_pOwner->CreateChild(startPosition, std::format("Enemy {}", entityIndex));
 
@@ -77,23 +75,23 @@ void Entity::CreatePlayer(Stage& stage, int entityIndex, glm::vec2 startPosition
     auto* pepperObject{ stage.m_pOwner->CreateChild(0, 0, std::format("Pepper{}", entityIndex)) };
     pepperObject->AddComponent<Pepper>(*playerEntity);
 
-    hitBox = playerObject->AddComponent<gla::CollisionRect>(
+    playerObject->AddComponent<PlayerStateMachine>(Context{
+        .animation = *animation,
+        .moveComponent = *moveComponent,
+    });
+
+    playerObject->AddComponent<gla::CollisionRect>(
         gla::Collider::Bits::Layer2,
         gla::Collider::Bits::Layer3,
-        [=](auto&, auto&) -> void
+        [=](auto& collider, auto&) -> void
         {
-            stateMachine->TransitionTo<Dying>();
-            hitBox->Disable();
+            playerObject->GetComponent<PlayerStateMachine>()->TransitionTo<Dying>();
+            collider.Disable();
 
             gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
         },
         glm::vec2{ 3.f, 0.f },
         glm::vec2{ 10.f, 16.f });
-
-    stateMachine = playerObject->AddComponent<PlayerStateMachine>(Context{
-        .animation = *animation,
-        .moveComponent = *moveComponent,
-    });
 }
 
 void Entity::CreateEnemy(Stage& stage, int entityIndex, glm::vec2 startPosition, Type entityType)
