@@ -1,7 +1,7 @@
 #include "Services/GameState.hpp"
 
-#include <fstream>
 #include <format>
+#include <fstream>
 #include <nlohmann/json.hpp>
 #include <print>
 
@@ -60,12 +60,15 @@ void GameState::BeginRound() const
     switch (m_gameMode)
     {
         case GameMode::Singleplayer:
+            sceneManager.ResetScene("Singleplayer");
             sceneManager.LoadScene("Singleplayer");
             break;
         case GameMode::Coop:
+            sceneManager.ResetScene("Coop");
             sceneManager.LoadScene("Coop");
             break;
         case GameMode::Versus:
+            sceneManager.ResetScene("Versus");
             sceneManager.LoadScene("Versus");
             break;
     }
@@ -126,15 +129,20 @@ void GameState::OnDeactivate()
 
 void GameState::OnRespawn(std::any const& /*respawnEvent*/)
 {
+    auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
+
     health--;
     if (health <= 0)
     {
-        gla::Locator::Get<gla::SceneManager>().LoadScene("GameOver");
+        sceneManager.ResetScene("GameOver");
+        sceneManager.LoadScene("GameOver");
         EndGame();
         return;
     }
 
-    gla::Locator::Get<gla::SceneManager>().LoadScene("Loading");
+    m_pStageObject->Deactivate();
+    sceneManager.ResetScene("Loading");
+    sceneManager.LoadScene("Loading");
 }
 
 void GameState::OnPlayerConnect(std::any const& connectEvent)
