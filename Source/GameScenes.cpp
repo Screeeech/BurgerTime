@@ -10,6 +10,8 @@
 #include "Components/Stage.hpp"
 #include "Components/StartMenu.hpp"
 #include "Components/TextComponent.hpp"
+#include "Components/Timer.hpp"
+#include "Constants.hpp"
 #include "Locator.hpp"
 #include "Scene.hpp"
 #include "Services/GameState.hpp"
@@ -50,6 +52,37 @@ void LoadStartScene(gla::Scene const& scene)
 }
 
 void UnloadStartScene() {}
+
+void LoadLoadingScene(gla::Scene const& scene)
+{
+    auto& resourceManager = gla::Locator::Get<gla::ResourceManager>();
+    auto const& gameState = gla::Locator::Get<GameState>();
+    auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
+
+    auto* loading = scene.GetRoot()->CreateChild(128, 110, "Loading text");
+
+    static constexpr float startTime{ 3.f };
+    loading->AddComponent<gla::Timer>([] -> void { gla::Locator::Get<GameState>().StartGame(); })->Start(startTime);
+
+    std::string const loadingText = [=]
+    {
+        switch (gameState.GetGameMode())
+        {
+            case GameMode::Singleplayer:
+                return "SINGLEPLAYER";
+            case GameMode::Coop:
+                return "CO-OP";
+            case GameMode::Versus:
+                return "VERSUS";
+        }
+    }();
+
+    loading->AddComponent<gla::TextComponent>(loadingText, font, layers::text, gla::TextComponent::Align::Center, colors::LoadingTextColor);
+
+    loading->CreateChild(0, 10, "Ready text")
+        ->AddComponent<gla::TextComponent>("READY", font, layers::text, gla::TextComponent::Align::Center, colors::LoadingTextColor);
+}
+
 void LoadGameScene(gla::Scene const& scene)
 {
     auto& resourceManager{ gla::Locator::Get<gla::ResourceManager>() };

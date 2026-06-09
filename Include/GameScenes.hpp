@@ -12,6 +12,8 @@ namespace bt
 void LoadStartScene(gla::Scene const& scene);
 void UnloadStartScene();
 
+void LoadLoadingScene(gla::Scene const& scene);
+
 void LoadGameScene(gla::Scene const& scene);
 
 void LoadSinglePlayerGameScene(gla::Scene const& scene);

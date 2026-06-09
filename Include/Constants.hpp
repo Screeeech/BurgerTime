@@ -11,6 +11,7 @@ namespace colors
 inline constexpr SDL_Color PlatformColor{ .r = 255, .g = 154, .b = 57, .a = 255 };
 inline constexpr SDL_Color BlueLadderColor{ .r = 52, .g = 173, .b = 232, .a = 255 };
 inline constexpr SDL_Color GreenLadderColor{ .r = 67, .g = 202, .b = 67, .a = 255 };
+inline constexpr SDL_Color LoadingTextColor{ .r = 100, .g = 176, .b = 255, .a = 255 };
 
 inline constexpr SDL_Color Red{ .r = 255, .g = 0, .b = 0, .a = 255 };
 inline constexpr SDL_Color Green{ .r = 0, .g = 255, .b = 0, .a = 255 };

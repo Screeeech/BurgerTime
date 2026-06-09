@@ -56,6 +56,7 @@ void load()
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
 
     auto& startScene = sceneManager.CreateScene(bt::LoadStartScene, bt::UnloadStartScene, "Start");
+    sceneManager.CreateScene(bt::LoadLoadingScene, bt::UnloadGameScene, "Loading");
     sceneManager.CreateScene(bt::LoadSinglePlayerGameScene, bt::UnloadGameScene, "Singleplayer");
     sceneManager.CreateScene(bt::LoadCoopGameScene, bt::UnloadGameScene, "Coop");
     sceneManager.CreateScene(bt::LoadVersusGameScene, bt::UnloadGameScene, "Versus");
