@@ -40,6 +40,7 @@ inline constexpr int hotdog{ 100 };
 inline constexpr int pickle{ 200 };
 inline constexpr int egg{ 300 };
 inline constexpr int enemyDropScoreMultiplier{ 500 };
+inline constexpr int enemyDropScoreCap{ 6 };
 
 }
 

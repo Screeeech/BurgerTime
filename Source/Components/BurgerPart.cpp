@@ -78,7 +78,7 @@ void BurgerPart::ReleaseEnemies()
         eventManager.InvokeEvent(gla::PlayerEvent{ "OnLanding"_h, enemy->entityIndex });
     }
 
-    auto const enemyCount = static_cast<double>(m_fallingEnemies.size());
+    auto const enemyCount = std::min(static_cast<double>(score::enemyDropScoreCap), static_cast<double>(m_fallingEnemies.size()));
     auto const score = score::enemyDropScoreMultiplier * std::pow(2, enemyCount - 1);
 
     std::println("Enemy drop!");
