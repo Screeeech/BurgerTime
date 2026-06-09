@@ -38,8 +38,8 @@ protected:
 
 public:
     // Enemy and Player creation helper functions
-    static void CreatePlayer(Stage& stage, int entityIndex, glm::vec2 startPosition);
-    static void CreateEnemy(Stage& stage, int entityIndex, glm::vec2 startPosition, Type entityType);
+    static void CreatePlayer(gla::GameObject* parent, int entityIndex, glm::vec2 startPosition);
+    static void CreateEnemy(gla::GameObject* parent, int entityIndex, glm::vec2 startPosition, Type entityType);
     static void DefineAnimationsPlayer(gla::Animation& animation);
     static void DefineAnimationsEnemy(gla::Animation& animation, int rowIndex);
 };

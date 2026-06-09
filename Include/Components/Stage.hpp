@@ -25,12 +25,6 @@ public:
     };
 
     explicit Stage(gla::GameObject* pOwner, std::string const& stageDataPath);
-    ~Stage() noexcept override = default;
-
-    Stage(Stage const&) = delete;
-    auto operator=(Stage const&) -> Stage& = delete;
-    Stage(Stage&&) = delete;
-    auto operator=(Stage&&) -> Stage& = delete;
 
     void PrintTileType(glm::vec2 position) const;
 

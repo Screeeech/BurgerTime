@@ -8,22 +8,16 @@ class Scene;
 
 namespace bt
 {
+class GameState;
 
 void LoadStartScene(gla::Scene const& scene);
-void UnloadStartScene();
-
 void LoadLoadingScene(gla::Scene const& scene);
 
-void LoadGameScene(gla::Scene const& scene);
 
+void LoadGameScene(gla::Scene const& scene, GameState const* gameState);
 void LoadSinglePlayerGameScene(gla::Scene const& scene);
-void UnloadGameScene();
-
 void LoadCoopGameScene(gla::Scene const& scene);
-void UnloadCoopGameScene();
-
 void LoadVersusGameScene(gla::Scene const& scene);
-void UnloadVersusGameScene();
 
 }
 

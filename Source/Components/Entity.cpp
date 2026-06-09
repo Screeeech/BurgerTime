@@ -60,19 +60,19 @@ void Entity::OnDeactivate()
     inputManager.UnbindAction("moveRight"_h, entityIndex);
 }
 
-void Entity::CreatePlayer(Stage& stage, int entityIndex, glm::vec2 startPosition)
+void Entity::CreatePlayer(gla::GameObject* parent, int entityIndex, glm::vec2 startPosition)
 {
     using namespace playerstates;
 
-    auto* playerObject = stage.m_pOwner->CreateChild(startPosition, std::format("Enemy {}", entityIndex));
+    auto* playerObject = parent->CreateChild(startPosition, std::format("Enemy {}", entityIndex));
 
     auto* playerEntity = playerObject->AddComponent<Entity>(entityIndex, Type::Player);
     playerObject->AddComponent<gla::Timer>();
-    auto* moveComponent(playerObject->AddComponent<MoveComponent>(stage, 0.85f, 0.65f));
+    auto* moveComponent(playerObject->AddComponent<MoveComponent>(0.85f, 0.65f));
     auto* animation(playerObject->AddComponent<gla::Animation>(layers::player));
     DefineAnimationsPlayer(*animation);
 
-    auto* pepperObject{ stage.m_pOwner->CreateChild(0, 0, std::format("Pepper{}", entityIndex)) };
+    auto* pepperObject{ parent->CreateChild(0, 0, std::format("Pepper{}", entityIndex)) };
     pepperObject->AddComponent<Pepper>(*playerEntity);
 
     playerObject->AddComponent<PlayerStateMachine>(Context{
@@ -94,11 +94,11 @@ void Entity::CreatePlayer(Stage& stage, int entityIndex, glm::vec2 startPosition
         glm::vec2{ 10.f, 16.f });
 }
 
-void Entity::CreateEnemy(Stage& stage, int entityIndex, glm::vec2 startPosition, Type entityType)
+void Entity::CreateEnemy(gla::GameObject* parent, int entityIndex, glm::vec2 startPosition, Type entityType)
 {
     using namespace enemystates;
 
-    auto* enemyObject = stage.m_pOwner->CreateChild(startPosition, std::format("Enemy {}", entityIndex));
+    auto* enemyObject = parent->CreateChild(startPosition, std::format("Enemy {}", entityIndex));
 
     switch (entityType)
     {
@@ -118,7 +118,7 @@ void Entity::CreateEnemy(Stage& stage, int entityIndex, glm::vec2 startPosition,
 
     auto* enemyEntity = enemyObject->AddComponent<Entity>(entityIndex, entityType);
 
-    auto* pMoveComponent = enemyObject->AddComponent<MoveComponent>(stage, 0.6f, 0.5f);
+    auto* pMoveComponent = enemyObject->AddComponent<MoveComponent>(0.6f, 0.5f);
     auto* pTimer = enemyObject->AddComponent<gla::Timer>();
     auto* pAnimation = enemyObject->GetComponent<gla::Animation>();
 

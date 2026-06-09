@@ -52,14 +52,16 @@ void load()
     renderer.SetLogicalResolution(256, 240);
     renderer.SetBackgroundColor(bt::colors::Black);
 
-    gla::Locator::Provide<bt::GameState>();
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
 
-    auto& startScene = sceneManager.CreateScene(bt::LoadStartScene, bt::UnloadStartScene, "Start");
-    sceneManager.CreateScene(bt::LoadLoadingScene, bt::UnloadGameScene, "Loading");
-    sceneManager.CreateScene(bt::LoadSinglePlayerGameScene, bt::UnloadGameScene, "Singleplayer");
-    sceneManager.CreateScene(bt::LoadCoopGameScene, bt::UnloadGameScene, "Coop");
-    sceneManager.CreateScene(bt::LoadVersusGameScene, bt::UnloadGameScene, "Versus");
+    // Initialise persistent GameState component that will hold info over the wider game
+    sceneManager.GetPersistentScene().GetRoot()->AddComponent<bt::GameState>();
+
+    auto& startScene = sceneManager.CreateScene("Start", bt::LoadStartScene);
+    sceneManager.CreateScene("Loading", bt::LoadLoadingScene);
+    sceneManager.CreateScene("Singleplayer", bt::LoadSinglePlayerGameScene);
+    sceneManager.CreateScene("Coop", bt::LoadCoopGameScene);
+    sceneManager.CreateScene("Versus", bt::LoadVersusGameScene);
 
     sceneManager.LoadScene(startScene);
 }

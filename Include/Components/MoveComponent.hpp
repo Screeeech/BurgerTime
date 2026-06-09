@@ -11,7 +11,7 @@ class Stage;
 class MoveComponent final : public gla::Component
 {
 public:
-    explicit MoveComponent(gla::GameObject* pOwner, Stage& stage, float walkModifier = 1.f, float climbModifier = 1.f);
+    explicit MoveComponent(gla::GameObject* pOwner, float walkModifier = 1.f, float climbModifier = 1.f);
 
     void Climb() const;
     void Walk() const;
@@ -34,6 +34,8 @@ public:
 
 protected:
     void LateUpdate() override;
+
+    void OnActivate() override;
 
 private:
 

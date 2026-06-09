@@ -8,9 +8,9 @@
 namespace bt
 {
 
-MoveComponent::MoveComponent(gla::GameObject* pOwner, Stage& stage, float walkModifier, float climbModifier)
+MoveComponent::MoveComponent(gla::GameObject* pOwner, float walkModifier, float climbModifier)
     : Component(pOwner)
-    , m_pStage(&stage)
+    , m_pStage()
     , m_walkModifier(walkModifier)
     , m_climbModifier(climbModifier)
 {
@@ -139,6 +139,19 @@ auto MoveComponent::IsOnGround() const -> bool
 void MoveComponent::LateUpdate()
 {
     m_direction = {};
+}
+
+void MoveComponent::OnActivate()
+{
+    auto const* persistentRoot = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot();
+    for (auto const* child : persistentRoot->GetChildren())
+    {
+        if (auto* stage = child->GetComponent<Stage>())
+        {
+            m_pStage = stage;
+            return;
+        }
+    }
 }
 
 }  // namespace bt

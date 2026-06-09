@@ -8,6 +8,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "Component.hpp"
+
 
 namespace bt
 {
@@ -16,14 +18,14 @@ struct Initials
     char first;
     char last;
 
-    bool operator==(const Initials& other) const { return first == other.first && last == other.last; }
+    auto operator==(const Initials& other) const -> bool { return first == other.first && last == other.last; }
 };
 }  // namespace bt
 
 template<>
 struct std::hash<bt::Initials>
 {
-    std::size_t operator()(bt::Initials const& init) const noexcept
+    auto operator()(bt::Initials const& init) const noexcept -> std::size_t
     {
         return (static_cast<std::size_t>(init.first) << 8) | static_cast<std::size_t>(init.last);
     }
@@ -39,18 +41,21 @@ enum class GameMode : std::uint8_t
     Versus
 };
 
-class GameState final
+class GameState final : public gla::Component
 {
+    static constexpr int maxStageCount{ 3 };
     static constexpr int maxLives{ 5 };
     static constexpr int initialPepper{ 5 };
     static constexpr std::string highScoreFile{ "highscores.json" };
 
 public:
-    explicit GameState();
+    explicit GameState(gla::GameObject* pOwner);
 
     void StartGame();
     void BeginRound() const;
+    void EndRound();
     void EndGame();
+
     void SetGameMode(GameMode mode);
     auto GetGameMode() const -> GameMode;
 
@@ -63,7 +68,12 @@ public:
     int health{ maxLives };
     int score{};
     int highScore{};
-    Initials currentInitials{ 'P', '1' };
+    Initials currentInitials{ .first = 'P', .last = '1' };
+
+protected:
+    void OnActivate() override;
+    void OnDeactivate() override;
+
 private:
     void OnRespawn(std::any const& respawnEvent);
 
@@ -76,7 +86,8 @@ private:
 
     bool m_gameStarted{ false };
     GameMode m_gameMode{};
-
+    gla::GameObject* m_pStageObject;
+    int m_stageIndex{};
 };
 
 }  // namespace bt

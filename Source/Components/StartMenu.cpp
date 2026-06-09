@@ -11,9 +11,10 @@
 namespace bt
 {
 
-StartMenu::StartMenu(gla::GameObject* pOwner, gla::GameObject* indicatorObject)
+StartMenu::StartMenu(gla::GameObject* pOwner, gla::GameObject* indicatorObject, GameState* gameState)
     : Component(pOwner)
     , m_pIndicatorObject(indicatorObject)
+    , m_pGameState(gameState)
 {
 }
 
@@ -54,7 +55,6 @@ void StartMenu::OnSelect()
 void StartMenu::OnGameStart() const
 {
     auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
-    auto& gameState = gla::Locator::Get<GameState>();
 
     auto const activePlayerIndices = inputManager.GetActivePlayerIndices();
     switch (m_selectedMode)
@@ -63,7 +63,7 @@ void StartMenu::OnGameStart() const
         {
             if (not activePlayerIndices.empty())
             {
-                gameState.peterPepperPlayerIndex = *activePlayerIndices.begin();
+                m_pGameState->peterPepperPlayerIndex = *activePlayerIndices.begin();
             }
             else
             {
@@ -76,8 +76,8 @@ void StartMenu::OnGameStart() const
         {
             if (activePlayerIndices.size() >= 2)
             {
-                gameState.peterPepperPlayerIndex = *activePlayerIndices.begin();
-                gameState.sallySaltPlayerIndex = *(++activePlayerIndices.begin());
+                m_pGameState->peterPepperPlayerIndex = *activePlayerIndices.begin();
+                m_pGameState->sallySaltPlayerIndex = *(++activePlayerIndices.begin());
             }
             else
             {
@@ -90,8 +90,8 @@ void StartMenu::OnGameStart() const
         {
             if (activePlayerIndices.size() >= 2)
             {
-                gameState.peterPepperPlayerIndex = *activePlayerIndices.begin();
-                gameState.enemyPlayerIndex = *(++activePlayerIndices.begin());
+                m_pGameState->peterPepperPlayerIndex = *activePlayerIndices.begin();
+                m_pGameState->enemyPlayerIndex = *(++activePlayerIndices.begin());
             }
             else
             {
@@ -101,8 +101,8 @@ void StartMenu::OnGameStart() const
         }
         break;
     }
-    gameState.SetGameMode(m_selectedMode);
-    gameState.StartGame();
+    m_pGameState->SetGameMode(m_selectedMode);
+    m_pGameState->StartGame();
     gla::Locator::Get<gla::SceneManager>().LoadScene("Loading");
 }
 

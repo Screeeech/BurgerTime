@@ -48,25 +48,25 @@ void LoadStartScene(gla::Scene const& scene)
     indicatorSprite->SetSourceRect({ .x = 48, .y = 128, .w = 16, .h = 16 });
     indicatorSprite->m_offset.y = -4;
 
-    startMenu->AddComponent<StartMenu>(indicator);
+    startMenu->AddComponent<StartMenu>(
+        indicator,
+        gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->GetComponent<GameState>());
 }
-
-void UnloadStartScene() {}
 
 void LoadLoadingScene(gla::Scene const& scene)
 {
+    auto const* gameState = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->GetComponent<GameState>();
     auto& resourceManager = gla::Locator::Get<gla::ResourceManager>();
-    auto const& gameState = gla::Locator::Get<GameState>();
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
 
     auto* loading = scene.GetRoot()->CreateChild(128, 110, "Loading text");
 
     static constexpr float startTime{ 3.f };
-    loading->AddComponent<gla::Timer>([] -> void { gla::Locator::Get<GameState>().BeginRound(); })->Start(startTime);
+    loading->AddComponent<gla::Timer>([=] -> void { gameState->BeginRound(); })->Start(startTime);
 
-    std::string const loadingText = [=]
+    std::string const loadingText = [&] -> auto
     {
-        switch (gameState.GetGameMode())
+        switch (gameState->GetGameMode())
         {
             case GameMode::Singleplayer:
                 return "SINGLEPLAYER";
@@ -83,9 +83,8 @@ void LoadLoadingScene(gla::Scene const& scene)
         ->AddComponent<gla::TextComponent>("READY", font, layers::text, gla::TextComponent::Align::Center, colors::LoadingTextColor);
 }
 
-void LoadGameScene(gla::Scene const& scene)
+void LoadGameScene(gla::Scene const& scene, GameState const* gameState)
 {
-    auto const& gameState{ gla::Locator::Get<GameState>() };
     auto& resourceManager{ gla::Locator::Get<gla::ResourceManager>() };
 
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
@@ -97,59 +96,54 @@ void LoadGameScene(gla::Scene const& scene)
     highScore->AddComponent<HighScore>(font, 20'000);
 
     auto* pepperDisplay = scene.GetRoot()->CreateChild(208, 15, "PepperDisplay");
-    pepperDisplay->AddComponent<PepperDisplay>(gameState.pepper);
+    pepperDisplay->AddComponent<PepperDisplay>(gameState->pepper);
 
     auto* healthDisplay = scene.GetRoot()->CreateChild(240, 15, "Health");
-    healthDisplay->AddComponent<HealthDisplay>(gameState.health);
+    healthDisplay->AddComponent<HealthDisplay>(gameState->health);
 }
 
 void LoadSinglePlayerGameScene(gla::Scene const& scene)
 {
-    LoadGameScene(scene);
-    auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
-    auto* stage = stageObject->AddComponent<Stage>("Stages/stage1.json");
-    auto const& gameState{ gla::Locator::Get<GameState>() };
+    auto const* gameState = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->GetComponent<GameState>();
+    LoadGameScene(scene, gameState);
+
+    auto* entitiesContainer = scene.GetRoot()->CreateChild(32, 32, "Entities");
 
     // Peter Pepper
-    Entity::CreatePlayer(*stage, *gameState.peterPepperPlayerIndex, { 95, -2 });
+    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, { 95, -2 });
 
     // NPCs
-    Entity::CreateEnemy(*stage, 11, { 75, -2 }, Entity::Type::HotDog);
+    Entity::CreateEnemy(entitiesContainer, 11, { 75, -2 }, Entity::Type::HotDog);
     // NPCs
-    Entity::CreateEnemy(*stage, 11, { 71, -2 }, Entity::Type::Egg);
+    Entity::CreateEnemy(entitiesContainer, 11, { 71, -2 }, Entity::Type::Egg);
 }
-
-void UnloadGameScene() {}
 
 void LoadCoopGameScene(gla::Scene const& scene)
 {
-    LoadGameScene(scene);
-    auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
-    auto* stage = stageObject->AddComponent<Stage>("Stages/stage1.json");
-    auto const& gameState{ gla::Locator::Get<GameState>() };
+    auto const* gameState = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->GetComponent<GameState>();
+    LoadGameScene(scene, gameState);
+
+    auto* entitiesContainer = scene.GetRoot()->CreateChild(32, 32, "Entities");
 
     // Peter Pepper
-    Entity::CreatePlayer(*stage, *gameState.peterPepperPlayerIndex, { 95, -2 });
+    Entity::CreatePlayer(entitiesContainer, *(gameState->peterPepperPlayerIndex), { 95, -2 });
 
     // Sally Salt
-    Entity::CreatePlayer(*stage, *gameState.sallySaltPlayerIndex, { 127, -2 });
+    Entity::CreatePlayer(entitiesContainer, *(gameState->sallySaltPlayerIndex), { 127, -2 });
 }
-void UnloadCoopGameScene() {}
 
 void LoadVersusGameScene(gla::Scene const& scene)
 {
-    LoadGameScene(scene);
-    auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
-    auto* stage = stageObject->AddComponent<Stage>("Stages/stage1.json");
-    auto const& gameState{ gla::Locator::Get<GameState>() };
+    auto const* gameState = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->GetComponent<GameState>();
+    LoadGameScene(scene, gameState);
+
+    auto* entitiesContainer = scene.GetRoot()->CreateChild(32, 32, "Entities");
 
     // Peter Pepper
-    Entity::CreatePlayer(*stage, *gameState.peterPepperPlayerIndex, { 95, -2 });
+    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, { 95, -2 });
 
     // Mr HotDog
-    Entity::CreateEnemy(*stage, *gameState.enemyPlayerIndex, { 127, -2 }, Entity::Type::HotDog);
+    Entity::CreateEnemy(entitiesContainer, *gameState->enemyPlayerIndex, { 127, -2 }, Entity::Type::HotDog);
 }
-
-void UnloadVersusGameScene() {}
 
 }  // namespace bt

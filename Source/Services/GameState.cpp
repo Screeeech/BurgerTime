@@ -1,15 +1,16 @@
 #include "Services/GameState.hpp"
 
 #include <fstream>
+#include <format>
 #include <nlohmann/json.hpp>
 #include <print>
 
+#include "Components/Stage.hpp"
 #include "Events.hpp"
 #include "Locator.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/SceneManager.hpp"
-#include "Services/InputManager.hpp"
 #include "Utils.hpp"
 
 
@@ -35,23 +36,25 @@ using namespace nlohmann;
 namespace bt
 {
 
-GameState::GameState()
+GameState::GameState(gla::GameObject* pOwner)
+    : Component(pOwner)
+    , m_pStageObject(gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->CreateChild(32, 32, "Persistent Stage Object"))
 {
-    auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.BindEvent("OnPlayerConnect"_h, this, &GameState::OnPlayerConnect);
-    eventManager.BindEvent("OnPlayerDisconnect"_h, this, &GameState::OnPlayerDisconnect);
-    eventManager.BindEvent("Respawn"_h, this, &GameState::OnRespawn);
 }
 
 void GameState::StartGame()
 {
     m_gameStarted = true;
+    m_pStageObject->Deactivate();
+    m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
 }
 
 void GameState::BeginRound() const
 {
     if (not m_gameStarted)
         return;
+
+    m_pStageObject->Activate();
 
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
     switch (m_gameMode)
@@ -66,6 +69,17 @@ void GameState::BeginRound() const
             sceneManager.LoadScene("Versus");
             break;
     }
+}
+
+void GameState::EndRound()
+{
+    if (not m_gameStarted)
+        return;
+
+    m_pStageObject->Deactivate();
+    m_pStageObject->RemoveComponent(m_pStageObject->GetComponent<Stage>());
+    m_stageIndex = ++m_stageIndex % maxStageCount;
+    m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
 }
 
 void GameState::EndGame()
@@ -93,6 +107,22 @@ auto GameState::GetHealth() const -> int
 {
     return health;
 }
+
+void GameState::OnActivate()
+{
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+    eventManager.BindEvent("OnPlayerConnect"_h, this, &GameState::OnPlayerConnect);
+    eventManager.BindEvent("OnPlayerDisconnect"_h, this, &GameState::OnPlayerDisconnect);
+    eventManager.BindEvent("Respawn"_h, this, &GameState::OnRespawn);
+}
+void GameState::OnDeactivate()
+{
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+    eventManager.UnbindEvent("OnPlayerConnect"_h, this);
+    eventManager.UnbindEvent("OnPlayerDisconnect"_h, this);
+    eventManager.UnbindEvent("Respawn"_h, this);
+}
+
 
 void GameState::OnRespawn(std::any const& /*respawnEvent*/)
 {
