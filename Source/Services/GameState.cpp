@@ -9,6 +9,7 @@
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/SceneManager.hpp"
+#include "Services/InputManager.hpp"
 #include "Utils.hpp"
 
 
@@ -40,8 +41,6 @@ GameState::GameState()
     eventManager.BindEvent("OnPlayerConnect"_h, this, &GameState::OnPlayerConnect);
     eventManager.BindEvent("OnPlayerDisconnect"_h, this, &GameState::OnPlayerDisconnect);
     eventManager.BindEvent("Respawn"_h, this, &GameState::OnRespawn);
-
-    //LoadHighScoreData();
 }
 
 void GameState::StartGame()

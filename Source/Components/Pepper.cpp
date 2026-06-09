@@ -68,11 +68,6 @@ Pepper::Pepper(gla::GameObject* pOwner, Entity& player)
 
     m_pAnimation->SetAnimation("pepperDustNone"_h);
 }
-Pepper::~Pepper()
-{
-    auto& inputManager = gla::Locator::Get<gla::InputManager>();
-    inputManager.UnbindAction("attack"_h, m_pPlayer->entityIndex);
-}
 
 void Pepper::SpawnPepper(glm::vec2 position, glm::vec2 direction) const
 {
@@ -128,6 +123,12 @@ void Pepper::OnActivate()
             gla::Locator::Get<gla::EventManager>().InvokeEvent(
                 PepperEvent("TryPepper"_h, m_pPlayer->entityIndex, pMoveComponent->GetDirection(), pMoveComponent->GetSpritePosition(), this));
         });
+}
+
+void Pepper::OnDeactivate()
+{
+    auto& inputManager = gla::Locator::Get<gla::InputManager>();
+    inputManager.UnbindAction("attack"_h, m_pPlayer->entityIndex);
 }
 
 }  // namespace bt

@@ -20,6 +20,7 @@ public:
     void OnHealthChange(std::any const& healthEvent);
 protected:
     void OnActivate() override;
+    void OnDeactivate() override;
 
 private:
     int const m_startingHealth;

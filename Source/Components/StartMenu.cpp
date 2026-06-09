@@ -17,18 +17,18 @@ StartMenu::StartMenu(gla::GameObject* pOwner, gla::GameObject* indicatorObject)
 {
 }
 
-StartMenu::~StartMenu()
-{
-    auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
-    inputManager.UnbindAction("select"_h, 0);
-    inputManager.UnbindAction("start"_h, 0);
-}
-
 void StartMenu::OnActivate()
 {
     auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
     inputManager.BindAction<gla::CallbackCommand>("select"_h, 0, [this] -> void { OnSelect(); });
     inputManager.BindAction<gla::CallbackCommand>("start"_h, 0, [this] -> void { OnGameStart(); });
+}
+
+void StartMenu::OnDeactivate()
+{
+    auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
+    inputManager.UnbindAction("select"_h, 0);
+    inputManager.UnbindAction("start"_h, 0);
 }
 
 void StartMenu::OnSelect()

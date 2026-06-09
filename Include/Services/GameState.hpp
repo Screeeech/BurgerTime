@@ -76,6 +76,7 @@ private:
 
     bool m_gameStarted{ false };
     GameMode m_gameMode{};
+
 };
 
 }  // namespace bt

@@ -27,15 +27,6 @@ Entity::Entity(gla::GameObject* pOwner, int entityIndex, Type entityType)
 {
 }
 
-Entity::~Entity()
-{
-    auto& inputManager = gla::Locator::Get<gla::InputManager>();
-    inputManager.UnbindAction("moveUp"_h, entityIndex);
-    inputManager.UnbindAction("moveLeft"_h, entityIndex);
-    inputManager.UnbindAction("moveDown"_h, entityIndex);
-    inputManager.UnbindAction("moveRight"_h, entityIndex);
-}
-
 auto Entity::GetScoreForEnemyType(Type type) -> int
 {
     switch (type)
@@ -58,6 +49,15 @@ void Entity::OnActivate()
     inputManager.BindAction<MoveCommand>("moveLeft"_h, entityIndex, m_pOwner, glm::vec2{ -1, 0 });
     inputManager.BindAction<MoveCommand>("moveDown"_h, entityIndex, m_pOwner, glm::vec2{ 0, 1 });
     inputManager.BindAction<MoveCommand>("moveRight"_h, entityIndex, m_pOwner, glm::vec2{ 1, 0 });
+}
+
+void Entity::OnDeactivate()
+{
+    auto& inputManager = gla::Locator::Get<gla::InputManager>();
+    inputManager.UnbindAction("moveUp"_h, entityIndex);
+    inputManager.UnbindAction("moveLeft"_h, entityIndex);
+    inputManager.UnbindAction("moveDown"_h, entityIndex);
+    inputManager.UnbindAction("moveRight"_h, entityIndex);
 }
 
 void Entity::CreatePlayer(Stage& stage, int entityIndex, glm::vec2 startPosition)

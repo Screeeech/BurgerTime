@@ -18,13 +18,13 @@ class Pepper : public gla::Component
 {
 public:
     explicit Pepper(gla::GameObject* pOwner, Entity& player);
-    ~Pepper() override;
 
     void SpawnPepper(glm::vec2 position, glm::vec2 direction) const;
 
 protected:
     void Update() override;
     void OnActivate() override;
+    void OnDeactivate() override;
 
 private:
     static constexpr float pepperDuration{ .75f };
