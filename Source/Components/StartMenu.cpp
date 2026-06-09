@@ -102,6 +102,7 @@ void StartMenu::OnGameStart() const
         break;
     }
     gameState.SetGameMode(m_selectedMode);
+    gameState.StartGame();
     gla::Locator::Get<gla::SceneManager>().LoadScene("Loading");
 }
 

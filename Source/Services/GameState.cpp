@@ -1,11 +1,35 @@
 #include "Services/GameState.hpp"
 
+#include <fstream>
+#include <nlohmann/json.hpp>
+#include <print>
+
 #include "Events.hpp"
 #include "Locator.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/SceneManager.hpp"
 #include "Utils.hpp"
+
+
+template<>
+struct nlohmann::adl_serializer<bt::Initials>
+{
+    static void to_json(json& j, bt::Initials const& init) { j = std::string{ init.first, init.last }; }
+
+    static void from_json(json const& j, bt::Initials& init)
+    {
+        auto const s = j.get<std::string>();
+        if (s.size() != 2)
+        {
+            throw std::runtime_error("Initials must be exactly 2 characters");
+        }
+        init.first = s[0];
+        init.last = s[1];
+    }
+};  // namespace nlohmann
+
+using namespace nlohmann;
 
 namespace bt
 {
@@ -16,11 +40,19 @@ GameState::GameState()
     eventManager.BindEvent("OnPlayerConnect"_h, this, &GameState::OnPlayerConnect);
     eventManager.BindEvent("OnPlayerDisconnect"_h, this, &GameState::OnPlayerDisconnect);
     eventManager.BindEvent("Respawn"_h, this, &GameState::OnRespawn);
+
+    //LoadHighScoreData();
 }
 
 void GameState::StartGame()
 {
     m_gameStarted = true;
+}
+
+void GameState::BeginRound() const
+{
+    if (not m_gameStarted)
+        return;
 
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
     switch (m_gameMode)
@@ -35,6 +67,16 @@ void GameState::StartGame()
             sceneManager.LoadScene("Versus");
             break;
     }
+}
+
+void GameState::EndGame()
+{
+    m_gameStarted = false;
+    SaveHighScoreData();
+
+    health = maxLives;
+    pepper = initialPepper;
+    score = 0;
 }
 
 void GameState::SetGameMode(GameMode mode)
@@ -59,8 +101,10 @@ void GameState::OnRespawn(std::any const& /*respawnEvent*/)
     if (health <= 0)
     {
         gla::Locator::Get<gla::SceneManager>().LoadScene("GameOver");
+        EndGame();
         return;
     }
+
     gla::Locator::Get<gla::SceneManager>().LoadScene("Loading");
 }
 
@@ -116,6 +160,47 @@ void GameState::OnPlayerDisconnect(std::any const& connectEvent)
         inputManager.UnregisterInput(SDL_SCANCODE_S, "moveDown"_h, args.playerIndex);
         inputManager.UnregisterInput(SDL_SCANCODE_D, "moveRight"_h, args.playerIndex);
     }
+}
+
+void GameState::LoadHighScoreData()
+{
+    std::ifstream file(highScoreFile);
+
+    if (not file.is_open())
+        return;
+
+    json highScoreList = json::parse(file);
+
+    if (not highScoreList.is_array())
+        return;
+
+    for (auto const& item : highScoreList)
+    {
+        try
+        {
+            auto initial = item.at("initials").get<Initials>();
+            int score = item.at("score").get<int>();
+            m_highScores[initial] = score;
+        }
+        catch (std::exception const&)
+        {
+            std::println("Warning!\t{} contains an invalid entry, skipping entry", highScoreFile);
+        }
+    }
+
+    if (m_highScores.contains(currentInitials))
+        highScore = m_highScores.at(currentInitials);
+}
+
+void GameState::SaveHighScoreData()
+{
+    json jsonArray = json::array();
+
+    for (auto const& [initials, score] : m_highScores)
+        jsonArray.push_back({ { "initials", initials }, { "score", score } });
+
+    std::ofstream file(highScoreFile);
+    file << jsonArray.dump(4);
 }
 
 

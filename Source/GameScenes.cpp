@@ -62,7 +62,7 @@ void LoadLoadingScene(gla::Scene const& scene)
     auto* loading = scene.GetRoot()->CreateChild(128, 110, "Loading text");
 
     static constexpr float startTime{ 3.f };
-    loading->AddComponent<gla::Timer>([] -> void { gla::Locator::Get<GameState>().StartGame(); })->Start(startTime);
+    loading->AddComponent<gla::Timer>([] -> void { gla::Locator::Get<GameState>().BeginRound(); })->Start(startTime);
 
     std::string const loadingText = [=]
     {
@@ -85,6 +85,7 @@ void LoadLoadingScene(gla::Scene const& scene)
 
 void LoadGameScene(gla::Scene const& scene)
 {
+    auto const& gameState{ gla::Locator::Get<GameState>() };
     auto& resourceManager{ gla::Locator::Get<gla::ResourceManager>() };
 
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
@@ -93,13 +94,13 @@ void LoadGameScene(gla::Scene const& scene)
     score->AddComponent<Score>(font, 0);
 
     auto* highScore = scene.GetRoot()->CreateChild(110, 15, "HighScore");
-    highScore->AddComponent<HighScore>(font, "Jane Doe", 20'000);
+    highScore->AddComponent<HighScore>(font, 20'000);
 
     auto* pepperDisplay = scene.GetRoot()->CreateChild(208, 15, "PepperDisplay");
-    pepperDisplay->AddComponent<PepperDisplay>(5);
+    pepperDisplay->AddComponent<PepperDisplay>(gameState.pepper);
 
     auto* healthDisplay = scene.GetRoot()->CreateChild(240, 15, "Health");
-    healthDisplay->AddComponent<HealthDisplay>(5);
+    healthDisplay->AddComponent<HealthDisplay>(gameState.health);
 }
 
 void LoadSinglePlayerGameScene(gla::Scene const& scene)

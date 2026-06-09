@@ -35,6 +35,12 @@ void Score::OnScoreIncrease(std::any const& scoreEvent)
     auto const& args = std::any_cast<ScoreEvent const&>(scoreEvent);
     m_score += args.score;
     m_pText->SetText(std::to_string(m_score));
+
+    if (auto& gameState = gla::Locator::Get<GameState>(); m_score >= gameState.highScore)
+    {
+        gameState.highScore = m_score;
+        gla::Locator::Get<gla::EventManager>().InvokeEvent(ScoreEvent("HighScoreSet"_h, m_score));
+    }
 }
 
 auto Score::GetScore() const -> int
