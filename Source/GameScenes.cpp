@@ -13,6 +13,7 @@
 #include "Locator.hpp"
 #include "Scene.hpp"
 #include "Services/InputManager.hpp"
+#include "Services/GameState.hpp"
 #include "Services/ResourceManager.hpp"
 #include "Utils.hpp"
 
@@ -48,20 +49,12 @@ void LoadStartScene(gla::Scene const& scene)
     startMenu->AddComponent<StartMenu>(indicator);
 }
 
-void UnloadStartScene()
-{
-    // auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
-    // inputManager.UnbindAction("select"_h, 0);
-}
-
+void UnloadStartScene() {}
 void LoadGameScene(gla::Scene const& scene)
 {
     auto& resourceManager{ gla::Locator::Get<gla::ResourceManager>() };
 
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
-
-    auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
-    auto* stage = stageObject->AddComponent<Stage>("Stages/stage1.json");
 
     auto* score = scene.GetRoot()->CreateChild(100, 15, "Score");
     score->AddComponent<Score>(font, 0);
@@ -74,27 +67,49 @@ void LoadGameScene(gla::Scene const& scene)
 
     auto* healthDisplay = scene.GetRoot()->CreateChild(240, 15, "Health");
     healthDisplay->AddComponent<HealthDisplay>(5);
-
-    // Player 0
-    {
-        int constexpr playerIndex{ 0 };
-        Entity::CreatePlayer(*stage, playerIndex, { 95, -2 });
-    }
-
-    // Mr Egg
-    {
-        int constexpr enemyIndex{ 1 };
-        Entity::CreateEnemy(*stage, enemyIndex, { 50, -2 }, Entity::Type::Egg);
-
-    }
-
-    // Mr Hotdog
-    {
-        int constexpr enemyIndex{ 2 };
-        Entity::CreateEnemy(*stage, enemyIndex, { 30, -2 }, Entity::Type::HotDog);
-    }
 }
 
+void LoadSinglePlayerGameScene(gla::Scene const& scene)
+{
+    LoadGameScene(scene);
+    auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
+    auto* stage = stageObject->AddComponent<Stage>("Stages/stage1.json");
+
+    // Peter Pepper
+    auto const& gameState{ gla::Locator::Get<GameState>() };
+    Entity::CreatePlayer(*stage, *gameState.peterPepperPlayerIndex, { 95, -2 });
+}
 void UnloadGameScene() {}
+
+void LoadCoopGameScene(gla::Scene const& scene)
+{
+    LoadGameScene(scene);
+    auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
+    auto* stage = stageObject->AddComponent<Stage>("Stages/stage1.json");
+    auto const& gameState{ gla::Locator::Get<GameState>() };
+
+    // Peter Pepper
+    Entity::CreatePlayer(*stage, *gameState.peterPepperPlayerIndex, { 95, -2 });
+
+    // Sally Salt
+    Entity::CreatePlayer(*stage, *gameState.sallySaltPlayerIndex, { 127, -2 });
+}
+void UnloadCoopGameScene() {}
+
+void LoadVersusGameScene(gla::Scene const& scene)
+{
+    LoadGameScene(scene);
+    auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
+    auto* stage = stageObject->AddComponent<Stage>("Stages/stage1.json");
+    auto const& gameState{ gla::Locator::Get<GameState>() };
+
+    // Peter Pepper
+    Entity::CreatePlayer(*stage, *gameState.peterPepperPlayerIndex, { 95, -2 });
+
+    // Mr HotDog
+    Entity::CreateEnemy(*stage, *gameState.enemyPlayerIndex, { 127, -2 }, Entity::Type::HotDog);
+}
+
+void UnloadVersusGameScene() {}
 
 }  // namespace bt

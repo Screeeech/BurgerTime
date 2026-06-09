@@ -3,6 +3,7 @@
 #include "Events.hpp"
 #include "Locator.hpp"
 #include "Services/EventManager.hpp"
+#include "Services/SceneManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Utils.hpp"
 
@@ -19,6 +20,20 @@ GameState::GameState()
 void GameState::StartGame()
 {
     m_gameStarted = true;
+
+    auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
+    switch (m_gameMode)
+    {
+        case GameMode::Singleplayer:
+            sceneManager.LoadScene("Singleplayer");
+            break;
+        case GameMode::Coop:
+            sceneManager.LoadScene("Coop");
+            break;
+        case GameMode::Versus:
+            sceneManager.LoadScene("Versus");
+            break;
+    }
 }
 
 void GameState::SetGameMode(GameMode mode)

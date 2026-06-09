@@ -3,6 +3,7 @@
 
 #include <any>
 #include <cstdint>
+#include <optional>
 
 namespace bt
 {
@@ -23,6 +24,9 @@ public:
     void SetGameMode(GameMode mode);
     auto GetGameMode() const -> GameMode;
 
+    std::optional<int> peterPepperPlayerIndex;
+    std::optional<int> sallySaltPlayerIndex;
+    std::optional<int> enemyPlayerIndex;
 private:
     void OnPlayerConnect(std::any const& connectEvent);
     void OnPlayerDisconnect(std::any const& connectEvent);

@@ -53,12 +53,56 @@ void StartMenu::OnSelect()
 
 void StartMenu::OnGameStart() const
 {
+    auto& inputManager{ gla::Locator::Get<gla::InputManager>() };
     auto& gameState = gla::Locator::Get<GameState>();
+
+    auto const activePlayerIndices = inputManager.GetActivePlayerIndices();
+    switch (m_selectedMode)
+    {
+        case GameMode::Singleplayer:
+        {
+            if (not activePlayerIndices.empty())
+            {
+                gameState.peterPepperPlayerIndex = *activePlayerIndices.begin();
+            }
+            else
+            {
+                std::println("Must have at least 1 player assigned");
+                return;
+            }
+        }
+        break;
+        case GameMode::Coop:
+        {
+            if (activePlayerIndices.size() >= 2)
+            {
+                gameState.peterPepperPlayerIndex = *activePlayerIndices.begin();
+                gameState.sallySaltPlayerIndex = *(++activePlayerIndices.begin());
+            }
+            else
+            {
+                std::println("Must have at least 2 players assigned");
+                return;
+            }
+        }
+        break;
+        case GameMode::Versus:
+        {
+            if (activePlayerIndices.size() >= 2)
+            {
+                gameState.peterPepperPlayerIndex = *activePlayerIndices.begin();
+                gameState.enemyPlayerIndex = *(++activePlayerIndices.begin());
+            }
+            else
+            {
+                std::println("Must have at least 2 players assigned");
+                return;
+            }
+        }
+        break;
+    }
     gameState.SetGameMode(m_selectedMode);
     gameState.StartGame();
-
-    auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
-    sceneManager.LoadScene("Game");
 }
 
 }  // namespace bt

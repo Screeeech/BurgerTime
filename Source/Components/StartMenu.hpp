@@ -1,4 +1,3 @@
-
 #ifndef BURGERTIME_STARTMENU_HPP
 #define BURGERTIME_STARTMENU_HPP
 #include "Component.hpp"
