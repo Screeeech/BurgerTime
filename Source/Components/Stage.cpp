@@ -10,7 +10,9 @@
 #include "Components/BurgerPart.hpp"
 #include "Components/Plate.hpp"
 #include "Constants.hpp"
+#include "GameEvents.hpp"
 #include "Locator.hpp"
+#include "Services/EventManager.hpp"
 #include "Services/ISound.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/ResourceManager.hpp"
@@ -123,6 +125,28 @@ void Stage::Render()
         }
     }
 }
+void Stage::OnActivate()
+{
+    Renderable::OnActivate();
+
+    gla::Locator::Get<gla::EventManager>().BindEvent("PlateFinished"_h, this, &Stage::OnPlateFinished);
+}
+void Stage::OnDeactivate()
+{
+    Renderable::OnDeactivate();
+
+    gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
+}
+
+void Stage::OnPlateFinished(std::any const& /*eventArgs*/)
+{
+    ++m_platesFinished;
+    if (m_platesFinished >= m_totalPlateCount)
+    {
+        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event("DisableEntities"_h));
+        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event("StageCompleted"_h));
+    }
+}
 
 auto Stage::GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType
 {
@@ -225,8 +249,9 @@ void Stage::SpawnPlates(json const& plateList)
 
         auto* plateObject = m_pOwner->CreateChild(xPosition, yPosition, std::format("Plate: {}", i));
         plateObject->AddComponent<Plate>(stackSize, i);
+        ++m_totalPlateCount;
     }
-    }
+}
 
 void Stage::DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const& renderer)
 {

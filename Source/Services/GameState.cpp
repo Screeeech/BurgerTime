@@ -6,6 +6,7 @@
 #include <print>
 
 #include "Components/Stage.hpp"
+#include "Components/Timer.hpp"
 #include "Events.hpp"
 #include "Locator.hpp"
 #include "Services/EventManager.hpp"
@@ -39,6 +40,7 @@ namespace bt
 GameState::GameState(gla::GameObject* pOwner)
     : Component(pOwner)
     , m_pStageObject(gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->CreateChild(32, 32, "Persistent Stage Object"))
+    , m_pStageChangeTimer(pOwner->AddComponent<gla::Timer>())
 {
 }
 
@@ -74,17 +76,6 @@ void GameState::BeginRound() const
     }
 }
 
-void GameState::EndRound()
-{
-    if (not m_gameStarted)
-        return;
-
-    m_pStageObject->Deactivate();
-    m_pStageObject->RemoveComponent(m_pStageObject->GetComponent<Stage>());
-    m_stageIndex = ++m_stageIndex % maxStageCount;
-    m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
-}
-
 void GameState::EndGame()
 {
     m_gameStarted = false;
@@ -116,18 +107,29 @@ void GameState::OnActivate()
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("OnPlayerConnect"_h, this, &GameState::OnPlayerConnect);
     eventManager.BindEvent("OnPlayerDisconnect"_h, this, &GameState::OnPlayerDisconnect);
-    eventManager.BindEvent("Respawn"_h, this, &GameState::OnRespawn);
+    eventManager.BindEvent("PlayerDeath"_h, this, &GameState::OnDeath);
+    eventManager.BindEvent("StageCompleted"_h, this, &GameState::OnStageComplete);
 }
+
 void GameState::OnDeactivate()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.UnbindEvent("OnPlayerConnect"_h, this);
-    eventManager.UnbindEvent("OnPlayerDisconnect"_h, this);
-    eventManager.UnbindEvent("Respawn"_h, this);
+    eventManager.UnbindEvents(this);
 }
 
+void GameState::OnStageComplete(std::any const& /*eventArgs*/)
+{
+    m_pStageChangeTimer->Start(stageChangeDelay);
+    m_pStageChangeTimer->SetCallback([this] -> void { NextStage(); });
+}
 
-void GameState::OnRespawn(std::any const& /*respawnEvent*/)
+void GameState::OnDeath(std::any const& /*eventArgs*/)
+{
+    m_pStageChangeTimer->Start(stageChangeDelay);
+    m_pStageChangeTimer->SetCallback([this] -> void { Respawn(); });
+}
+
+void GameState::Respawn()
 {
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
 
@@ -141,6 +143,21 @@ void GameState::OnRespawn(std::any const& /*respawnEvent*/)
     }
 
     m_pStageObject->Deactivate();
+    sceneManager.ResetScene("Loading");
+    sceneManager.LoadScene("Loading");
+}
+
+void GameState::NextStage()
+{
+    if (not m_gameStarted)
+        return;
+
+    m_pStageObject->Deactivate();
+    m_pStageObject->RemoveComponent(m_pStageObject->GetComponent<Stage>());
+    m_stageIndex = ++m_stageIndex % maxStageCount;
+    m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
+
+    auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
     sceneManager.ResetScene("Loading");
     sceneManager.LoadScene("Loading");
 }

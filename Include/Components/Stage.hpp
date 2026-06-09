@@ -39,10 +39,15 @@ public:
 
 protected:
     void Render() override;
+    void OnActivate() override;
+    void OnDeactivate() override;
 
 private:
+    int m_platesFinished{};
+    int m_totalPlateCount{};
     std::array<TileType, stageSize> m_tileArray;
 
+    void OnPlateFinished(std::any const& eventArgs);
     [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType;
 
     void PopulateTiles(nlohmann::json const& tileList);

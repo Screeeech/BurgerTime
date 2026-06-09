@@ -25,6 +25,7 @@ struct StandingIdle;
 struct Walking;
 struct ClimbingIdle;
 struct Climbing;
+struct Disabled;
 
 // Some data that we want to be passed to the states
 struct Context final
@@ -33,17 +34,18 @@ struct Context final
     MoveComponent& moveComponent;
 };
 
-using PlayerStateMachine = StateMachine<Context, StandingIdle, Walking, ClimbingIdle, Climbing, Dying>;
+using PlayerStateMachine = StateMachine<Context, StandingIdle, Walking, ClimbingIdle, Climbing, Dying, Disabled>;
 using PlayerState = HelperState<Context, PlayerStateMachine>;
 
-struct PepperableState : PlayerState
+struct PlayerActiveState : PlayerState
 {
     virtual void OnEnter();
     virtual void OnExit();
     virtual void OnPepper(std::any const& eventArgs) = 0;
+    virtual void OnDisable(std::any const& eventArgs);
 };
 
-struct StandingIdle final : PepperableState
+struct StandingIdle final : PlayerActiveState
 {
     void OnEnter() override;
     void Update() override;
@@ -54,7 +56,7 @@ private:
     void ChangeAnimation() const;
 };
 
-struct Walking final : PepperableState
+struct Walking final : PlayerActiveState
 {
     void Update() override;
     void OnPepper(std::any const& eventArgs) override;
@@ -63,7 +65,7 @@ private:
     void ChangeAnimation() const;
 };
 
-struct ClimbingIdle final : PepperableState
+struct ClimbingIdle final : PlayerActiveState
 {
     void OnEnter() override;
     void Update() override;
@@ -73,7 +75,7 @@ private:
     void ChangeAnimation() const;
 };
 
-struct Climbing final : PepperableState
+struct Climbing final : PlayerActiveState
 {
     void OnEnter() override;
     void Update() override;
@@ -87,12 +89,16 @@ struct Dying final : PlayerState
 {
     float wait{};
     static constexpr float animationWait{ 1.8f };
-    static constexpr float totalTime{ 6.f };
 
     void OnEnter() const;
     void Update() override;
 };
 
+struct Disabled final : PlayerState
+{
+    void OnEnter() const;
+    void Update() override;
+};
 
 }  // namespace bt::playerstates
 

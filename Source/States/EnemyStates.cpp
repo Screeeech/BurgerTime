@@ -24,22 +24,29 @@ struct Dying;
 
 constexpr float stunTime{ 3.f };
 
-void PepperEventState::OnEnter()
+void EnemyActiveState::OnEnter()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.BindEvent("OnPepper"_h, this, &PepperEventState::OnPepper);
+    eventManager.BindEvent("OnPepper"_h, this, &EnemyActiveState::OnPepper);
+    eventManager.BindEvent("DisableEntities"_h, this, &EnemyActiveState::OnDisable);
 }
 
-void PepperEventState::OnExit()
+void EnemyActiveState::OnExit()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.UnbindEvent("OnPepper"_h, this);
+    eventManager.UnbindEvent("DisableEntities"_h, this);
+}
+
+void EnemyActiveState::OnDisable(std::any const& /*eventArgs*/)
+{
+    machine->TransitionTo<Disabled>();
 }
 
 // ==================== STANDING IDLE ====================
 void IdleStanding::OnEnter()
 {
-    PepperEventState::OnEnter();
+    EnemyActiveState::OnEnter();
 
     ctx->animation.SetAnimation("idle"_h, true);
 }
@@ -110,7 +117,7 @@ void Walking::OnPepper(std::any const& playerEvent)
 // ==================== CLIMBING ====================
 void Climbing::OnEnter()
 {
-    PepperEventState::OnEnter();
+    EnemyActiveState::OnEnter();
 
     ctx->moveComponent.LockOntoLadder();
 }
@@ -210,12 +217,20 @@ void Dying::OnEnter() const
     ctx->feetHurtBox.SetCollisionLayers(0);
     ctx->feetHurtBox.SetCollisionMasks(0);
 }
+
 void Dying::Update() {}
+
+void Disabled::OnEnter() const
+{
+    ctx->animation.SetAnimation("idle"_h, true);
+}
+
+void Disabled::Update() {}
 
 // ==================== CLIMBING IDLE ====================
 void IdleClimbing::OnEnter()
 {
-    PepperEventState::OnEnter();
+    EnemyActiveState::OnEnter();
 
     ctx->animation.SetAnimation("idle"_h);
 }

@@ -31,6 +31,7 @@ struct Climbing;
 struct StunnedClimbing;
 struct Falling;
 struct Dying;
+struct Disabled;
 
 struct Context final
 {
@@ -44,28 +45,20 @@ struct Context final
     Entity::Type type;
 };
 
-using EnemyStateMachine = StateMachine<Context, IdleStanding, Walking, Climbing, IdleClimbing, StunnedStanding, StunnedClimbing, Falling, Dying>;
+using EnemyStateMachine = StateMachine<Context, IdleStanding, Walking, Climbing, IdleClimbing, StunnedStanding, StunnedClimbing, Falling, Dying, Disabled>;
 using EnemyState = HelperState<Context, EnemyStateMachine>;
 
-struct PepperEventState : EnemyState
+struct EnemyActiveState : EnemyState
 {
-    PepperEventState() = default;
-    PepperEventState(PepperEventState const&) = default;
-    PepperEventState(PepperEventState&&) = default;
-    auto operator=(PepperEventState const&) -> PepperEventState& = default;
-    auto operator=(PepperEventState&&) -> PepperEventState& = default;
-    ~PepperEventState() override = default;
-
     virtual void OnEnter();
     virtual void OnExit();
 
 private:
     virtual void OnPepper(std::any const& collisionEvent) = 0;
-    // void OnSquish(std::any const& collisionEvent);
-    // void OnDrop(std::any const& collisionEvent);
+    virtual void OnDisable(std::any const& eventArgs);
 };
 
-struct IdleStanding final : PepperEventState
+struct IdleStanding final : EnemyActiveState
 {
     bool nextFrame{};
 
@@ -77,7 +70,7 @@ private:
     void OnPepper(std::any const& playerEvent) override;
 };
 
-struct Walking final : PepperEventState
+struct Walking final : EnemyActiveState
 {
     void Update() override;
 
@@ -85,7 +78,7 @@ private:
     void OnPepper(std::any const& playerEvent) override;
 };
 
-struct Climbing final : PepperEventState
+struct Climbing final : EnemyActiveState
 {
     void OnEnter() override;
     void Update() override;
@@ -94,7 +87,7 @@ private:
     void OnPepper(std::any const& playerEvent) override;
 };
 
-struct IdleClimbing final : PepperEventState
+struct IdleClimbing final : EnemyActiveState
 {
     void OnEnter() override;
     void Update() override;
@@ -127,6 +120,12 @@ struct Falling final : EnemyState
 };
 
 struct Dying final : EnemyState
+{
+    void OnEnter() const;
+    void Update() override;
+};
+
+struct Disabled final : EnemyState
 {
     void OnEnter() const;
     void Update() override;

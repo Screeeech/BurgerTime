@@ -24,8 +24,10 @@ Plate::Plate(gla::GameObject* pOwner, int maxStackSize, int plateIndex)
           [this](gla::Collider& collider, gla::Collider& otherCollider) -> void
           {
               m_pieceCount++;
+              std::println("Part dropped! piece count: {}", m_pieceCount);
               if (m_pieceCount >= m_maxStackSize)
               {
+                  std::println("Yummm plate finished", m_pieceCount);
                   gla::Locator::Get<gla::EventManager>().InvokeEvent(PlateFinishedEvent("PlateFinished"_h, m_plateIndex));
                   collider.Disable();
               }

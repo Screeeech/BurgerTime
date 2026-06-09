@@ -11,6 +11,10 @@
 #include "Component.hpp"
 
 
+namespace gla
+{
+class Timer;
+}
 namespace bt
 {
 struct Initials
@@ -47,13 +51,13 @@ class GameState final : public gla::Component
     static constexpr int maxLives{ 5 };
     static constexpr int initialPepper{ 5 };
     static constexpr std::string highScoreFile{ "highscores.json" };
+    static constexpr float stageChangeDelay{ 5.f };
 
 public:
     explicit GameState(gla::GameObject* pOwner);
 
     void StartGame();
     void BeginRound() const;
-    void EndRound();
     void EndGame();
 
     void SetGameMode(GameMode mode);
@@ -75,7 +79,10 @@ protected:
     void OnDeactivate() override;
 
 private:
-    void OnRespawn(std::any const& respawnEvent);
+    void OnStageComplete(std::any const& eventArgs);
+    void OnDeath(std::any const& eventArgs);
+    void Respawn();
+    void NextStage();
 
     void OnPlayerConnect(std::any const& connectEvent);
     void OnPlayerDisconnect(std::any const& connectEvent);
@@ -88,6 +95,7 @@ private:
     GameMode m_gameMode{};
     gla::GameObject* m_pStageObject;
     int m_stageIndex{};
+    gla::Timer* m_pStageChangeTimer;
 };
 
 }  // namespace bt

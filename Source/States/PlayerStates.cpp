@@ -22,23 +22,30 @@ static float remainingPepperDuration{};
 static glm::vec2 previousDirection{ 1.f, 1.f };
 
 
-// ==================== PEPPER ABLE ====================
-void PepperableState::OnEnter()
+// ==================== ACTIVE BASE STATE ====================
+void PlayerActiveState::OnEnter()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.BindEvent("Pepper"_h, this, &PepperableState::OnPepper);
+    eventManager.BindEvent("Pepper"_h, this, &PlayerActiveState::OnPepper);
+    eventManager.BindEvent("DisableEntities"_h, this, &PlayerActiveState::OnDisable);
 }
 
-void PepperableState::OnExit()
+void PlayerActiveState::OnExit()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.UnbindEvent("Pepper"_h, this);
+    eventManager.UnbindEvent("DisableEntities"_h, this);
+}
+
+void PlayerActiveState::OnDisable(std::any const& /*eventArgs*/)
+{
+    machine->TransitionTo<Disabled>();
 }
 
 // ==================== STANDING IDLE ====================
 void StandingIdle::OnEnter()
 {
-    PepperableState::OnEnter();
+    PlayerActiveState::OnEnter();
 
     // std::println("Entered Standing Idle state");
     ctx->animation.SetAnimation("idle"_h, true);
@@ -160,7 +167,7 @@ void Walking::ChangeAnimation() const
 
 void ClimbingIdle::OnEnter()
 {
-    PepperableState::OnEnter();
+    PlayerActiveState::OnEnter();
 
     ctx->animation.SetAnimation("idle"_h);
 }
@@ -222,7 +229,7 @@ void ClimbingIdle::ChangeAnimation() const
 // ==================== CLIMBING ====================
 void Climbing::OnEnter()
 {
-    PepperableState::OnEnter();
+    PlayerActiveState::OnEnter();
 
     // Lock the player onto a ladder when climbing
     ctx->moveComponent.LockOntoLadder();
@@ -295,15 +302,21 @@ void Climbing::ChangeAnimation() const
 void Dying::OnEnter() const
 {
     ctx->animation.SetAnimation("death"_h, true, false);
+    gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
+    gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "PlayerDeath"_h });
 }
 
 void Dying::Update()
 {
     wait += gla::Time::Get().FixedDeltaTime();
-    if (wait >= totalTime)
-        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "Respawn"_h });
     if (wait >= animationWait)
         ctx->animation.SetAnimation("dying"_h, true);
 }
+void Disabled::OnEnter() const
+{
+    ctx->animation.SetAnimation("idle"_h, true);
+}
+
+void Disabled::Update() {}
 
 }  // namespace bt::playerstates
