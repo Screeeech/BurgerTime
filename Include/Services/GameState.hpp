@@ -1,6 +1,7 @@
 #ifndef BURGERTIME_GAMESTATE_HPP
 #define BURGERTIME_GAMESTATE_HPP
 
+#include <any>
 #include <cstdint>
 
 namespace bt
@@ -16,11 +17,16 @@ enum class GameMode : std::uint8_t
 class GameState final
 {
 public:
+    explicit GameState();
+
     void StartGame();
     void SetGameMode(GameMode mode);
     auto GetGameMode() const -> GameMode;
 
 private:
+    void OnPlayerConnect(std::any const& connectEvent);
+    void OnPlayerDisconnect(std::any const& connectEvent);
+
     static constexpr int maxLives{ 5 };
 
     bool m_gameStarted{ false };

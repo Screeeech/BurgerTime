@@ -54,13 +54,6 @@ void load()
 
     gla::Locator::Provide<bt::GameState>();
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
-    auto& inputManager =  gla::Locator::Get<gla::InputManager>();
-
-    inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_SOUTH, gla::Input::Type::released, "select"_h, 0);
-    inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_EAST, gla::Input::Type::released, "start"_h, 0);
-
-    inputManager.RegisterInput(SDL_SCANCODE_U, gla::Input::Type::released, "select"_h, 0);
-    inputManager.RegisterInput(SDL_SCANCODE_I, gla::Input::Type::released, "start"_h, 0);
 
     auto& startScene = sceneManager.CreateScene(bt::LoadStartScene, bt::UnloadStartScene, "Start");
     sceneManager.CreateScene(bt::LoadGameScene, bt::UnloadGameScene, "Game");
