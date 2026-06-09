@@ -12,8 +12,8 @@
 #include "Components/TextComponent.hpp"
 #include "Locator.hpp"
 #include "Scene.hpp"
-#include "Services/InputManager.hpp"
 #include "Services/GameState.hpp"
+#include "Services/InputManager.hpp"
 #include "Services/ResourceManager.hpp"
 #include "Utils.hpp"
 
@@ -74,11 +74,17 @@ void LoadSinglePlayerGameScene(gla::Scene const& scene)
     LoadGameScene(scene);
     auto* stageObject = scene.GetRoot()->CreateChild(32, 32, "Stage");
     auto* stage = stageObject->AddComponent<Stage>("Stages/stage1.json");
+    auto const& gameState{ gla::Locator::Get<GameState>() };
 
     // Peter Pepper
-    auto const& gameState{ gla::Locator::Get<GameState>() };
     Entity::CreatePlayer(*stage, *gameState.peterPepperPlayerIndex, { 95, -2 });
+
+    // NPCs
+    Entity::CreateEnemy(*stage, 11, { 75, -2 }, Entity::Type::HotDog);
+    // NPCs
+    Entity::CreateEnemy(*stage, 11, { 71, -2 }, Entity::Type::Egg);
 }
+
 void UnloadGameScene() {}
 
 void LoadCoopGameScene(gla::Scene const& scene)

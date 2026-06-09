@@ -1,5 +1,6 @@
 #include "Components/BurgerPart.hpp"
 
+#include <cmath>
 #include <ranges>
 
 #include "Components/Collider.hpp"
@@ -10,6 +11,7 @@
 #include "Components/Stage.hpp"
 #include "Components/Timer.hpp"
 #include "Constants.hpp"
+#include "GameEvents.hpp"
 #include "Services/EventManager.hpp"
 #include "Utils.hpp"
 
@@ -47,11 +49,11 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, s
           }())
     , m_pStage(pStage)
     , m_pStateMachine(pOwner->AddComponent<burgerpartstates::BurgerStateMachine>(burgerpartstates::Context{
-        .part = *this,
-        .transform = pOwner->GetTransform(),
-        .timer = *m_pResetTimer,
-        .stage = *m_pStage,
-    }))
+          .part = *this,
+          .transform = pOwner->GetTransform(),
+          .timer = *m_pResetTimer,
+          .stage = *m_pStage,
+      }))
 {
 }
 
@@ -64,13 +66,23 @@ void BurgerPart::AcquireEnemy(gla::GameObject& enemyObject, Entity& enemy)
 
 void BurgerPart::ReleaseEnemies()
 {
+    if (m_fallingEnemies.empty())
+        return;
+
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+
     // Reparent to stage
     for (auto* enemy : m_fallingEnemies)
     {
         enemy->m_pOwner->QueueReparent(*m_pStage->m_pOwner);
-        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::PlayerEvent{"OnLanding"_h, enemy->entityIndex});
+        eventManager.InvokeEvent(gla::PlayerEvent{ "OnLanding"_h, enemy->entityIndex });
     }
 
+    auto const enemyCount = static_cast<double>(m_fallingEnemies.size());
+    auto const score = score::enemyDropScoreMultiplier * std::pow(2, enemyCount - 1);
+
+    std::println("Enemy drop!");
+    eventManager.InvokeEvent(ScoreEvent("ScoreChange"_h, static_cast<int>(score)));
     m_fallingEnemies.clear();
 }
 
@@ -91,7 +103,7 @@ void BurgerPart::SetSteppedPieces(int steppedPieces)
 
 void BurgerPart::SettleOntoPlate(int partCount, glm::vec2 platePosition) const
 {
-    float const partYPosition{ platePosition.y - (static_cast<float>(partCount - 1) * (pieceSize + 1))};
+    float const partYPosition{ platePosition.y - (static_cast<float>(partCount - 1) * (pieceSize + 1)) };
 
     auto& transform = m_pOwner->GetTransform();
     transform.SetLocalPosition(transform.GetLocalPosition().x, partYPosition);

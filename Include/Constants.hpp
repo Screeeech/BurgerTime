@@ -33,6 +33,16 @@ inline constexpr int text{ 10 };
 ;
 }  // namespace layers
 
+namespace score
+{
+inline constexpr int partDrop{ 50 };
+inline constexpr int hotdog{ 100 };
+inline constexpr int pickle{ 200 };
+inline constexpr int egg{ 300 };
+inline constexpr int enemyDropScoreMultiplier{ 500 };
+
+}
+
 }  // namespace bt
 
 #endif  // BURGERTIME_COLORS_HPP

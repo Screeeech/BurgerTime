@@ -10,7 +10,11 @@
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
 #include "Components/Timer.hpp"
+#include "Constants.hpp"
+#include "GameEvents.hpp"
+#include "Services/EventManager.hpp"
 #include "Time.hpp"
+#include "Utils.hpp"
 
 namespace bt
 {
@@ -96,6 +100,8 @@ void burgerpartstates::Falling::Update()
 
 void burgerpartstates::Falling::OnExit() const
 {
+    gla::Locator::Get<gla::EventManager>().InvokeEvent(ScoreEvent("ScoreChange"_h, score::partDrop));
+
     for (auto const& [collider, sprite] : ctx->part.GetPieces())
     {
         // Turn off falling collider

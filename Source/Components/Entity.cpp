@@ -32,11 +32,11 @@ auto Entity::GetScoreForEnemyType(Type type) -> int
     switch (type)
     {
         case Type::HotDog:
-            return 100;
+            return score::hotdog;
         case Type::Pickle:
-            return 200;
+            return score::pickle;
         case Type::Egg:
-            return 300;
+            return score::egg;
         default:
             return 0;
     }
