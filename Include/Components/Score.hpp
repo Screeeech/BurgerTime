@@ -17,6 +17,7 @@ class Score final : public gla::Component
 {
 public:
     explicit Score(gla::GameObject* pOwner, std::shared_ptr<gla::Font> font, int startingScore = 0);
+    ~Score() override;
 
     void OnScoreIncrease(std::any const& scoreEvent);
 
@@ -24,7 +25,6 @@ public:
 
 protected:
     void OnActivate() override;
-    void OnDeactivate() override;
 
 private:
     int m_score;

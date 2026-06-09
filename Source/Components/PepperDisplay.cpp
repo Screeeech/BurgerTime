@@ -23,6 +23,11 @@ PepperDisplay::PepperDisplay(gla::GameObject* pOwner, int startingPeppers)
 {
 }
 
+PepperDisplay::~PepperDisplay()
+{
+    gla::Locator::Get<gla::EventManager>().UnbindEvent("TryPepper"_h, this);
+}
+
 void PepperDisplay::OnTryPepper(std::any const& pepperEvent)
 {
     if (m_pepperCount <= 0)
@@ -54,8 +59,4 @@ void PepperDisplay::OnActivate()
     m_pPepperText->SetText(std::to_string(m_startingPepperCount));
 }
 
-void PepperDisplay::OnDeactivate()
-{
-    gla::Locator::Get<gla::EventManager>().UnbindEvent("TryPepper"_h, this);
-}
 }  // namespace bt

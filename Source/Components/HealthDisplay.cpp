@@ -45,9 +45,4 @@ void HealthDisplay::OnActivate()
     m_pHealthText->SetText(std::to_string(m_startingHealth));
 }
 
-void HealthDisplay::OnDeactivate()
-{
-    Component::OnDeactivate();
-}
-
 }  // namespace bt

@@ -21,13 +21,21 @@ public:
     explicit GameState();
 
     void StartGame();
+    void EndGame();
     void SetGameMode(GameMode mode);
     auto GetGameMode() const -> GameMode;
+
+    auto GetHealth() const -> int;
 
     std::optional<int> peterPepperPlayerIndex;
     std::optional<int> sallySaltPlayerIndex;
     std::optional<int> enemyPlayerIndex;
+    int health{ maxLives };
+    int score{};
+
 private:
+    void OnRespawn(std::any const& respawnEvent);
+
     void OnPlayerConnect(std::any const& connectEvent);
     void OnPlayerDisconnect(std::any const& connectEvent);
 
@@ -35,7 +43,6 @@ private:
 
     bool m_gameStarted{ false };
     GameMode m_gameMode{};
-
 };
 
 }  // namespace bt

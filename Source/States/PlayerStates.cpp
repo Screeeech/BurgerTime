@@ -295,13 +295,14 @@ void Climbing::ChangeAnimation() const
 void Dying::OnEnter() const
 {
     ctx->animation.SetAnimation("death"_h, true, false);
+    gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "Death"_h });
 }
 
 void Dying::Update()
 {
     wait += gla::Time::Get().FixedDeltaTime();
     if (wait >= totalTime)
-        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "reset"_h });
+        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "Respawn"_h });
     if (wait >= animationWait)
         ctx->animation.SetAnimation("dying"_h, true);
 }

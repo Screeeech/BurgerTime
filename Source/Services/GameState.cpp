@@ -3,8 +3,8 @@
 #include "Events.hpp"
 #include "Locator.hpp"
 #include "Services/EventManager.hpp"
-#include "Services/SceneManager.hpp"
 #include "Services/InputManager.hpp"
+#include "Services/SceneManager.hpp"
 #include "Utils.hpp"
 
 namespace bt
@@ -15,6 +15,7 @@ GameState::GameState()
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("OnPlayerConnect"_h, this, &GameState::OnPlayerConnect);
     eventManager.BindEvent("OnPlayerDisconnect"_h, this, &GameState::OnPlayerDisconnect);
+    eventManager.BindEvent("Respawn"_h, this, &GameState::OnRespawn);
 }
 
 void GameState::StartGame()
@@ -45,6 +46,22 @@ void GameState::SetGameMode(GameMode mode)
 auto GameState::GetGameMode() const -> GameMode
 {
     return m_gameMode;
+}
+
+auto GameState::GetHealth() const -> int
+{
+    return health;
+}
+
+void GameState::OnRespawn(std::any const& /*respawnEvent*/)
+{
+    health--;
+    if (health <= 0)
+    {
+        gla::Locator::Get<gla::SceneManager>().LoadScene("GameOver");
+        return;
+    }
+    gla::Locator::Get<gla::SceneManager>().LoadScene("Loading");
 }
 
 void GameState::OnPlayerConnect(std::any const& connectEvent)

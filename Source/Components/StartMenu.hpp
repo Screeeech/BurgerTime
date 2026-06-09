@@ -10,10 +10,10 @@ class StartMenu final : public gla::Component
 {
 public:
     explicit StartMenu(gla::GameObject* pOwner, gla::GameObject* indicatorObject);
+    ~StartMenu() override;
 
 protected:
     void OnActivate() override;
-    void OnDeactivate() override;
 
     void OnSelect();
     void OnGameStart() const;

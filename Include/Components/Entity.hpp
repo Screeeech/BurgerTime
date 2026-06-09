@@ -27,6 +27,8 @@ public:
     };
 
     explicit Entity(gla::GameObject* pOwner, int entityIndex, Type entityType);
+    ~Entity() override;
+
 
     static auto GetScoreForEnemyType(Type type) -> int;
 
@@ -34,7 +36,6 @@ public:
     int const entityIndex;
 protected:
     void OnActivate() override;
-    void OnDeactivate() override;
 
 public:
     // Enemy and Player creation helper functions

@@ -16,6 +16,7 @@ class PepperDisplay final : public gla::Component
 {
 public:
     explicit PepperDisplay(gla::GameObject* pOwner, int startingPeppers);
+    ~PepperDisplay() override;
 
     void OnTryPepper(std::any const& pepperEvent);
 
@@ -23,7 +24,6 @@ public:
 
 protected:
     void OnActivate() override;
-    void OnDeactivate() override;
 
 private:
     int const m_startingPepperCount;
