@@ -33,6 +33,7 @@ public:
     void PrintTileType(glm::vec2 position) const;
 
     [[nodiscard]] auto GetTileAtPosition(glm::vec2 stageLocalPosition) const -> TileType;
+    [[nodiscard]] auto GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>;
 
     static constexpr uint32_t stageWidth{ 9 };
     static constexpr uint32_t stageHeight{ 12 };
@@ -55,11 +56,13 @@ private:
     int m_totalPlateCount{};
     std::array<TileType, stageSize> m_tileArray;
     gla::Timer* m_pTimer;
+    std::pair<glm::vec2, glm::vec2> m_spawnPositions{};
 
     void OnPlateFinished(std::any const& eventArgs);
     [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType;
 
-    void PopulateTiles(nlohmann::json const& tileList);
+    void LoadTiles(nlohmann::json const& tileList);
+    void LoadSpawnPositions(nlohmann::json const& spawnList);
     void SpawnBurgerParts(nlohmann::json const& burgerPartList);
     void SpawnPlates(nlohmann::json const& plateList);
 

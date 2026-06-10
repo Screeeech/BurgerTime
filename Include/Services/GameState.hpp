@@ -3,6 +3,7 @@
 
 #include <any>
 #include <cstdint>
+#include <glm/vec2.hpp>
 #include <map>
 #include <optional>
 #include <string>
@@ -65,8 +66,8 @@ public:
 
     void SetGameMode(GameMode mode);
     auto GetGameMode() const -> GameMode;
-
     auto GetHealth() const -> int;
+    auto GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>;
 
     std::optional<int> peterPepperPlayerIndex;
     std::optional<int> sallySaltPlayerIndex;

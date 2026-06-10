@@ -51,8 +51,6 @@ void LoadStartScene(gla::Scene const& scene)
     startMenu->AddComponent<StartMenu>(
         indicator,
         gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->GetComponent<GameState>());
-
-
 }
 
 void LoadLoadingScene(gla::Scene const& scene)
@@ -103,13 +101,17 @@ void LoadGameScene(gla::Scene const& scene, GameState const* gameState)
 
 void LoadSinglePlayerGameScene(gla::Scene const& scene)
 {
-    auto const* gameState = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->GetComponent<GameState>();
+    auto const* persistentRoot = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot();
+    auto const* gameState = persistentRoot->GetComponent<GameState>();
+
+    auto [firstPos, secondPos] = gameState->GetSpawnPositions();
+
     LoadGameScene(scene, gameState);
 
     auto* entitiesContainer = scene.GetRoot()->CreateChild(32, 32, "Entities");
 
     // Peter Pepper
-    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, { 95, -2 });
+    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, firstPos);
 
     // NPCs
     Entity::CreateEnemy(entitiesContainer, 11, { 75, -2 }, Entity::Type::HotDog);
@@ -119,30 +121,36 @@ void LoadSinglePlayerGameScene(gla::Scene const& scene)
 
 void LoadCoopGameScene(gla::Scene const& scene)
 {
-    auto const* gameState = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->GetComponent<GameState>();
+    auto const* persistentRoot = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot();
+    auto const* gameState = persistentRoot->GetComponent<GameState>();
+
     LoadGameScene(scene, gameState);
 
     auto* entitiesContainer = scene.GetRoot()->CreateChild(32, 32, "Entities");
+    auto [firstPos, secondPos] = gameState->GetSpawnPositions();
 
     // Peter Pepper
-    Entity::CreatePlayer(entitiesContainer, *(gameState->peterPepperPlayerIndex), { 95, -2 });
+    Entity::CreatePlayer(entitiesContainer, *(gameState->peterPepperPlayerIndex), firstPos);
 
     // Sally Salt
-    Entity::CreatePlayer(entitiesContainer, *(gameState->sallySaltPlayerIndex), { 127, -2 });
+    Entity::CreatePlayer(entitiesContainer, *(gameState->sallySaltPlayerIndex), secondPos);
 }
 
 void LoadVersusGameScene(gla::Scene const& scene)
 {
-    auto const* gameState = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->GetComponent<GameState>();
+    auto const* persistentRoot = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot();
+    auto const* gameState = persistentRoot->GetComponent<GameState>();
+
     LoadGameScene(scene, gameState);
 
     auto* entitiesContainer = scene.GetRoot()->CreateChild(32, 32, "Entities");
+    auto [firstPos, secondPos] = gameState->GetSpawnPositions();
 
     // Peter Pepper
-    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, { 95, -2 });
+    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, firstPos);
 
     // Mr HotDog
-    Entity::CreateEnemy(entitiesContainer, *gameState->enemyPlayerIndex, { 127, -2 }, Entity::Type::HotDog);
+    Entity::CreateEnemy(entitiesContainer, *gameState->enemyPlayerIndex, secondPos, Entity::Type::HotDog);
 }
 
 }  // namespace bt

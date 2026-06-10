@@ -106,6 +106,11 @@ auto GameState::GetHealth() const -> int
     return health;
 }
 
+auto GameState::GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>
+{
+    return m_pStageObject->GetComponent<Stage>()->GetSpawnPositions();
+}
+
 void GameState::OnActivate()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();

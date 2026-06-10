@@ -328,6 +328,7 @@ void Disabled::OnEnter()
     eventManager.BindEvent("EnableEntities"_h, this, &Disabled::OnEnable);
 
     ctx->animation.SetAnimation("idle"_h, true);
+    ctx->moveComponent.LockOntoGround();
 }
 void Disabled::Update() {}
 void Disabled::OnExit()

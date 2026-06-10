@@ -39,7 +39,11 @@ Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
 
     if (not stageData.contains("Tiles"))
         throw std::runtime_error{ "Invalid stage data file: No \"tiles\" list found" };
-    PopulateTiles(stageData.at("Tiles"));
+    LoadTiles(stageData.at("Tiles"));
+
+    if (not stageData.contains("Spawns"))
+        throw std::runtime_error{ "Invalid stage data file: No \"spawns\" list found" };
+    LoadSpawnPositions(stageData.at("Spawns"));
 
     if (not stageData.contains("Parts"))
         throw std::runtime_error{ "Invalid stage data file: No \"parts\" list found" };
@@ -78,6 +82,11 @@ auto Stage::GetTileAtPosition(glm::vec2 stageLocalPosition) const -> TileType
     auto const yIdx{ static_cast<uint32_t>(stageLocalPosition.y / tileHeight) };
 
     return GetTileAtIndex(xIdx, yIdx);
+}
+
+auto Stage::GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>
+{
+    return m_spawnPositions;
 }
 
 void Stage::Render()
@@ -175,13 +184,30 @@ auto Stage::GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType
     return m_tileArray.at(idx);
 }
 
-void Stage::PopulateTiles(json const& tileList)
+void Stage::LoadTiles(json const& tileList)
 {
     if (not tileList.is_array() or tileList.size() != stageHeight or tileList.at(0).size() != stageWidth)
         throw std::runtime_error{ "TileList incorrectly formatted" };
 
     for (auto const& [i, tile] : tileList | vw::join | vw::enumerate)
         m_tileArray.at(i) = tile;
+}
+
+void Stage::LoadSpawnPositions(json const& spawnList)
+{
+    if (not spawnList.is_array() or spawnList.size() != 2)
+        throw std::runtime_error{ "Spawn list incorrectly formatted" };
+
+    auto getPos = [&](int idx) -> glm::vec2
+    {
+        auto const xIndex = spawnList.at(idx).at("x").get<float>();
+        auto const yIndex = spawnList.at(idx).at("y").get<float>();
+        return { xIndex * tileWidth, yIndex * tileHeight };
+    };
+
+    m_spawnPositions.first = getPos(0);
+    m_spawnPositions.second = getPos(1);
+
 }
 
 void Stage::SpawnBurgerParts(json const& burgerPartList)
