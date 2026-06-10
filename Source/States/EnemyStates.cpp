@@ -264,6 +264,9 @@ void Falling::OnLanding(std::any const& playerEvent) const
     // Re-enable feet hurtbox for next
     ctx->feetHurtBox.EnableCollisionLayers(gla::Collider::Bits::Layer6);
 
+    if (not ctx->moveComponent.IsOnGround())
+        machine->TransitionTo<Dying>();
+
     if (ctx->stunTimer.IsRunning())
         machine->TransitionTo<StunnedStanding>();
     else

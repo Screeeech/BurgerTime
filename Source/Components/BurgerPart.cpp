@@ -38,7 +38,14 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, s
                   hitbox = pOwner->AddComponent<gla::CollisionRect>(
                       gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4,
                       gla::Collider::Bits::Layer7 | gla::Collider::Bits::Layer4,
-                      [this, i](auto&, auto&) -> void { OnPieceStep(i); },
+                      [this, i](auto&, gla::Collider& otherCollider) -> void
+                      {
+                          // If the collision comes from a player
+                          if (otherCollider.GetCollisionMasks() & gla::Collider::Bits::Layer3)
+                              gla::Locator::Get<gla::Sound>().PlayAudio("burger_step"_h);
+
+                          OnPieceStep(i);
+                      },
                       glm::vec2{ xOffset, 0.f },
                       glm::vec2(pieceSize));
                   sprite = pOwner->AddComponent<gla::Sprite>(spriteSheetTexture, layers::burgerParts);
@@ -141,7 +148,6 @@ auto BurgerPart::GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect
 
 void BurgerPart::OnPieceStep(long index)
 {
-    gla::Locator::Get<gla::Sound>().PlayAudio("burger_step"_h);
     auto& [hitbox, sprite] = m_pieces.at(index);
 
     // Turn off player stepping collisions

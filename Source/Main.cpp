@@ -33,9 +33,9 @@ void LoadSounds()
     sound.LoadAudio("Sounds/burger_step.wav", "burger_step"_h);
     sound.LoadAudio("Sounds/coin.wav", "coin"_h);
     sound.LoadAudio("Sounds/death.wav", "death"_h);
-    sound.LoadAudio("Sounds/enemy_fall.wav", "enemy_fall.wav"_h);
-    sound.LoadAudio("Sounds/enemy_sprayed.wav", "enemy_sprayed.wav"_h);
-    sound.LoadAudio("Sounds/enemy_squashed.wav", "enemy_squashed.wav"_h);
+    sound.LoadAudio("Sounds/enemy_fall.wav", "enemy_fall"_h);
+    sound.LoadAudio("Sounds/enemy_sprayed.wav", "enemy_sprayed"_h);
+    sound.LoadAudio("Sounds/enemy_squashed.wav", "enemy_squashed"_h);
     sound.LoadAudio("Sounds/game_start.wav", "game_start"_h);
     sound.LoadAudio("Sounds/pepper_shake.wav", "pepper_shake"_h);
     sound.LoadAudio("Sounds/round_clear.wav", "round_clear"_h);
