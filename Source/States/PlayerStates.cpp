@@ -9,6 +9,7 @@
 #include "Components/MoveComponent.hpp"
 #include "Components/Pepper.hpp"
 #include "Components/Stage.hpp"
+#include "Components/Timer.hpp"
 #include "Constants.hpp"
 #include "GameEvents.hpp"
 #include "Locator.hpp"
@@ -23,8 +24,7 @@ class Sound;
 }
 namespace bt::playerstates
 {
-static float remainingPepperDuration{};
-static glm::vec2 previousDirection{ 1.f, 1.f };
+static constexpr float pepperDuration{ 1.f };
 
 
 // ==================== ACTIVE BASE STATE ====================
@@ -58,11 +58,7 @@ void StandingIdle::OnEnter()
 
 void StandingIdle::Update()
 {
-    if (remainingPepperDuration > 0.f)
-    {
-        remainingPepperDuration = std::max(remainingPepperDuration - gla::Time::Get().FixedDeltaTime(), 0.f);
-        ChangeAnimation();
-    }
+    ChangeAnimation();
 
     if (ctx->moveComponent.GetDirection().x != 0.f and ctx->moveComponent.CanWalk())
     {
@@ -86,18 +82,20 @@ void StandingIdle::OnExit()
 void StandingIdle::OnPepper(std::any const& eventArgs)
 {
     auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
+    if (pepperArgs.playerIndex != ctx->playerIndex)
+        return;
 
-    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { previousDirection.x, 0.f });
-    remainingPepperDuration = 1.f;
+    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { ctx->previousDirection.x, 0.f });
+    ctx->pepperTimer->Start(pepperDuration);
 }
 
 void StandingIdle::ChangeAnimation() const
 {
-    if (remainingPepperDuration > 0.f)
+    if (ctx->pepperTimer->IsRunning())
     {
-        if (previousDirection.x >= 0)  // Right
+        if (ctx->previousDirection.x >= 0)  // Right
             ctx->animation.SetAnimation("pepperRight"_h);
-        else if (previousDirection.x < 0)  // Left
+        else if (ctx->previousDirection.x < 0)  // Left
             ctx->animation.SetAnimation("pepperLeft"_h);
     }
     else
@@ -111,11 +109,6 @@ void StandingIdle::ChangeAnimation() const
 void Walking::Update()
 {
     // assert(ctx->animation != nullptr and "Animation cannot be null!");
-
-    if (remainingPepperDuration > 0.f)
-        remainingPepperDuration = std::max(remainingPepperDuration - gla::Time::Get().FixedDeltaTime(), 0.f);
-
-
     if (ctx->moveComponent.GetDirection().x == 0.f or not ctx->moveComponent.CanWalk())
     {
         // TODO: Find workaround for this
@@ -131,7 +124,7 @@ void Walking::Update()
         return;
     }
 
-    previousDirection.x = ctx->moveComponent.GetDirection().x;
+    ctx->previousDirection.x = ctx->moveComponent.GetDirection().x;
 
     ChangeAnimation();
 
@@ -141,9 +134,11 @@ void Walking::Update()
 void Walking::OnPepper(std::any const& eventArgs)
 {
     auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
+    if (pepperArgs.playerIndex != ctx->playerIndex)
+        return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, pepperArgs.inputDirection);
-    remainingPepperDuration = 1.f;
+    ctx->pepperTimer->Start(pepperDuration);
 }
 
 void Walking::ChangeAnimation() const
@@ -155,14 +150,14 @@ void Walking::ChangeAnimation() const
 
     if (direction.x > 0.f)
     {
-        if (remainingPepperDuration > 0.f)
+        if (ctx->pepperTimer->IsRunning())
             animation.SetAnimation("pepperRight"_h, true);
         else
             animation.SetAnimation("walkRight"_h, true);
     }
     else if (direction.x < 0.f)
     {
-        if (remainingPepperDuration > 0.f)
+        if (ctx->pepperTimer->IsRunning())
             animation.SetAnimation("pepperLeft"_h, true);
         else
             animation.SetAnimation("walkLeft"_h, true);
@@ -180,12 +175,7 @@ void ClimbingIdle::OnEnter()
 // ==================== CLIMBING IDLE ====================
 void ClimbingIdle::Update()
 {
-    if (remainingPepperDuration > 0.f)
-    {
-        if (remainingPepperDuration > 0.f)
-            remainingPepperDuration = std::max(remainingPepperDuration - gla::Time::Get().FixedDeltaTime(), 0.f);
-        ChangeAnimation();
-    }
+    ChangeAnimation();
 
     if (ctx->moveComponent.GetDirection().y != 0)
         machine->TransitionTo<Climbing>();
@@ -194,17 +184,19 @@ void ClimbingIdle::Update()
 void ClimbingIdle::OnPepper(std::any const& eventArgs)
 {
     auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
+    if (pepperArgs.playerIndex != ctx->playerIndex)
+        return;
 
-    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, previousDirection.y });
-    remainingPepperDuration = 1.f;
+    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, ctx->previousDirection.y });
+    ctx->pepperTimer->Start(pepperDuration);
 }
 
 void ClimbingIdle::ChangeAnimation() const
 {
     // Up
-    if (previousDirection.y < 0)
+    if (ctx->previousDirection.y < 0)
     {
-        if (remainingPepperDuration > 0.f)
+        if (ctx->pepperTimer->IsRunning())
         {
             ctx->animation.SetAnimation("pepperUp"_h);
         }
@@ -215,9 +207,9 @@ void ClimbingIdle::ChangeAnimation() const
         }
     }
     // Down
-    else if (previousDirection.y > 0)
+    else if (ctx->previousDirection.y > 0)
     {
-        if (remainingPepperDuration > 0.f)
+        if (ctx->pepperTimer->IsRunning())
         {
             ctx->animation.SetAnimation("pepperDown"_h);
         }
@@ -241,12 +233,9 @@ void Climbing::OnEnter()
 
 void Climbing::Update()
 {
-    if (remainingPepperDuration > 0.f)
-        remainingPepperDuration = std::max(remainingPepperDuration - gla::Time::Get().FixedDeltaTime(), 0.f);
-
     auto const direction = ctx->moveComponent.GetDirection();
     if (direction.y != 0)
-        previousDirection.y = direction.y;
+        ctx->previousDirection.y = direction.y;
 
     // clang-format off
     if (ctx->moveComponent.IsOnGround() and (
@@ -276,25 +265,27 @@ void Climbing::Update()
 void Climbing::OnPepper(std::any const& eventArgs)
 {
     auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
+    if (pepperArgs.playerIndex != ctx->playerIndex)
+        return;
 
-    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, previousDirection.y });
-    remainingPepperDuration = 1.f;
+    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, ctx->previousDirection.y });
+    ctx->pepperTimer->Start(pepperDuration);
 }
 
 void Climbing::ChangeAnimation() const
 {
     auto& animation = ctx->animation;
 
-    if (previousDirection.y < 0.f)
+    if (ctx->previousDirection.y < 0.f)
     {
-        if (remainingPepperDuration > 0.f)
+        if (ctx->pepperTimer->IsRunning())
             animation.SetAnimation("pepperUp"_h, true);
         else
             animation.SetAnimation("walkUp"_h, true);
     }
-    else if (previousDirection.y > 0.f)
+    else if (ctx->previousDirection.y > 0.f)
     {
-        if (remainingPepperDuration > 0.f)
+        if (ctx->pepperTimer->IsRunning())
             animation.SetAnimation("pepperDown"_h, true);
         else
             animation.SetAnimation("walkDown"_h, true);

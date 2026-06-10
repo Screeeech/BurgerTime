@@ -28,7 +28,7 @@ protected:
 
 private:
     static constexpr float pepperDuration{ .75f };
-    static constexpr float pepperCooldown{ 1.f };
+    static constexpr float pepperCooldown{ 1.25f };
 
     gla::Timer* m_pDurationTimer;
     gla::Timer* m_pCoolDownTimer;

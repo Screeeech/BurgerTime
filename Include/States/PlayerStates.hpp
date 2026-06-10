@@ -32,6 +32,9 @@ struct Context final
 {
     gla::Animation& animation;
     MoveComponent& moveComponent;
+    int playerIndex;
+    gla::Timer* pepperTimer;
+    glm::vec2 previousDirection{ 1, 1 };
 };
 
 using PlayerStateMachine = StateMachine<Context, Disabled, StandingIdle, Walking, ClimbingIdle, Climbing, Dying>;
@@ -99,6 +102,7 @@ struct Disabled final : PlayerState
     void OnEnter();
     void Update() override;
     void OnExit();
+
 private:
     void OnEnable(std::any const& eventArgs) const;
 };

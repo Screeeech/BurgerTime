@@ -78,6 +78,8 @@ void Entity::CreatePlayer(gla::GameObject* parent, int entityIndex, glm::vec2 st
     playerObject->AddComponent<PlayerStateMachine>(Context{
         .animation = *animation,
         .moveComponent = *moveComponent,
+        .playerIndex = entityIndex,
+        .pepperTimer = playerObject->AddComponent<gla::Timer>(),
     });
 
     playerObject->AddComponent<gla::CollisionRect>(
