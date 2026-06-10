@@ -34,7 +34,7 @@ struct Context final
     MoveComponent& moveComponent;
 };
 
-using PlayerStateMachine = StateMachine<Context, StandingIdle, Walking, ClimbingIdle, Climbing, Dying, Disabled>;
+using PlayerStateMachine = StateMachine<Context, Disabled, StandingIdle, Walking, ClimbingIdle, Climbing, Dying>;
 using PlayerState = HelperState<Context, PlayerStateMachine>;
 
 struct PlayerActiveState : PlayerState
@@ -96,8 +96,11 @@ struct Dying final : PlayerState
 
 struct Disabled final : PlayerState
 {
-    void OnEnter() const;
+    void OnEnter();
     void Update() override;
+    void OnExit();
+private:
+    void OnEnable(std::any const& eventArgs) const;
 };
 
 }  // namespace bt::playerstates

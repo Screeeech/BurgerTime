@@ -68,7 +68,6 @@ public:
         // Find a way to model all valid states at compile time
 
         CallOnExit();
-        // What is this syntax C++??
         InitNewState<NewState>();
         CallOnEnter();
     }
@@ -83,6 +82,7 @@ public:
     template<typename NewState>
     void InitNewState()
     {
+        // What is this syntax C++??
         m_currentState.template emplace<NewState>();
         auto& newState = std::get<NewState>(m_currentState);
         newState.machine = this;

@@ -9,13 +9,14 @@
 
 #include "Components/BurgerPart.hpp"
 #include "Components/Plate.hpp"
+#include "Components/Timer.hpp"
 #include "Constants.hpp"
 #include "GameEvents.hpp"
 #include "Locator.hpp"
 #include "Services/EventManager.hpp"
-#include "Services/ISound.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/ResourceManager.hpp"
+#include "Services/Sound.hpp"
 #include "Utils.hpp"
 
 using nlohmann::json;
@@ -28,6 +29,7 @@ namespace bt
 Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
     : Renderable{ pOwner, layers::stage }
     , m_tileArray{}
+    , m_pTimer(pOwner->AddComponent<gla::Timer>())
 {
     std::ifstream file{ stageDataPath };
     if (not file.is_open())
@@ -46,8 +48,6 @@ Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
     if (not stageData.contains("Plates"))
         throw std::runtime_error{ "Invalid stage data file: No \"plates\" list found" };
     SpawnPlates(stageData.at("Plates"));
-
-    gla::Locator::Get<gla::ISound>().PlayAudio("game_start"_h);
 }
 
 void Stage::PrintTileType(glm::vec2 position) const
@@ -130,13 +130,26 @@ void Stage::OnActivate()
 {
     Renderable::OnActivate();
 
-    gla::Locator::Get<gla::EventManager>().BindEvent("PlateFinished"_h, this, &Stage::OnPlateFinished);
+    gla::Locator::Get<gla::Sound>().PlayAudio("game_start"_h);
+
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+    eventManager.BindEvent("PlateFinished"_h, this, &Stage::OnPlateFinished);
+    eventManager.QueueEvent(gla::Event("DisableEntities"_h));
+
+    m_pTimer->Start(stageBeginDelay);
+    m_pTimer->SetCallback(
+        []
+        {
+            gla::Locator::Get<gla::EventManager>().QueueEvent(gla::Event("EnableEntities"_h));
+            gla::Locator::Get<gla::Sound>().PlayTrack("background");
+        });
 }
+
 void Stage::OnDeactivate()
 {
     Renderable::OnDeactivate();
 
-    gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
+    gla::Locator::Get<gla::EventManager>().UnbindEvent("PlateFinished"_h, this);
 }
 
 void Stage::OnPlateFinished(std::any const& /*eventArgs*/)
@@ -146,6 +159,7 @@ void Stage::OnPlateFinished(std::any const& /*eventArgs*/)
     {
         gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event("DisableEntities"_h));
         gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event("StageCompleted"_h));
+        gla::Locator::Get<gla::Sound>().PlayAudio("round_clear"_h);
     }
 }
 

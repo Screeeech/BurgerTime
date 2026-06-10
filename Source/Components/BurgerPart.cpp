@@ -13,6 +13,7 @@
 #include "Constants.hpp"
 #include "GameEvents.hpp"
 #include "Services/EventManager.hpp"
+#include "Services/Sound.hpp"
 #include "Utils.hpp"
 
 namespace vw = std::ranges::views;
@@ -140,6 +141,7 @@ auto BurgerPart::GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect
 
 void BurgerPart::OnPieceStep(long index)
 {
+    gla::Locator::Get<gla::Sound>().PlayAudio("burger_step"_h);
     auto& [hitbox, sprite] = m_pieces.at(index);
 
     // Turn off player stepping collisions

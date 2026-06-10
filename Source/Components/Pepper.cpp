@@ -14,6 +14,7 @@
 #include "Services/InputManager.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/ResourceManager.hpp"
+#include "Services/Sound.hpp"
 #include "Utils.hpp"
 
 namespace bt
@@ -71,6 +72,8 @@ Pepper::Pepper(gla::GameObject* pOwner, Entity& player)
 
 void Pepper::SpawnPepper(glm::vec2 position, glm::vec2 direction) const
 {
+    gla::Locator::Get<gla::Sound>().PlayAudio("pepper_shake"_h);
+
     m_pDurationTimer->Start(pepperDuration);
     m_pHitbox->Enable();
 

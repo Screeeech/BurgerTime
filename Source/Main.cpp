@@ -8,9 +8,9 @@
 #include "GameScenes.hpp"
 #include "Locator.hpp"
 #include "Services/InputManager.hpp"
-#include "Services/ISound.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/SceneManager.hpp"
+#include "Services/Sound.hpp"
 #include "Utils.hpp"
 
 
@@ -25,7 +25,7 @@ namespace
 
 void LoadSounds()
 {
-    auto& sound{ gla::Locator::Get<gla::ISound>() };
+    auto& sound{ gla::Locator::Get<gla::Sound>() };
     sound.LoadAudio("Sounds/bonus_appear.wav", "bonus_appear"_h);
     sound.LoadAudio("Sounds/bonus_obtained.wav", "bonus_obtained"_h);
     sound.LoadAudio("Sounds/burger_fall.wav", "burger_fall"_h);

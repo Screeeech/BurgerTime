@@ -11,8 +11,8 @@
 #include "Constants.hpp"
 #include "Locator.hpp"
 #include "Services/InputManager.hpp"
-#include "Services/ISound.hpp"
 #include "Services/ResourceManager.hpp"
+#include "Services/Sound.hpp"
 #include "States/EnemyStates.hpp"
 #include "States/PlayerStates.hpp"
 #include "Utils.hpp"
@@ -88,7 +88,7 @@ void Entity::CreatePlayer(gla::GameObject* parent, int entityIndex, glm::vec2 st
             playerObject->GetComponent<PlayerStateMachine>()->TransitionTo<Dying>();
             collider.Disable();
 
-            gla::Locator::Get<gla::ISound>().PlayAudio("death"_h);
+            gla::Locator::Get<gla::Sound>().PlayAudio("death"_h);
         },
         glm::vec2{ 3.f, 0.f },
         glm::vec2{ 10.f, 16.f });

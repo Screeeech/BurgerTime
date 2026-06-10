@@ -13,9 +13,14 @@
 #include "GameEvents.hpp"
 #include "Locator.hpp"
 #include "Services/EventManager.hpp"
+#include "Services/Sound.hpp"
 #include "Time.hpp"
 #include "Utils.hpp"
 
+namespace gla
+{
+class Sound;
+}
 namespace bt::playerstates
 {
 static float remainingPepperDuration{};
@@ -310,13 +315,31 @@ void Dying::Update()
 {
     wait += gla::Time::Get().FixedDeltaTime();
     if (wait >= animationWait)
+    {
+        gla::Locator::Get<gla::Sound>().PlayAudio("death"_h);
         ctx->animation.SetAnimation("dying"_h, true);
-}
-void Disabled::OnEnter() const
-{
-    ctx->animation.SetAnimation("idle"_h, true);
+    }
 }
 
+// ==================== DISABLED ====================
+
+void Disabled::OnEnter()
+{
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+    eventManager.BindEvent("EnableEntities"_h, this, &Disabled::OnEnable);
+
+    ctx->animation.SetAnimation("idle"_h, true);
+}
 void Disabled::Update() {}
+void Disabled::OnExit()
+{
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+    eventManager.UnbindEvent("EnableEntities"_h, this);
+}
+
+void Disabled::OnEnable(std::any const& /*eventArgs*/) const
+{
+    machine->TransitionTo<StandingIdle>();
+}
 
 }  // namespace bt::playerstates

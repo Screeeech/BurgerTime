@@ -45,7 +45,8 @@ struct Context final
     Entity::Type type;
 };
 
-using EnemyStateMachine = StateMachine<Context, IdleStanding, Walking, Climbing, IdleClimbing, StunnedStanding, StunnedClimbing, Falling, Dying, Disabled>;
+using EnemyStateMachine =
+    StateMachine<Context, Disabled, IdleStanding, Walking, Climbing, IdleClimbing, StunnedStanding, StunnedClimbing, Falling, Dying>;
 using EnemyState = HelperState<Context, EnemyStateMachine>;
 
 struct EnemyActiveState : EnemyState
@@ -127,8 +128,12 @@ struct Dying final : EnemyState
 
 struct Disabled final : EnemyState
 {
-    void OnEnter() const;
+    void OnEnter();
     void Update() override;
+    void OnExit();
+
+private:
+    void OnEnable(std::any const& eventArgs) const;
 };
 
 }  // namespace enemystates

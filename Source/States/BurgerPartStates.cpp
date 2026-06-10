@@ -13,6 +13,7 @@
 #include "Constants.hpp"
 #include "GameEvents.hpp"
 #include "Services/EventManager.hpp"
+#include "Services/Sound.hpp"
 #include "Time.hpp"
 #include "Utils.hpp"
 
@@ -101,6 +102,7 @@ void burgerpartstates::Falling::Update()
 void burgerpartstates::Falling::OnExit() const
 {
     gla::Locator::Get<gla::EventManager>().InvokeEvent(ScoreEvent("ScoreChange"_h, score::partDrop));
+    gla::Locator::Get<gla::Sound>().PlayAudio("burger_fall"_h);
 
     for (auto const& [collider, sprite] : ctx->part.GetPieces())
     {

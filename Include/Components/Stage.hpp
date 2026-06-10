@@ -10,6 +10,10 @@
 #include "Renderable.hpp"
 #include "Services/Renderer.hpp"
 
+namespace gla
+{
+class Timer;
+}
 namespace bt
 {
 
@@ -36,6 +40,7 @@ public:
     static constexpr float stageOffset{ 32.f };
     static constexpr float tileWidth{ 24.f };
     static constexpr float tileHeight{ 16.f };
+    static constexpr float stageBeginDelay{ 3.f };
 
 protected:
     void Render() override;
@@ -43,9 +48,11 @@ protected:
     void OnDeactivate() override;
 
 private:
+
     int m_platesFinished{};
     int m_totalPlateCount{};
     std::array<TileType, stageSize> m_tileArray;
+    gla::Timer* m_pTimer;
 
     void OnPlateFinished(std::any const& eventArgs);
     [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType;

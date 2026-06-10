@@ -117,7 +117,10 @@ void GameState::OnActivate()
 void GameState::OnDeactivate()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.UnbindEvents(this);
+    eventManager.UnbindEvent("OnPlayerConnect"_h, this);
+    eventManager.UnbindEvent("OnPlayerDisconnect"_h, this);
+    eventManager.UnbindEvent("PlayerDeath"_h, this);
+    eventManager.UnbindEvent("StageCompleted"_h, this);
 }
 
 void GameState::OnStageComplete(std::any const& /*eventArgs*/)

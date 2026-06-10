@@ -10,6 +10,7 @@
 #include "Events.hpp"
 #include "GameEvents.hpp"
 #include "Services/EventManager.hpp"
+#include "Services/Sound.hpp"
 #include "States/PlayerStates.hpp"
 #include "Utils.hpp"
 
@@ -43,7 +44,7 @@ void EnemyActiveState::OnDisable(std::any const& /*eventArgs*/)
     machine->TransitionTo<Disabled>();
 }
 
-// ==================== STANDING IDLE ====================
+// ==================== IDLE STANDING ====================
 void IdleStanding::OnEnter()
 {
     EnemyActiveState::OnEnter();
@@ -78,8 +79,10 @@ void IdleStanding::OnPepper(std::any const& playerEvent)
     if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
         return;
 
+    gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
     machine->TransitionTo<StunnedStanding>();
 }
+
 
 // ==================== WALKING ====================
 void Walking::Update()
@@ -110,6 +113,7 @@ void Walking::OnPepper(std::any const& playerEvent)
     if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
         return;
 
+    gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
     machine->TransitionTo<StunnedStanding>();
 }
 
@@ -155,6 +159,31 @@ void Climbing::OnPepper(std::any const& playerEvent)
     if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
         return;
 
+    gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
+    machine->TransitionTo<StunnedClimbing>();
+}
+
+
+// ==================== IDLE CLIMBING ====================
+void IdleClimbing::OnEnter()
+{
+    EnemyActiveState::OnEnter();
+
+    ctx->animation.SetAnimation("idle"_h);
+}
+
+void IdleClimbing::Update()
+{
+    if (ctx->moveComponent.GetDirection().y != 0)
+        machine->TransitionTo<Climbing>();
+}
+
+void IdleClimbing::OnPepper(std::any const& playerEvent)
+{
+    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
+        return;
+
+    gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
     machine->TransitionTo<StunnedClimbing>();
 }
 
@@ -202,57 +231,11 @@ void StunnedClimbing::OnExit() const
 }
 
 
-// ==================== DYING ====================
-void Dying::OnEnter() const
-{
-    gla::Locator::Get<gla::EventManager>().InvokeEvent(ScoreEvent("ScoreChange"_h, Entity::GetScoreForEnemyType(ctx->type)));
-
-    ctx->animation.SetAnimation("dying"_h, true, false);
-
-    // Disable all collisions
-    ctx->playerHitbox.SetCollisionLayers(0);
-    ctx->playerHitbox.SetCollisionMasks(0);
-    ctx->headBurtBox.SetCollisionLayers(0);
-    ctx->headBurtBox.SetCollisionMasks(0);
-    ctx->feetHurtBox.SetCollisionLayers(0);
-    ctx->feetHurtBox.SetCollisionMasks(0);
-}
-
-void Dying::Update() {}
-
-void Disabled::OnEnter() const
-{
-    ctx->animation.SetAnimation("idle"_h, true);
-}
-
-void Disabled::Update() {}
-
-// ==================== CLIMBING IDLE ====================
-void IdleClimbing::OnEnter()
-{
-    EnemyActiveState::OnEnter();
-
-    ctx->animation.SetAnimation("idle"_h);
-}
-void IdleClimbing::Update()
-{
-    if (ctx->moveComponent.GetDirection().y != 0)
-        machine->TransitionTo<Climbing>();
-}
-
-void IdleClimbing::OnPepper(std::any const& playerEvent)
-{
-    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
-        return;
-
-    machine->TransitionTo<StunnedClimbing>();
-}
-
-
 // ==================== FALLING ====================
 void Falling::OnEnter()
 {
     gla::Locator::Get<gla::EventManager>().BindEvent("OnLanding"_h, this, &Falling::OnLanding);
+    gla::Locator::Get<gla::Sound>().PlayAudio("enemy_fall"_h);
 
     ctx->playerHitbox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
 
@@ -267,7 +250,6 @@ void Falling::Update()
     if (ctx->stunTimer.IsFinished())
         ctx->animation.SetAnimation("idle"_h, true);
 }
-
 void Falling::OnExit() const
 {
     gla::Locator::Get<gla::EventManager>().UnbindEvent("OnLanding"_h, this);
@@ -286,6 +268,47 @@ void Falling::OnLanding(std::any const& playerEvent) const
         machine->TransitionTo<StunnedStanding>();
     else
         machine->TransitionTo<IdleStanding>();
+}
+
+
+// ==================== DYING ====================
+void Dying::OnEnter() const
+{
+    gla::Locator::Get<gla::EventManager>().InvokeEvent(ScoreEvent("ScoreChange"_h, Entity::GetScoreForEnemyType(ctx->type)));
+    gla::Locator::Get<gla::Sound>().PlayAudio("enemy_squashed"_h);
+
+    ctx->animation.SetAnimation("dying"_h, true, false);
+
+    // Disable all collisions
+    ctx->playerHitbox.SetCollisionLayers(0);
+    ctx->playerHitbox.SetCollisionMasks(0);
+    ctx->headBurtBox.SetCollisionLayers(0);
+    ctx->headBurtBox.SetCollisionMasks(0);
+    ctx->feetHurtBox.SetCollisionLayers(0);
+    ctx->feetHurtBox.SetCollisionMasks(0);
+}
+
+void Dying::Update() {}
+
+
+// ==================== DYING ====================
+void Disabled::OnEnter()
+{
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+    eventManager.BindEvent("EnableEntities"_h, this, &Disabled::OnEnable);
+
+    ctx->animation.SetAnimation("idle"_h, true);
+}
+void Disabled::Update() {}
+void Disabled::OnExit()
+{
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+    eventManager.UnbindEvent("EnableEntities"_h, this);
+}
+
+void Disabled::OnEnable(std::any const& /*eventArgs*/) const
+{
+    machine->TransitionTo<IdleStanding>();
 }
 
 
