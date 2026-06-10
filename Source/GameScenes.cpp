@@ -61,9 +61,6 @@ void LoadLoadingScene(gla::Scene const& scene)
 
     auto* loading = scene.GetRoot()->CreateChild(128, 110, "Loading text");
 
-    static constexpr float startTime{ 3.f };
-    loading->AddComponent<gla::Timer>([=] -> void { gameState->BeginRound(); })->Start(startTime);
-
     std::string const loadingText = [&] -> auto
     {
         switch (gameState->GetGameMode())

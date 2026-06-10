@@ -125,6 +125,7 @@ void Stage::Render()
         }
     }
 }
+
 void Stage::OnActivate()
 {
     Renderable::OnActivate();

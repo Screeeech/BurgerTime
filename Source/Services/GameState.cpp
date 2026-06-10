@@ -40,7 +40,7 @@ namespace bt
 GameState::GameState(gla::GameObject* pOwner)
     : Component(pOwner)
     , m_pStageObject(gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->CreateChild(32, 32, "Persistent Stage Object"))
-    , m_pStageChangeTimer(pOwner->AddComponent<gla::Timer>())
+    , m_pTimer(pOwner->AddComponent<gla::Timer>())
 {
 }
 
@@ -49,6 +49,9 @@ void GameState::StartGame()
     m_gameStarted = true;
     m_pStageObject->Deactivate();
     m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
+
+    m_pTimer->Start(loadingTime);
+    m_pTimer->SetCallback([this] { BeginRound(); });
 }
 
 void GameState::BeginRound() const
@@ -119,14 +122,14 @@ void GameState::OnDeactivate()
 
 void GameState::OnStageComplete(std::any const& /*eventArgs*/)
 {
-    m_pStageChangeTimer->Start(stageChangeDelay);
-    m_pStageChangeTimer->SetCallback([this] -> void { NextStage(); });
+    m_pTimer->Start(stageChangeDelay);
+    m_pTimer->SetCallback([this] -> void { NextStage(); });
 }
 
 void GameState::OnDeath(std::any const& /*eventArgs*/)
 {
-    m_pStageChangeTimer->Start(stageChangeDelay);
-    m_pStageChangeTimer->SetCallback([this] -> void { Respawn(); });
+    m_pTimer->Start(stageChangeDelay);
+    m_pTimer->SetCallback([this] -> void { Respawn(); });
 }
 
 void GameState::Respawn()
@@ -143,6 +146,10 @@ void GameState::Respawn()
     }
 
     m_pStageObject->Deactivate();
+
+    m_pTimer->Start(loadingTime);
+    m_pTimer->SetCallback([this] { BeginRound(); });
+
     sceneManager.ResetScene("Loading");
     sceneManager.LoadScene("Loading");
 }
@@ -153,9 +160,12 @@ void GameState::NextStage()
         return;
 
     m_pStageObject->Deactivate();
-    m_pStageObject->RemoveComponent(m_pStageObject->GetComponent<Stage>());
+    m_pStageObject->RemoveComponent<Stage>();
     m_stageIndex = ++m_stageIndex % maxStageCount;
     m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
+
+    m_pTimer->Start(loadingTime);
+    m_pTimer->SetCallback([this] { BeginRound(); });
 
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
     sceneManager.ResetScene("Loading");
