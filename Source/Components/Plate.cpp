@@ -61,7 +61,7 @@ void Plate::Render()
     renderer.DrawLines(
         {
             {
-                pos + glm::vec2(-(offset / 2.f) - 1.f, -offset / 4.f),
+                pos + glm::vec2(-3, 3),
                 pos + glm::vec2(-1.f, offset),
             },
             {
@@ -70,7 +70,7 @@ void Plate::Render()
             },
             {
                 pos + glm::vec2((offset * 4.f) + 1.f, offset),
-                pos + glm::vec2((offset * 4.f) + (offset / 2.f), -offset / 4.f),
+                pos + glm::vec2((offset * 4.f) + 3.f, 3.f),
             },
         });
 }

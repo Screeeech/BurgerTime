@@ -149,7 +149,7 @@ void Stage::OnDeactivate()
 {
     Renderable::OnDeactivate();
 
-    gla::Locator::Get<gla::EventManager>().UnbindEvent("PlateFinished"_h, this);
+    gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
 }
 
 void Stage::OnPlateFinished(std::any const& /*eventArgs*/)
@@ -293,19 +293,19 @@ void Stage::DrawLadder(glm::vec2 cursor, gla::Renderer const& renderer)
         {
             {
                 cursor + glm::vec2{ 2.f, 0.f },
-                cursor + glm::vec2{ 11.f, 0.f },
+                cursor + glm::vec2{ 12.f, 0.f },
             },
             {
                 cursor + glm::vec2{ 2.f, 2.f },
-                cursor + glm::vec2{ 11.f, 2.f },
+                cursor + glm::vec2{ 12.f, 2.f },
             },
             {
                 cursor + glm::vec2{ 2.f, 8.f },
-                cursor + glm::vec2{ 11.f, 8.f },
+                cursor + glm::vec2{ 12.f, 8.f },
             },
             {
                 cursor + glm::vec2{ 2.f, 10.f },
-                cursor + glm::vec2{ 11.f, 10.f },
+                cursor + glm::vec2{ 12.f, 10.f },
             },
         });
 }

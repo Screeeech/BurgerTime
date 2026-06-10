@@ -28,7 +28,7 @@ HighScore::HighScore(gla::GameObject* pOwner, std::shared_ptr<gla::Font> font, i
 
 HighScore::~HighScore()
 {
-    gla::Locator::Get<gla::EventManager>().UnbindEvent("HighScoreSet"_h, this);
+    gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
 }
 
 void HighScore::OnHighScoreSet(std::any const& scoreEvent)

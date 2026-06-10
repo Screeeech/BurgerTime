@@ -56,6 +56,6 @@ void PepperDisplay::OnActivate()
 
 void PepperDisplay::OnDeactivate()
 {
-    gla::Locator::Get<gla::EventManager>().UnbindEvent("TryPepper"_h, this);
+    gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
 }
 }  // namespace bt

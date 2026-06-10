@@ -144,7 +144,7 @@ void MoveComponent::LateUpdate()
 
 void MoveComponent::OnActivate()
 {
-    auto const* persistentRoot = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot();
+    auto* persistentRoot = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot();
     for (auto const* child : persistentRoot->GetChildren())
     {
         if (auto* stage = child->GetComponent<Stage>())

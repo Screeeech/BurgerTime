@@ -35,7 +35,7 @@ public:
     [[nodiscard]] auto GetTileAtPosition(glm::vec2 stageLocalPosition) const -> TileType;
 
     static constexpr uint32_t stageWidth{ 9 };
-    static constexpr uint32_t stageHeight{ 10 };
+    static constexpr uint32_t stageHeight{ 12 };
     static constexpr uint32_t stageSize{ stageWidth * stageHeight };
     static constexpr float stageOffset{ 32.f };
     static constexpr float tileWidth{ 24.f };

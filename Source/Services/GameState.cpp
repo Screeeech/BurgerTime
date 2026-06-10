@@ -5,6 +5,7 @@
 #include <nlohmann/json.hpp>
 #include <print>
 
+#include "Commands/CallbackCommand.hpp"
 #include "Components/Stage.hpp"
 #include "Components/Timer.hpp"
 #include "Events.hpp"
@@ -112,15 +113,23 @@ void GameState::OnActivate()
     eventManager.BindEvent("OnPlayerDisconnect"_h, this, &GameState::OnPlayerDisconnect);
     eventManager.BindEvent("PlayerDeath"_h, this, &GameState::OnDeath);
     eventManager.BindEvent("StageCompleted"_h, this, &GameState::OnStageComplete);
+
+    auto& inputManager = gla::Locator::Get<gla::InputManager>();
+    inputManager.RegisterInput(SDL_SCANCODE_F1, gla::Input::Type::released, "__skip_stage"_h, 0);
+    inputManager.BindAction<gla::CallbackCommand>("__skip_stage"_h, 0, [this]
+    {
+        NextStage();
+    });
 }
 
 void GameState::OnDeactivate()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.UnbindEvent("OnPlayerConnect"_h, this);
-    eventManager.UnbindEvent("OnPlayerDisconnect"_h, this);
-    eventManager.UnbindEvent("PlayerDeath"_h, this);
-    eventManager.UnbindEvent("StageCompleted"_h, this);
+    eventManager.UnbindEvents(this);
+
+    auto& inputManager = gla::Locator::Get<gla::InputManager>();
+    inputManager.UnregisterInput(SDL_SCANCODE_F1, "__skip_stage"_h, 0);
+    inputManager.UnbindAction("__skip_stage"_h, 0);
 }
 
 void GameState::OnStageComplete(std::any const& /*eventArgs*/)
@@ -164,6 +173,9 @@ void GameState::NextStage()
 
     m_pStageObject->Deactivate();
     m_pStageObject->RemoveComponent<Stage>();
+    for (auto* child : m_pStageObject->GetChildren())
+        child->QueueDelete();
+
     m_stageIndex = ++m_stageIndex % maxStageCount;
     m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
 

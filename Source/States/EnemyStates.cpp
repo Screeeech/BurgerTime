@@ -36,8 +36,7 @@ void EnemyActiveState::OnEnter()
 void EnemyActiveState::OnExit()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.UnbindEvent("OnPepper"_h, this);
-    eventManager.UnbindEvent("DisableEntities"_h, this);
+    eventManager.UnbindEvents(this);
 }
 
 void EnemyActiveState::OnDisable(std::any const& /*eventArgs*/)
@@ -313,7 +312,7 @@ void Disabled::Update() {}
 void Disabled::OnExit()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.UnbindEvent("EnableEntities"_h, this);
+    eventManager.UnbindEvents(this);
 }
 
 void Disabled::OnEnable(std::any const& /*eventArgs*/) const

@@ -38,8 +38,7 @@ void PlayerActiveState::OnEnter()
 void PlayerActiveState::OnExit()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.UnbindEvent("Pepper"_h, this);
-    eventManager.UnbindEvent("DisableEntities"_h, this);
+    eventManager.UnbindEvents(this);
 }
 
 void PlayerActiveState::OnDisable(std::any const& /*eventArgs*/)
@@ -81,7 +80,7 @@ void StandingIdle::Update()
 void StandingIdle::OnExit()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.UnbindEvent("Pepper"_h, this);
+    eventManager.UnbindEvents(this);
 }
 
 void StandingIdle::OnPepper(std::any const& eventArgs)
@@ -334,7 +333,7 @@ void Disabled::Update() {}
 void Disabled::OnExit()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
-    eventManager.UnbindEvent("EnableEntities"_h, this);
+    eventManager.UnbindEvents(this);
 }
 
 void Disabled::OnEnable(std::any const& /*eventArgs*/) const

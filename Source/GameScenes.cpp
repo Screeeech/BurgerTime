@@ -51,6 +51,8 @@ void LoadStartScene(gla::Scene const& scene)
     startMenu->AddComponent<StartMenu>(
         indicator,
         gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->GetComponent<GameState>());
+
+
 }
 
 void LoadLoadingScene(gla::Scene const& scene)

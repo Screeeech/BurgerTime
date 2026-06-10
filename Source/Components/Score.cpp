@@ -44,7 +44,7 @@ void Score::OnActivate()
 
 void Score::OnDeactivate()
 {
-    gla::Locator::Get<gla::EventManager>().UnbindEvent("ScoreChange"_h, this);
+    gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
 }
 
 }  // namespace bt
