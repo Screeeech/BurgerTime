@@ -56,8 +56,6 @@ public:
         : Component(pOwner)
         , m_context(context)
     {
-        InitNewState<std::tuple_element_t<0, std::tuple<States...>>>();
-        CallOnEnter();
     }
     ~StateMachine() noexcept override = default;
 
@@ -93,6 +91,15 @@ protected:
     void FixedUpdate() override
     {
         std::visit([&](auto& state) -> void { state.Update(); }, m_currentState);
+    }
+    void OnActivate() override
+    {
+        InitNewState<std::tuple_element_t<0, std::tuple<States...>>>();
+        CallOnEnter();
+    }
+    void OnDeactivate() override
+    {
+        CallOnExit();
     }
 
 private:

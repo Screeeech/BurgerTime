@@ -24,24 +24,25 @@ Plate::Plate(gla::GameObject* pOwner, int maxStackSize, int plateIndex)
           [this](gla::Collider& collider, gla::Collider& otherCollider) -> void
           {
               m_pieceCount++;
-              if (m_pieceCount >= m_maxStackSize)
-              {
-                  gla::Locator::Get<gla::EventManager>().InvokeEvent(PlateFinishedEvent("PlateFinished"_h, m_plateIndex));
-                  collider.Disable();
-              }
-
-              // Disable burger part collider so it doesn't trigger multiple times
-              otherCollider.DisableCollisionMasks(gla::Collider::Bits::Layer7);
-
               if (m_pieceCount % BurgerPart::pieceCount == 0)
               {
-                  auto const* burgerPart = otherCollider.m_pOwner->GetComponent<BurgerPart>();
+                  auto* burgerPart = otherCollider.m_pOwner->GetComponent<BurgerPart>();
                   assert(burgerPart and "otherCollider must have a BurgerPart component");
+
                   burgerPart->SettleOntoPlate(m_pieceCount / BurgerPart::pieceCount, m_pOwner->GetLocalPosition() + glm::vec2(0.f, -1.f));
 
                   // Move plate collider up for the next burger part
                   auto& collisionRect = static_cast<gla::CollisionRect&>(collider);
                   collisionRect.m_position.y -= BurgerPart::pieceSize + 1.f;
+              }
+
+              // Disable burger part collider so it doesn't trigger multiple times
+              otherCollider.DisableCollisionMasks(gla::Collider::Bits::Layer7);
+
+              if (m_pieceCount >= m_maxStackSize)
+              {
+                  gla::Locator::Get<gla::EventManager>().InvokeEvent(PlateFinishedEvent("PlateFinished"_h, m_plateIndex));
+                  collider.Disable();
               }
           },
           glm::vec2{ -BurgerPart::pieceSize / 2.f, BurgerPart::pieceSize },

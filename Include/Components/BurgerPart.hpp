@@ -50,17 +50,19 @@ public:
 
     void AcquireEnemy(gla::GameObject& enemyObject, Entity& enemy);
     void ReleaseEnemies();
+    void KillEnemies();
     auto GetEnemyCount() const -> int;
 
     auto GetSteppedPieces() const -> int;
     void SetSteppedPieces(int steppedPieces);
 
-    void SettleOntoPlate(int partCount, glm::vec2 platePosition) const;
+    void SettleOntoPlate(int partCount, glm::vec2 platePosition);
 
     auto GetPieces() -> Pieces&;
 
     int m_dropCount{};
     bool m_firstFall{};
+    bool m_finished{};
 private:
     static auto GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect;
     void OnPieceStep(long index);

@@ -113,8 +113,16 @@ void burgerpartstates::Falling::OnExit() const
         sprite->m_offset.y = 0;
     }
 
+    if (ctx->part.m_finished)
+    {
+        ctx->part.KillEnemies();
+        return;
+    }
+
     if (ctx->part.m_dropCount == 0)
+    {
         ctx->part.ReleaseEnemies();
+    }
 }
 
 auto burgerpartstates::Falling::IsOnPlatform(gla::Transform const& transform, Stage const& stage) -> bool

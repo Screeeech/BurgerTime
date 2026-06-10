@@ -1,6 +1,7 @@
 #include "States/EnemyStates.hpp"
 
 #include <cassert>
+#include <print>
 
 #include "Components/Animation.hpp"
 #include "Components/Collider.hpp"
@@ -235,6 +236,7 @@ void StunnedClimbing::OnExit() const
 void Falling::OnEnter()
 {
     gla::Locator::Get<gla::EventManager>().BindEvent("OnLanding"_h, this, &Falling::OnLanding);
+    gla::Locator::Get<gla::EventManager>().BindEvent("EnemyFellOnPlate"_h, this, &Falling::OnPlate);
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_fall"_h);
 
     ctx->playerHitbox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
@@ -252,7 +254,7 @@ void Falling::Update()
 }
 void Falling::OnExit() const
 {
-    gla::Locator::Get<gla::EventManager>().UnbindEvent("OnLanding"_h, this);
+    gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
     ctx->playerHitbox.EnableCollisionMasks(gla::Collider::Bits::Layer2);
 }
 
@@ -264,13 +266,18 @@ void Falling::OnLanding(std::any const& playerEvent) const
     // Re-enable feet hurtbox for next
     ctx->feetHurtBox.EnableCollisionLayers(gla::Collider::Bits::Layer6);
 
-    if (not ctx->moveComponent.IsOnGround())
-        machine->TransitionTo<Dying>();
-
     if (ctx->stunTimer.IsRunning())
         machine->TransitionTo<StunnedStanding>();
     else
         machine->TransitionTo<IdleStanding>();
+}
+
+void Falling::OnPlate(std::any const& playerEvent) const
+{
+    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
+        return;
+
+    machine->TransitionTo<Dying>();
 }
 
 

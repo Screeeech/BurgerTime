@@ -14,6 +14,7 @@
 #include "GameEvents.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/Sound.hpp"
+#include "States/EnemyStates.hpp"
 #include "Utils.hpp"
 
 namespace vw = std::ranges::views;
@@ -89,8 +90,23 @@ void BurgerPart::ReleaseEnemies()
     auto const enemyCount = std::min(static_cast<double>(score::enemyDropScoreCap), static_cast<double>(m_fallingEnemies.size()));
     auto const score = score::enemyDropScoreMultiplier * std::pow(2, enemyCount - 1);
 
-    std::println("Enemy drop!");
     eventManager.InvokeEvent(ScoreEvent("ScoreChange"_h, static_cast<int>(score)));
+    m_fallingEnemies.clear();
+}
+
+void BurgerPart::KillEnemies()
+{
+    if (m_fallingEnemies.empty())
+        return;
+
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+
+    // Reparent to stage
+    for (auto const* enemy : m_fallingEnemies)
+    {
+        enemy->m_pOwner->QueueReparent(*m_pStage->m_pOwner);
+        eventManager.InvokeEvent(gla::PlayerEvent{ "EnemyFellOnPlate"_h, enemy->entityIndex });
+    }
     m_fallingEnemies.clear();
 }
 
@@ -109,13 +125,14 @@ void BurgerPart::SetSteppedPieces(int steppedPieces)
     m_steppedPieces = std::min(steppedPieces, pieceCount);
 }
 
-void BurgerPart::SettleOntoPlate(int partCount, glm::vec2 platePosition) const
+void BurgerPart::SettleOntoPlate(int partCount, glm::vec2 platePosition)
 {
     float const partYPosition{ platePosition.y - (static_cast<float>(partCount - 1) * (pieceSize + 1)) };
 
     auto& transform = m_pOwner->GetTransform();
     transform.SetLocalPosition(transform.GetLocalPosition().x, partYPosition);
 
+    m_finished = true;
     m_pStateMachine->TransitionTo<burgerpartstates::Finished>();
 }
 

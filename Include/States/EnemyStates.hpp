@@ -116,8 +116,9 @@ struct Falling final : EnemyState
     void OnEnter();
     void Update() override;
     void OnExit() const;
-
+private:
     void OnLanding(std::any const& playerEvent) const;
+    void OnPlate(std::any const& playerEvent) const;
 };
 
 struct Dying final : EnemyState
