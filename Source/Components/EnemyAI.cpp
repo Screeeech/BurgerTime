@@ -71,42 +71,82 @@ void EnemyAI::OnFindNewDirection(std::any const& entityEvent)
 void EnemyAI::FindNewDirection()
 {
     auto const target = GetClosestPlayerDirection();
-    switch (m_currentDirection)
+
+    if (m_currentDirection == Direction::Idle)
     {
-        case Direction::Idle:
+        if (target.y < 0 and m_pMoveComponent->CanClimbUp())
+            m_currentDirection = Direction::Up;
+        else if (target.y > 0 and m_pMoveComponent->CanClimbDown())
+            m_currentDirection = Direction::Down;
+        else if (target.x < 0 and m_pMoveComponent->CanWalkLeft())
+            m_currentDirection = Direction::Left;
+        else if (target.x > 0 and m_pMoveComponent->CanWalkRight())
+            m_currentDirection = Direction::Right;
+    }
+    else if (m_currentDirection == Direction::Up or m_currentDirection == Direction::Down)
+    {
+        // Up or Down
+        if (target.x > 0 and m_pMoveComponent->CanWalkRight())
         {
-            if (target.x > 0 and m_pMoveComponent->CanWalkRight())
-                m_currentDirection = Direction::Right;
-            else if (target.x < 0 and m_pMoveComponent->CanWalkLeft())
+            m_currentDirection = Direction::Right;
+            return;
+        }
+        if (target.x < 0 and m_pMoveComponent->CanWalkLeft())
+        {
+            m_currentDirection = Direction::Left;
+            return;
+        }
+
+        if (m_currentDirection == Direction::Up and not m_pMoveComponent->CanClimbUp())
+        {
+            if (m_pMoveComponent->CanWalkLeft())
                 m_currentDirection = Direction::Left;
-            else if (target.y < 0 and m_pMoveComponent->CanClimbUp())
-                m_currentDirection = Direction::Up;
-            else if (target.y > 0 and m_pMoveComponent->CanClimbDown())
+            else if (m_pMoveComponent->CanWalkRight())
+                m_currentDirection = Direction::Right;
+            else // Complete dead end
                 m_currentDirection = Direction::Down;
         }
-        break;
-        case Direction::Up:
-        case Direction::Down:
+        else if (m_currentDirection == Direction::Down and not m_pMoveComponent->CanClimbDown())
         {
-            if (target.x > 0 and m_pMoveComponent->CanWalkRight())
-                m_currentDirection = Direction::Right;
-            else if (target.x < 0 and m_pMoveComponent->CanWalkLeft())
+            if (m_pMoveComponent->CanWalkLeft())
                 m_currentDirection = Direction::Left;
-            else if (not m_pMoveComponent->CanWalkLeft() and not m_pMoveComponent->CanWalkRight())
-                m_currentDirection = FlipDirections(m_currentDirection);
-        }
-        break;
-        case Direction::Left:
-        case Direction::Right:
-        {
-            if (target.y < 0 and m_pMoveComponent->CanClimbUp())
+            else if (m_pMoveComponent->CanWalkRight())
+                m_currentDirection = Direction::Right;
+            else // Complete dead end
                 m_currentDirection = Direction::Up;
-            else if (target.y > 0 and m_pMoveComponent->CanClimbDown())
-                m_currentDirection = Direction::Down;
-            else if (not m_pMoveComponent->CanClimbUp() and not m_pMoveComponent->CanClimbDown())
-                m_currentDirection = FlipDirections(m_currentDirection);
         }
-        break;
+    }
+    else if (m_currentDirection == Direction::Left or m_currentDirection == Direction::Right)
+    {
+        if (target.y < 0 and m_pMoveComponent->CanClimbUp())
+        {
+            m_currentDirection = Direction::Up;
+            return;
+        }
+        if (target.y > 0 and m_pMoveComponent->CanClimbDown())
+        {
+            m_currentDirection = Direction::Down;
+            return;
+        }
+
+        if (m_currentDirection == Direction::Left and not m_pMoveComponent->CanWalkLeft())
+        {
+            if (m_pMoveComponent->CanClimbUp())
+                m_currentDirection = Direction::Up;
+            else if (m_pMoveComponent->CanClimbDown())
+                m_currentDirection = Direction::Down;
+            else  // Complete dead end
+                m_currentDirection = Direction::Right;
+        }
+        else if (m_currentDirection == Direction::Right and not m_pMoveComponent->CanWalkRight())
+        {
+            if (m_pMoveComponent->CanClimbUp())
+                m_currentDirection = Direction::Up;
+            else if (m_pMoveComponent->CanClimbDown())
+                m_currentDirection = Direction::Down;
+            else  // Complete dead end
+                m_currentDirection = Direction::Left;
+        }
     }
 }
 

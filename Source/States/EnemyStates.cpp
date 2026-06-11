@@ -49,7 +49,6 @@ void IdleStanding::OnEnter()
 {
     EnemyActiveState::OnEnter();
 
-    ctx->moveComponent.LockOntoGround();
     ctx->animation.SetAnimation("idle"_h, true);
 }
 
