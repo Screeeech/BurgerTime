@@ -38,6 +38,7 @@ set(SOURCE_FILES
     "Source/Components/HighScore.cpp"
     "Source/Components/Entity.cpp"
     "Source/Components/EnemyAI.cpp"
+    "Source/Components/EnemySpawner.cpp"
     "Source/AchievementManager.cpp"
     "Source/States/BurgerPartStates.cpp"
     "Source/States/PlayerStates.cpp"

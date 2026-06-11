@@ -38,20 +38,24 @@ Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
     json const stageData = json::parse(file);
 
     if (not stageData.contains("Tiles"))
-        throw std::runtime_error{ "Invalid stage data file: No \"tiles\" list found" };
+        throw std::runtime_error{ R"(Invalid stage data file: No "Tiles" list found)" };
     LoadTiles(stageData.at("Tiles"));
 
     if (not stageData.contains("Spawns"))
-        throw std::runtime_error{ "Invalid stage data file: No \"spawns\" list found" };
+        throw std::runtime_error{ R"(Invalid stage data file: No "Spawns" list found)" };
     LoadSpawnPositions(stageData.at("Spawns"));
 
     if (not stageData.contains("Parts"))
-        throw std::runtime_error{ "Invalid stage data file: No \"parts\" list found" };
+        throw std::runtime_error{ R"(Invalid stage data file: No "Parts" list found)" };
     SpawnBurgerParts(stageData.at("Parts"));
 
     if (not stageData.contains("Plates"))
-        throw std::runtime_error{ "Invalid stage data file: No \"plates\" list found" };
+        throw std::runtime_error{ R"(Invalid stage data file: No "Plates" list found)" };
     SpawnPlates(stageData.at("Plates"));
+
+    if (not stageData.contains("Enemies"))
+        throw std::runtime_error{ R"(Invalid stage data file: No "Enemies" list found)" };
+    LoadEnemyCounts(stageData.at("Enemies"));
 }
 
 void Stage::PrintTileType(glm::vec2 position) const
@@ -87,6 +91,11 @@ auto Stage::GetTileAtPosition(glm::vec2 stageLocalPosition) const -> TileType
 auto Stage::GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>
 {
     return m_spawnPositions;
+}
+
+auto Stage::GetEnemyCounts() -> std::unordered_map<Entity::Type, int>&
+{
+    return m_enemyCounts;
 }
 
 void Stage::Render()
@@ -207,7 +216,6 @@ void Stage::LoadSpawnPositions(json const& spawnList)
 
     m_spawnPositions.first = getPos(0);
     m_spawnPositions.second = getPos(1);
-
 }
 
 void Stage::SpawnBurgerParts(json const& burgerPartList)
@@ -292,6 +300,21 @@ void Stage::SpawnPlates(json const& plateList)
         plateObject->AddComponent<Plate>(stackSize, i);
         ++m_totalPlateCount;
     }
+}
+void Stage::LoadEnemyCounts(json const& enemyCounts)
+{
+    if (not enemyCounts.is_object())
+        throw std::runtime_error("Invalid enemy count list: Enemies is not a valid json object");
+    if (not enemyCounts.contains("HotDog"))
+        throw std::runtime_error(R"(Invalid enemy count list: Enemies does not contain a "HotDog" entry)");
+    if (not enemyCounts.contains("Pickle"))
+        throw std::runtime_error(R"(Invalid enemy count list: Enemies does not contain a "Pickle" entry)");
+    if (not enemyCounts.contains("Egg"))
+        throw std::runtime_error(R"(Invalid enemy count list: Enemies does not contain a "Egg" entry)");
+
+    m_enemyCounts[Entity::Type::HotDog] = enemyCounts.at("HotDog").get<int>();
+    m_enemyCounts[Entity::Type::Pickle] = enemyCounts.at("Pickle").get<int>();
+    m_enemyCounts[Entity::Type::Egg] = enemyCounts.at("Egg").get<int>();
 }
 
 void Stage::DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const& renderer)

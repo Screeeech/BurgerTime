@@ -7,6 +7,7 @@
 #include <string>
 
 #include "Component.hpp"
+#include "Entity.hpp"
 #include "Renderable.hpp"
 #include "Services/Renderer.hpp"
 
@@ -34,6 +35,7 @@ public:
 
     [[nodiscard]] auto GetTileAtPosition(glm::vec2 stageLocalPosition) const -> TileType;
     [[nodiscard]] auto GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>;
+    [[nodiscard]] auto GetEnemyCounts() -> std::unordered_map<Entity::Type, int>&;
 
     static constexpr uint32_t stageWidth{ 9 };
     static constexpr uint32_t stageHeight{ 12 };
@@ -51,12 +53,12 @@ protected:
     void OnDeactivate() override;
 
 private:
-
     int m_platesFinished{};
     int m_totalPlateCount{};
     std::array<TileType, stageSize> m_tileArray;
     gla::Timer* m_pTimer;
     std::pair<glm::vec2, glm::vec2> m_spawnPositions{};
+    std::unordered_map<Entity::Type, int> m_enemyCounts;
 
     void OnPlateFinished(std::any const& eventArgs);
     [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType;
@@ -65,6 +67,7 @@ private:
     void LoadSpawnPositions(nlohmann::json const& spawnList);
     void SpawnBurgerParts(nlohmann::json const& burgerPartList);
     void SpawnPlates(nlohmann::json const& plateList);
+    void LoadEnemyCounts(nlohmann::json const& enemyCounts);
 
     static void DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const& renderer);
     static void DrawLadder(glm::vec2 cursor, gla::Renderer const& renderer);

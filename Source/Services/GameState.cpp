@@ -111,6 +111,15 @@ auto GameState::GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>
     return m_pStageObject->GetComponent<Stage>()->GetSpawnPositions();
 }
 
+auto GameState::GetEnemyCounts() const -> std::unordered_map<Entity::Type, int> const&
+{
+    auto& enemyCounts = m_pStageObject->GetComponent<Stage>()->GetEnemyCounts();
+    if (m_gameMode == GameMode::Versus)
+        enemyCounts[Entity::Type::HotDog]--;
+
+    return enemyCounts;
+}
+
 void GameState::OnActivate()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();

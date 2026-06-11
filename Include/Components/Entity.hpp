@@ -18,16 +18,16 @@ class Stage;
 class Entity final : public gla::Component
 {
 public:
-    static constexpr glm::vec2 playerVelocity{ 0.85f, 0.65f };
-    static constexpr glm::vec2 enemyWalkSpeed{ 0.6f, 0.5f };
+    static constexpr glm::vec2 playerVelocity{ 0.65f, 0.45f };
+    static constexpr glm::vec2 enemyWalkSpeed{ 0.4f, 0.3f };
 
     enum class Type : std::uint8_t
     {
-        Pepper,
-        Salt,
         HotDog,
         Pickle,
         Egg,
+        Pepper,
+        Salt,
     };
 
     explicit Entity(gla::GameObject* pOwner, int entityIndex, Type entityType);
@@ -44,7 +44,7 @@ protected:
 public:
     // Enemy and Player creation helper functions
     static void CreatePlayer(gla::GameObject* parent, int entityIndex, Type playerType);
-    static void CreateEnemy(gla::GameObject* enemyObject, int entityIndex, Type entityType);
+    static void CreateEnemy(gla::GameObject* enemyObject, int entityIndex, Type entityType, glm::vec2 initialWalkingDirection = {});
     static void DefineAnimationsPlayer(gla::Animation& animation, int rowIndex);
     static void DefineAnimationsEnemy(gla::Animation& animation, int rowIndex);
 };

@@ -1,7 +1,9 @@
 #ifndef BURGERTIME_EVENTS_HPP
 #define BURGERTIME_EVENTS_HPP
-#include "Events.hpp"
 #include <glm/vec2.hpp>
+
+#include "Components/Entity.hpp"
+#include "Events.hpp"
 
 namespace bt
 {
@@ -53,6 +55,17 @@ struct PepperEvent final : gla::EntityEvent
     glm::vec2 inputDirection;
     glm::vec2 position;
     Pepper* pPepper;
+};
+
+struct EnemyDeathEvent final : gla::EntityEvent
+{
+    explicit EnemyDeathEvent(EventID id, int entityIndex, Entity::Type type)
+        : EntityEvent(id, entityIndex)
+        , enemyType(type)
+    {
+    }
+
+    Entity::Type enemyType;
 };
 
 }  // namespace bt

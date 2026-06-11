@@ -32,6 +32,7 @@ struct StunnedClimbing;
 struct Falling;
 struct Dying;
 struct Disabled;
+struct Spawning;
 
 struct Context final
 {
@@ -44,12 +45,11 @@ struct Context final
     gla::Collider& feetHurtBox;
     int entityIndex;
     Entity::Type type;
+    glm::vec2 initialWalkingDirection;
 };
 
-static constexpr float aiDelay{ 0.5f };
-
 using EnemyStateMachine =
-    StateMachine<Context, Disabled, IdleStanding, Walking, Climbing, IdleClimbing, StunnedStanding, StunnedClimbing, Falling, Dying>;
+    StateMachine<Context, Spawning, Disabled, IdleStanding, Walking, Climbing, IdleClimbing, StunnedStanding, StunnedClimbing, Falling, Dying>;
 using EnemyState = HelperState<Context, EnemyStateMachine>;
 
 struct EnemyActiveState : EnemyState
@@ -138,6 +138,12 @@ struct Disabled final : EnemyState
 
 private:
     void OnEnable(std::any const& eventArgs) const;
+};
+
+struct Spawning final : EnemyState
+{
+    void OnEnter() const;
+    void Update() override;
 };
 
 }  // namespace enemystates

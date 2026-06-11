@@ -2,6 +2,7 @@
 
 #include "Commands/CallbackCommand.hpp"
 #include "Components/EnemyAI.hpp"
+#include "Components/EnemySpawner.hpp"
 #include "Components/Entity.hpp"
 #include "Components/HealthDisplay.hpp"
 #include "Components/HighScore.hpp"
@@ -115,13 +116,15 @@ void LoadSinglePlayerGameScene(gla::Scene const& scene)
     auto* playerObject = entitiesContainer->CreateChild(firstPos, std::format("Enemy {}", *gameState->peterPepperPlayerIndex));
     Entity::CreatePlayer(playerObject, *gameState->peterPepperPlayerIndex, Entity::Type::Pepper);
 
+    entitiesContainer->AddComponent<EnemySpawner>(playerObject, nullptr, gameState->GetEnemyCounts());
+
     // NPCs
     // Entity::CreateEnemy(entitiesContainer, 11, { 75, -2 }, Entity::Type::HotDog);
     // NPCs
 
-    auto* enemyObject = entitiesContainer->CreateChild({ 40, -2 }, std::format("Enemy {}", 11));
-    Entity::CreateEnemy(enemyObject, 11, Entity::Type::Egg);
-    enemyObject->AddComponent<EnemyAI>(11, playerObject, nullptr);
+    //auto* enemyObject = entitiesContainer->CreateChild({ 40, -2 }, std::format("Enemy {}", 11));
+    //Entity::CreateEnemy(enemyObject, 11, Entity::Type::Egg);
+    //enemyObject->AddComponent<EnemyAI>(11, playerObject, nullptr);
 }
 
 void LoadCoopGameScene(gla::Scene const& scene)
@@ -141,6 +144,8 @@ void LoadCoopGameScene(gla::Scene const& scene)
     // Sally Salt
     auto* player2Object = entitiesContainer->CreateChild(secondPos, std::format("Enemy {}", *gameState->sallySaltPlayerIndex));
     Entity::CreatePlayer(player2Object, *(gameState->sallySaltPlayerIndex), Entity::Type::Salt);
+
+    entitiesContainer->AddComponent<EnemySpawner>(player1Object, player2Object, gameState->GetEnemyCounts());
 }
 
 void LoadVersusGameScene(gla::Scene const& scene)
@@ -160,6 +165,8 @@ void LoadVersusGameScene(gla::Scene const& scene)
     // Mr HotDog
     auto* enemyObject = entitiesContainer->CreateChild(secondPos, std::format("Enemy {}", 11));
     Entity::CreateEnemy(enemyObject, 2, Entity::Type::HotDog);
+
+    entitiesContainer->AddComponent<EnemySpawner>(player1Object, nullptr, gameState->GetEnemyCounts());
 }
 
 }  // namespace bt

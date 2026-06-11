@@ -107,10 +107,9 @@ void Entity::CreatePlayer(gla::GameObject* playerObject, int entityIndex, Type p
         glm::vec2{ 10.f, 16.f });
 }
 
-void Entity::CreateEnemy(gla::GameObject* enemyObject, int entityIndex, Type entityType)
+void Entity::CreateEnemy(gla::GameObject* enemyObject, int entityIndex, Type entityType, glm::vec2 initialWalkingDirection)
 {
     using namespace enemystates;
-
 
     switch (entityType)
     {
@@ -178,6 +177,7 @@ void Entity::CreateEnemy(gla::GameObject* enemyObject, int entityIndex, Type ent
         .feetHurtBox = *pFeetHurtBox,
         .entityIndex = entityIndex,
         .type = entityType,
+        .initialWalkingDirection = initialWalkingDirection,
     });
 }
 
