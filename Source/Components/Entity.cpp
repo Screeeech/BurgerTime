@@ -86,14 +86,7 @@ void Entity::CreatePlayer(gla::GameObject* playerObject, int entityIndex, Type p
     auto* pepperObject{ playerObject->GetParent()->CreateChild(0, 0, std::format("Pepper{}", entityIndex)) };
     pepperObject->AddComponent<Pepper>(*playerEntity);
 
-    playerObject->AddComponent<PlayerStateMachine>(Context{
-        .animation = *animation,
-        .moveComponent = *moveComponent,
-        .playerIndex = entityIndex,
-        .pepperTimer = playerObject->AddComponent<gla::Timer>(),
-    });
-
-    playerObject->AddComponent<gla::CollisionRect>(
+    auto* hitbox = playerObject->AddComponent<gla::CollisionRect>(
         gla::Collider::Bits::Layer2,
         gla::Collider::Bits::Layer3,
         [=](auto& collider, auto&) -> void
@@ -105,6 +98,15 @@ void Entity::CreatePlayer(gla::GameObject* playerObject, int entityIndex, Type p
         },
         glm::vec2{ 4.f, 4.f },
         glm::vec2{ 8.f, 8.f });
+
+    playerObject->AddComponent<PlayerStateMachine>(Context{
+        .animation = *animation,
+        .pepperTimer = *playerObject->AddComponent<gla::Timer>(),
+        .collider = *hitbox,
+        .moveComponent = *moveComponent,
+        .playerIndex = entityIndex,
+    });
+
 }
 
 void Entity::CreateEnemy(gla::GameObject* enemyObject, int entityIndex, Type entityType, glm::vec2 initialWalkingDirection)

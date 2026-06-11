@@ -6,6 +6,7 @@
 #include <print>
 
 #include "Components/Animation.hpp"
+#include "Components/Collider.hpp"
 #include "Components/MoveComponent.hpp"
 #include "Components/Pepper.hpp"
 #include "Components/Stage.hpp"
@@ -54,6 +55,7 @@ void StandingIdle::OnEnter()
     // std::println("Entered Standing Idle state");
     ctx->animation.SetAnimation("idle"_h, true);
     ctx->moveComponent.LockOntoGround();
+    ctx->collider.EnableCollisionMasks(gla::Collider::Bits::Layer3);
 }
 
 void StandingIdle::Update()
@@ -86,12 +88,12 @@ void StandingIdle::OnPepper(std::any const& eventArgs)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { ctx->previousDirection.x, 0.f });
-    ctx->pepperTimer->Start(pepperDuration);
+    ctx->pepperTimer.Start(pepperDuration);
 }
 
 void StandingIdle::ChangeAnimation() const
 {
-    if (ctx->pepperTimer->IsRunning())
+    if (ctx->pepperTimer.IsRunning())
     {
         if (ctx->previousDirection.x >= 0)  // Right
             ctx->animation.SetAnimation("pepperRight"_h);
@@ -138,7 +140,7 @@ void Walking::OnPepper(std::any const& eventArgs)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, pepperArgs.inputDirection);
-    ctx->pepperTimer->Start(pepperDuration);
+    ctx->pepperTimer.Start(pepperDuration);
 }
 
 void Walking::ChangeAnimation() const
@@ -150,14 +152,14 @@ void Walking::ChangeAnimation() const
 
     if (direction.x > 0.f)
     {
-        if (ctx->pepperTimer->IsRunning())
+        if (ctx->pepperTimer.IsRunning())
             animation.SetAnimation("pepperRight"_h, true);
         else
             animation.SetAnimation("walkRight"_h, true);
     }
     else if (direction.x < 0.f)
     {
-        if (ctx->pepperTimer->IsRunning())
+        if (ctx->pepperTimer.IsRunning())
             animation.SetAnimation("pepperLeft"_h, true);
         else
             animation.SetAnimation("walkLeft"_h, true);
@@ -188,7 +190,7 @@ void ClimbingIdle::OnPepper(std::any const& eventArgs)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, ctx->previousDirection.y });
-    ctx->pepperTimer->Start(pepperDuration);
+    ctx->pepperTimer.Start(pepperDuration);
 }
 
 void ClimbingIdle::ChangeAnimation() const
@@ -196,7 +198,7 @@ void ClimbingIdle::ChangeAnimation() const
     // Up
     if (ctx->previousDirection.y < 0)
     {
-        if (ctx->pepperTimer->IsRunning())
+        if (ctx->pepperTimer.IsRunning())
         {
             ctx->animation.SetAnimation("pepperUp"_h);
         }
@@ -209,7 +211,7 @@ void ClimbingIdle::ChangeAnimation() const
     // Down
     else if (ctx->previousDirection.y > 0)
     {
-        if (ctx->pepperTimer->IsRunning())
+        if (ctx->pepperTimer.IsRunning())
         {
             ctx->animation.SetAnimation("pepperDown"_h);
         }
@@ -229,6 +231,7 @@ void Climbing::OnEnter()
 
     // Lock the player onto a ladder when climbing
     ctx->moveComponent.LockOntoLadder();
+    ctx->collider.DisableCollisionMasks(gla::Collider::Bits::Layer3);
 }
 
 void Climbing::Update()
@@ -269,7 +272,7 @@ void Climbing::OnPepper(std::any const& eventArgs)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, ctx->previousDirection.y });
-    ctx->pepperTimer->Start(pepperDuration);
+    ctx->pepperTimer.Start(pepperDuration);
 }
 
 void Climbing::ChangeAnimation() const
@@ -278,14 +281,14 @@ void Climbing::ChangeAnimation() const
 
     if (ctx->previousDirection.y < 0.f)
     {
-        if (ctx->pepperTimer->IsRunning())
+        if (ctx->pepperTimer.IsRunning())
             animation.SetAnimation("pepperUp"_h, true);
         else
             animation.SetAnimation("walkUp"_h, true);
     }
     else if (ctx->previousDirection.y > 0.f)
     {
-        if (ctx->pepperTimer->IsRunning())
+        if (ctx->pepperTimer.IsRunning())
             animation.SetAnimation("pepperDown"_h, true);
         else
             animation.SetAnimation("walkDown"_h, true);

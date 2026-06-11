@@ -9,6 +9,7 @@
 
 namespace gla
 {
+class Collider;
 class Timer;
 class Animation;
 }  // namespace gla
@@ -31,9 +32,10 @@ struct Disabled;
 struct Context final
 {
     gla::Animation& animation;
+    gla::Timer& pepperTimer;
+    gla::Collider& collider;
     MoveComponent& moveComponent;
     int playerIndex;
-    gla::Timer* pepperTimer;
     glm::vec2 previousDirection{ 1, 1 };
 };
 
