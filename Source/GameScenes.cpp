@@ -1,5 +1,6 @@
 #include "GameScenes.hpp"
 
+#include "Components/StartMenu.hpp"
 #include "Commands/CallbackCommand.hpp"
 #include "Components/Entity.hpp"
 #include "Components/HealthDisplay.hpp"
@@ -8,7 +9,6 @@
 #include "Components/Score.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
-#include "Components/StartMenu.hpp"
 #include "Components/TextComponent.hpp"
 #include "Components/Timer.hpp"
 #include "Constants.hpp"

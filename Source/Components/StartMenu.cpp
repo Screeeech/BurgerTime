@@ -1,4 +1,4 @@
-#include "StartMenu.hpp"
+#include "Components/StartMenu.hpp"
 
 #include "Commands/CallbackCommand.hpp"
 #include "GameObject.hpp"
