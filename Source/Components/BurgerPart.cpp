@@ -84,7 +84,7 @@ void BurgerPart::ReleaseEnemies()
     for (auto* enemy : m_fallingEnemies)
     {
         enemy->m_pOwner->QueueReparent(*m_pStage->m_pOwner);
-        eventManager.InvokeEvent(gla::PlayerEvent{ "OnLanding"_h, enemy->entityIndex });
+        eventManager.InvokeEvent(gla::EntityEvent{ "OnLanding"_h, enemy->entityIndex });
     }
 
     auto const enemyCount = std::min(static_cast<double>(score::enemyDropScoreCap), static_cast<double>(m_fallingEnemies.size()));
@@ -105,7 +105,7 @@ void BurgerPart::KillEnemies()
     for (auto const* enemy : m_fallingEnemies)
     {
         enemy->m_pOwner->QueueReparent(*m_pStage->m_pOwner);
-        eventManager.InvokeEvent(gla::PlayerEvent{ "EnemyFellOnPlate"_h, enemy->entityIndex });
+        eventManager.InvokeEvent(gla::EntityEvent{ "EnemyFellOnPlate"_h, enemy->entityIndex });
     }
     m_fallingEnemies.clear();
 }

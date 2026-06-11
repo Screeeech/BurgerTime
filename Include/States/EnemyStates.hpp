@@ -37,6 +37,7 @@ struct Context final
 {
     gla::Animation& animation;
     gla::Timer& stunTimer;
+    gla::Timer& aiDelayTimer;
     MoveComponent& moveComponent;
     gla::Collider& playerHitbox;
     gla::Collider& headBurtBox;
@@ -44,6 +45,8 @@ struct Context final
     int entityIndex;
     Entity::Type type;
 };
+
+static constexpr float aiDelay{ 0.5f };
 
 using EnemyStateMachine =
     StateMachine<Context, Disabled, IdleStanding, Walking, Climbing, IdleClimbing, StunnedStanding, StunnedClimbing, Falling, Dying>;

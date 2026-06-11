@@ -49,6 +49,7 @@ void IdleStanding::OnEnter()
 {
     EnemyActiveState::OnEnter();
 
+    ctx->moveComponent.LockOntoGround();
     ctx->animation.SetAnimation("idle"_h, true);
 }
 
@@ -76,7 +77,7 @@ void IdleStanding::Update()
 
 void IdleStanding::OnPepper(std::any const& playerEvent)
 {
-    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
+    if (std::any_cast<gla::EntityEvent const&>(playerEvent).entityIndex != ctx->entityIndex)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
@@ -87,19 +88,28 @@ void IdleStanding::OnPepper(std::any const& playerEvent)
 // ==================== WALKING ====================
 void Walking::Update()
 {
+    if ((ctx->moveComponent.CanClimbUp() or ctx->moveComponent.CanClimbDown()) and not ctx->aiDelayTimer.IsRunning())
+    {
+        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::EntityEvent("FindNewDirection"_h, ctx->entityIndex));
+        ctx->aiDelayTimer.Start(aiDelay);
+    }
+
     if (ctx->moveComponent.GetDirection().x < 0)
         ctx->animation.SetAnimation("walkLeft"_h, true);
     if (ctx->moveComponent.GetDirection().x > 0)
         ctx->animation.SetAnimation("walkRight"_h, true);
 
 
-    if ((ctx->moveComponent.GetDirection().y < 0.f and ctx->moveComponent.CanClimbUp()) or
-        (ctx->moveComponent.GetDirection().y > 0.f and ctx->moveComponent.CanClimbDown()))
+    bool const canClimbUp = ctx->moveComponent.CanClimbUp();
+    bool const canClimbDown = ctx->moveComponent.CanClimbDown();
+    auto const direction = ctx->moveComponent.GetDirection();
+
+    if ((direction.y < 0.f and canClimbUp) or (direction.y > 0.f and canClimbDown))
     {
         machine->TransitionTo<Climbing>();
         return;
     }
-    if (ctx->moveComponent.GetDirection().x == 0.f or not ctx->moveComponent.CanWalk())
+    if (direction.x == 0.f or not ctx->moveComponent.CanWalk())
     {
         machine->TransitionTo<IdleStanding>();
         return;
@@ -110,7 +120,7 @@ void Walking::Update()
 
 void Walking::OnPepper(std::any const& playerEvent)
 {
-    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
+    if (std::any_cast<gla::EntityEvent const&>(playerEvent).entityIndex != ctx->entityIndex)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
@@ -128,6 +138,12 @@ void Climbing::OnEnter()
 
 void Climbing::Update()
 {
+    if (ctx->moveComponent.IsOnGround() and not ctx->aiDelayTimer.IsRunning())
+    {
+        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::EntityEvent("FindNewDirection"_h, ctx->entityIndex));
+        ctx->aiDelayTimer.Start(aiDelay);
+    }
+
     // clang-format off
     if (ctx->moveComponent.IsOnGround() and
         ((ctx->moveComponent.GetDirection().y == 0) or
@@ -156,7 +172,7 @@ void Climbing::Update()
 
 void Climbing::OnPepper(std::any const& playerEvent)
 {
-    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
+    if (std::any_cast<gla::EntityEvent const&>(playerEvent).entityIndex != ctx->entityIndex)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
@@ -180,7 +196,7 @@ void IdleClimbing::Update()
 
 void IdleClimbing::OnPepper(std::any const& playerEvent)
 {
-    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
+    if (std::any_cast<gla::EntityEvent const&>(playerEvent).entityIndex != ctx->entityIndex)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
@@ -259,7 +275,7 @@ void Falling::OnExit() const
 
 void Falling::OnLanding(std::any const& playerEvent) const
 {
-    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
+    if (std::any_cast<gla::EntityEvent const&>(playerEvent).entityIndex != ctx->entityIndex)
         return;
 
     // Re-enable feet hurtbox for next
@@ -273,7 +289,7 @@ void Falling::OnLanding(std::any const& playerEvent) const
 
 void Falling::OnPlate(std::any const& playerEvent) const
 {
-    if (std::any_cast<gla::PlayerEvent const&>(playerEvent).playerIndex != ctx->entityIndex)
+    if (std::any_cast<gla::EntityEvent const&>(playerEvent).entityIndex != ctx->entityIndex)
         return;
 
     machine->TransitionTo<Dying>();

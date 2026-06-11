@@ -79,6 +79,24 @@ auto MoveComponent::CanWalk() const -> bool
     return tile == Stage::TileType::Platform or tile == Stage::TileType::LadderPlatform;
 }
 
+auto MoveComponent::CanWalkLeft() const -> bool
+{
+    float constexpr halfPlayerSprite{ 8.f };
+    glm::vec2 constexpr xSideOffset{ -halfPlayerSprite * 3, 0 };
+
+    Stage::TileType const tile = m_pStage->GetTileAtPosition(GetSpritePosition() + xSideOffset);
+    return tile == Stage::TileType::Platform or tile == Stage::TileType::LadderPlatform;
+}
+
+auto MoveComponent::CanWalkRight() const -> bool
+{
+    float constexpr halfPlayerSprite{ 8.f };
+    glm::vec2 constexpr xSideOffset{ halfPlayerSprite * 3, 0 };
+
+    Stage::TileType const tile = m_pStage->GetTileAtPosition(GetSpritePosition() + xSideOffset);
+    return tile == Stage::TileType::Platform or tile == Stage::TileType::LadderPlatform;
+}
+
 auto MoveComponent::CanClimbDown() const -> bool
 {
     int const xOffsetIntoTile = static_cast<int>(GetSpritePosition().x) % static_cast<int>(Stage::tileWidth);
@@ -134,7 +152,6 @@ auto MoveComponent::IsOnGround() const -> bool
             return false;
     }
 }
-
 
 
 void MoveComponent::LateUpdate()

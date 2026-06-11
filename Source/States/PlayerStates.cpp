@@ -82,7 +82,7 @@ void StandingIdle::OnExit()
 void StandingIdle::OnPepper(std::any const& eventArgs)
 {
     auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
-    if (pepperArgs.playerIndex != ctx->playerIndex)
+    if (pepperArgs.entityIndex != ctx->playerIndex)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { ctx->previousDirection.x, 0.f });
@@ -134,7 +134,7 @@ void Walking::Update()
 void Walking::OnPepper(std::any const& eventArgs)
 {
     auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
-    if (pepperArgs.playerIndex != ctx->playerIndex)
+    if (pepperArgs.entityIndex != ctx->playerIndex)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, pepperArgs.inputDirection);
@@ -184,7 +184,7 @@ void ClimbingIdle::Update()
 void ClimbingIdle::OnPepper(std::any const& eventArgs)
 {
     auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
-    if (pepperArgs.playerIndex != ctx->playerIndex)
+    if (pepperArgs.entityIndex != ctx->playerIndex)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, ctx->previousDirection.y });
@@ -265,7 +265,7 @@ void Climbing::Update()
 void Climbing::OnPepper(std::any const& eventArgs)
 {
     auto const& pepperArgs = std::any_cast<PepperEvent>(eventArgs);
-    if (pepperArgs.playerIndex != ctx->playerIndex)
+    if (pepperArgs.entityIndex != ctx->playerIndex)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, ctx->previousDirection.y });

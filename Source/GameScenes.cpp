@@ -1,7 +1,7 @@
 #include "GameScenes.hpp"
 
-#include "Components/StartMenu.hpp"
 #include "Commands/CallbackCommand.hpp"
+#include "Components/EnemyAI.hpp"
 #include "Components/Entity.hpp"
 #include "Components/HealthDisplay.hpp"
 #include "Components/HighScore.hpp"
@@ -9,6 +9,7 @@
 #include "Components/Score.hpp"
 #include "Components/Sprite.hpp"
 #include "Components/Stage.hpp"
+#include "Components/StartMenu.hpp"
 #include "Components/TextComponent.hpp"
 #include "Components/Timer.hpp"
 #include "Constants.hpp"
@@ -111,12 +112,16 @@ void LoadSinglePlayerGameScene(gla::Scene const& scene)
     auto* entitiesContainer = scene.GetRoot()->CreateChild(32, 32, "Entities");
 
     // Peter Pepper
-    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, firstPos, Entity::Type::Pepper);
+    auto* playerObject = entitiesContainer->CreateChild(firstPos, std::format("Enemy {}", *gameState->peterPepperPlayerIndex));
+    Entity::CreatePlayer(playerObject, *gameState->peterPepperPlayerIndex, Entity::Type::Pepper);
 
     // NPCs
-    Entity::CreateEnemy(entitiesContainer, 11, { 75, -2 }, Entity::Type::HotDog);
+    // Entity::CreateEnemy(entitiesContainer, 11, { 75, -2 }, Entity::Type::HotDog);
     // NPCs
-    Entity::CreateEnemy(entitiesContainer, 11, { 71, -2 }, Entity::Type::Egg);
+
+    auto* enemyObject = entitiesContainer->CreateChild({ 40, -2 }, std::format("Enemy {}", 11));
+    Entity::CreateEnemy(enemyObject, 11, Entity::Type::Egg);
+    enemyObject->AddComponent<EnemyAI>(11, playerObject, nullptr);
 }
 
 void LoadCoopGameScene(gla::Scene const& scene)
@@ -130,10 +135,12 @@ void LoadCoopGameScene(gla::Scene const& scene)
     auto [firstPos, secondPos] = gameState->GetSpawnPositions();
 
     // Peter Pepper
-    Entity::CreatePlayer(entitiesContainer, *(gameState->peterPepperPlayerIndex), firstPos, Entity::Type::Pepper);
+    auto* player1Object = entitiesContainer->CreateChild(firstPos, std::format("Enemy {}", *gameState->peterPepperPlayerIndex));
+    Entity::CreatePlayer(player1Object, *(gameState->peterPepperPlayerIndex), Entity::Type::Pepper);
 
     // Sally Salt
-    Entity::CreatePlayer(entitiesContainer, *(gameState->sallySaltPlayerIndex), secondPos, Entity::Type::Salt);
+    auto* player2Object = entitiesContainer->CreateChild(secondPos, std::format("Enemy {}", *gameState->sallySaltPlayerIndex));
+    Entity::CreatePlayer(player2Object, *(gameState->sallySaltPlayerIndex), Entity::Type::Salt);
 }
 
 void LoadVersusGameScene(gla::Scene const& scene)
@@ -147,10 +154,12 @@ void LoadVersusGameScene(gla::Scene const& scene)
     auto [firstPos, secondPos] = gameState->GetSpawnPositions();
 
     // Peter Pepper
-    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, firstPos, Entity::Type::Pepper);
+    auto* player1Object = entitiesContainer->CreateChild(firstPos, std::format("Enemy {}", *gameState->peterPepperPlayerIndex));
+    Entity::CreatePlayer(player1Object, *(gameState->peterPepperPlayerIndex), Entity::Type::Pepper);
 
     // Mr HotDog
-    Entity::CreateEnemy(entitiesContainer, *gameState->enemyPlayerIndex, secondPos, Entity::Type::HotDog);
+    auto* enemyObject = entitiesContainer->CreateChild(secondPos, std::format("Enemy {}", 11));
+    Entity::CreateEnemy(enemyObject, 2, Entity::Type::HotDog);
 }
 
 }  // namespace bt

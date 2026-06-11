@@ -7,10 +7,10 @@ namespace bt
 {
 class Pepper;
 
-struct HealthEvent : gla::PlayerEvent
+struct HealthEvent : gla::EntityEvent
 {
     explicit HealthEvent(EventID id, int playerIndex, int healthChange)
-        : PlayerEvent(id, playerIndex)
+        : EntityEvent(id, playerIndex)
         , healthChange(healthChange)
     {
     }
@@ -40,10 +40,10 @@ struct PlateFinishedEvent final : gla::Event
     int plateIndex;
 };
 
-struct PepperEvent final : gla::PlayerEvent
+struct PepperEvent final : gla::EntityEvent
 {
     explicit PepperEvent(EventID id, int playerIndex, glm::vec2 inputDirection, glm::vec2 position, Pepper* pPepper)
-        : PlayerEvent(id, playerIndex)
+        : EntityEvent(id, playerIndex)
         , inputDirection(inputDirection)
         , position(position)
         , pPepper(pPepper)

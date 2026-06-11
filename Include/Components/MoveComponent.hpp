@@ -22,11 +22,12 @@ public:
     auto GetSpritePosition() const -> glm::vec2;
 
     // Stage related helper functions
-
     void LockOntoGround() const;
     void LockOntoLadder() const;
 
     auto CanWalk() const -> bool;
+    auto CanWalkLeft() const -> bool;
+    auto CanWalkRight() const -> bool;
     auto CanClimbDown() const -> bool;
     auto CanClimbUp() const -> bool;
     auto IsOnGround() const -> bool;

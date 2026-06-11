@@ -4,6 +4,7 @@
 #include "Components/Animation.hpp"
 #include "Components/BurgerPart.hpp"
 #include "Components/CollisionRect.hpp"
+#include "Components/EnemyAI.hpp"
 #include "Components/MoveComponent.hpp"
 #include "Components/Pepper.hpp"
 #include "Components/Stage.hpp"
@@ -60,15 +61,13 @@ void Entity::OnDeactivate()
     inputManager.UnbindAction("moveRight"_h, entityIndex);
 }
 
-void Entity::CreatePlayer(gla::GameObject* parent, int entityIndex, glm::vec2 startPosition, Type playerType)
+void Entity::CreatePlayer(gla::GameObject* playerObject, int entityIndex, Type playerType)
 {
     using namespace playerstates;
 
-    auto* playerObject = parent->CreateChild(startPosition, std::format("Enemy {}", entityIndex));
-
-    auto* playerEntity = playerObject->AddComponent<Entity>(entityIndex, playerType);
     playerObject->AddComponent<gla::Timer>();
-    auto* moveComponent(playerObject->AddComponent<MoveComponent>(0.85f, 0.65f));
+    auto* playerEntity = playerObject->AddComponent<Entity>(entityIndex, playerType);
+    auto* moveComponent(playerObject->AddComponent<MoveComponent>(playerVelocity.x, playerVelocity.y));
     auto* animation(playerObject->AddComponent<gla::Animation>(layers::player));
 
     if (playerType == Type::Pepper)
@@ -84,7 +83,7 @@ void Entity::CreatePlayer(gla::GameObject* parent, int entityIndex, glm::vec2 st
         assert(false and "Cannot create player out of an enemy type");
     }
 
-    auto* pepperObject{ parent->CreateChild(0, 0, std::format("Pepper{}", entityIndex)) };
+    auto* pepperObject{ playerObject->GetParent()->CreateChild(0, 0, std::format("Pepper{}", entityIndex)) };
     pepperObject->AddComponent<Pepper>(*playerEntity);
 
     playerObject->AddComponent<PlayerStateMachine>(Context{
@@ -108,11 +107,10 @@ void Entity::CreatePlayer(gla::GameObject* parent, int entityIndex, glm::vec2 st
         glm::vec2{ 10.f, 16.f });
 }
 
-void Entity::CreateEnemy(gla::GameObject* parent, int entityIndex, glm::vec2 startPosition, Type entityType)
+void Entity::CreateEnemy(gla::GameObject* enemyObject, int entityIndex, Type entityType)
 {
     using namespace enemystates;
 
-    auto* enemyObject = parent->CreateChild(startPosition, std::format("Enemy {}", entityIndex));
 
     switch (entityType)
     {
@@ -121,26 +119,27 @@ void Entity::CreateEnemy(gla::GameObject* parent, int entityIndex, glm::vec2 sta
             assert(false and "Cannot create of Player type");
             break;
         case Type::HotDog:
-            DefineAnimationsEnemy(*enemyObject->AddComponent<gla::Animation>(layers::enemies), 2);
-            break;
-        case Type::Pickle:
             DefineAnimationsEnemy(*enemyObject->AddComponent<gla::Animation>(layers::enemies), 4);
             break;
-        case Type::Egg:
+        case Type::Pickle:
             DefineAnimationsEnemy(*enemyObject->AddComponent<gla::Animation>(layers::enemies), 6);
+            break;
+        case Type::Egg:
+            DefineAnimationsEnemy(*enemyObject->AddComponent<gla::Animation>(layers::enemies), 8);
             break;
     }
 
     auto* enemyEntity = enemyObject->AddComponent<Entity>(entityIndex, entityType);
 
-    auto* pMoveComponent = enemyObject->AddComponent<MoveComponent>(0.6f, 0.5f);
-    auto* pTimer = enemyObject->AddComponent<gla::Timer>();
+    auto* pMoveComponent = enemyObject->AddComponent<MoveComponent>(enemyWalkSpeed.x, enemyWalkSpeed.y);
+    auto* pStunTimer = enemyObject->AddComponent<gla::Timer>();
+    auto* pAIDelayTimer = enemyObject->AddComponent<gla::Timer>();
     auto* pAnimation = enemyObject->GetComponent<gla::Animation>();
 
     auto* pPlayerHitBox = enemyObject->AddComponent<gla::CollisionRect>(
         gla::Collider::Bits::Layer1,
         gla::Collider::Bits::Layer2,
-        gla::PlayerEvent("OnPepper"_h, entityIndex),
+        gla::EntityEvent("OnPepper"_h, entityIndex),
         glm::vec2{},
         glm::vec2{ 16.f, 16.f });
 
@@ -171,7 +170,8 @@ void Entity::CreateEnemy(gla::GameObject* parent, int entityIndex, glm::vec2 sta
 
     enemyObject->AddComponent<EnemyStateMachine>(Context{
         .animation = *pAnimation,
-        .stunTimer = *pTimer,
+        .stunTimer = *pStunTimer,
+        .aiDelayTimer = *pAIDelayTimer,
         .moveComponent = *pMoveComponent,
         .playerHitbox = *pPlayerHitBox,
         .headBurtBox = *pHeadHurtBox,

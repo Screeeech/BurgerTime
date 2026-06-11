@@ -199,23 +199,23 @@ void GameState::OnPlayerConnect(std::any const& connectEvent)
 
     if (args.isGamepad)
     {
-        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_EAST, gla::Input::Type::released, "select"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_SOUTH, gla::Input::Type::released, "start"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_WEST, gla::Input::Type::held, "attack"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, gla::Input::Type::held, "moveUp"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, gla::Input::Type::held, "moveLeft"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, gla::Input::Type::held, "moveDown"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, gla::Input::Type::held, "moveRight"_h, args.playerIndex);
+        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_EAST, gla::Input::Type::released, "select"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_SOUTH, gla::Input::Type::released, "start"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_WEST, gla::Input::Type::held, "attack"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, gla::Input::Type::held, "moveUp"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, gla::Input::Type::held, "moveLeft"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, gla::Input::Type::held, "moveDown"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, gla::Input::Type::held, "moveRight"_h, args.entityIndex);
     }
     else
     {
-        inputManager.RegisterInput(SDL_SCANCODE_U, gla::Input::Type::released, "select"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_SCANCODE_I, gla::Input::Type::released, "start"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_SCANCODE_SPACE, gla::Input::Type::held, "attack"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_SCANCODE_S, gla::Input::Type::held, "moveDown"_h, args.playerIndex);
-        inputManager.RegisterInput(SDL_SCANCODE_D, gla::Input::Type::held, "moveRight"_h, args.playerIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_U, gla::Input::Type::released, "select"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_I, gla::Input::Type::released, "start"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_SPACE, gla::Input::Type::held, "attack"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_S, gla::Input::Type::held, "moveDown"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_D, gla::Input::Type::held, "moveRight"_h, args.entityIndex);
     }
 }
 
@@ -226,23 +226,23 @@ void GameState::OnPlayerDisconnect(std::any const& connectEvent)
 
     if (args.isGamepad)
     {
-        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_EAST, "select"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_SOUTH, "start"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_WEST, "attack"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, "moveUp"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, "moveLeft"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, "moveDown"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, "moveRight"_h, args.playerIndex);
+        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_EAST, "select"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_SOUTH, "start"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_WEST, "attack"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, "moveUp"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, "moveLeft"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, "moveDown"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, "moveRight"_h, args.entityIndex);
     }
     else
     {
-        inputManager.UnregisterInput(SDL_SCANCODE_U, "select"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_SCANCODE_I, "start"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_SCANCODE_SPACE, "attack"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_SCANCODE_W, "moveUp"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_SCANCODE_A, "moveLeft"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_SCANCODE_S, "moveDown"_h, args.playerIndex);
-        inputManager.UnregisterInput(SDL_SCANCODE_D, "moveRight"_h, args.playerIndex);
+        inputManager.UnregisterInput(SDL_SCANCODE_U, "select"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_SCANCODE_I, "start"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_SCANCODE_SPACE, "attack"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_SCANCODE_W, "moveUp"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_SCANCODE_A, "moveLeft"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_SCANCODE_S, "moveDown"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_SCANCODE_D, "moveRight"_h, args.entityIndex);
     }
 }
 
