@@ -45,7 +45,7 @@ void LoadStartScene(gla::Scene const& scene)
 
     auto* indicator = singlePlayerTextObject->CreateChild(-20, 0, "Indicator");
     auto* indicatorSprite = indicator->AddComponent<gla::Sprite>(spritesheetTexture);
-    indicatorSprite->SetSourceRect({ .x = 48, .y = 128, .w = 16, .h = 16 });
+    indicatorSprite->SetSourceRect({ .x = 3 * 16, .y = 10 * 16, .w = 16, .h = 16 });
     indicatorSprite->m_offset.y = -4;
 
     startMenu->AddComponent<StartMenu>(
@@ -111,7 +111,7 @@ void LoadSinglePlayerGameScene(gla::Scene const& scene)
     auto* entitiesContainer = scene.GetRoot()->CreateChild(32, 32, "Entities");
 
     // Peter Pepper
-    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, firstPos);
+    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, firstPos, Entity::Type::Pepper);
 
     // NPCs
     Entity::CreateEnemy(entitiesContainer, 11, { 75, -2 }, Entity::Type::HotDog);
@@ -130,10 +130,10 @@ void LoadCoopGameScene(gla::Scene const& scene)
     auto [firstPos, secondPos] = gameState->GetSpawnPositions();
 
     // Peter Pepper
-    Entity::CreatePlayer(entitiesContainer, *(gameState->peterPepperPlayerIndex), firstPos);
+    Entity::CreatePlayer(entitiesContainer, *(gameState->peterPepperPlayerIndex), firstPos, Entity::Type::Pepper);
 
     // Sally Salt
-    Entity::CreatePlayer(entitiesContainer, *(gameState->sallySaltPlayerIndex), secondPos);
+    Entity::CreatePlayer(entitiesContainer, *(gameState->sallySaltPlayerIndex), secondPos, Entity::Type::Salt);
 }
 
 void LoadVersusGameScene(gla::Scene const& scene)
@@ -147,7 +147,7 @@ void LoadVersusGameScene(gla::Scene const& scene)
     auto [firstPos, secondPos] = gameState->GetSpawnPositions();
 
     // Peter Pepper
-    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, firstPos);
+    Entity::CreatePlayer(entitiesContainer, *gameState->peterPepperPlayerIndex, firstPos, Entity::Type::Pepper);
 
     // Mr HotDog
     Entity::CreateEnemy(entitiesContainer, *gameState->enemyPlayerIndex, secondPos, Entity::Type::HotDog);

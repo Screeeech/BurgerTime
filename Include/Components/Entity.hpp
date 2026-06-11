@@ -20,7 +20,8 @@ class Entity final : public gla::Component
 public:
     enum class Type : std::uint8_t
     {
-        Player,
+        Pepper,
+        Salt,
         HotDog,
         Pickle,
         Egg,
@@ -38,9 +39,9 @@ protected:
 
 public:
     // Enemy and Player creation helper functions
-    static void CreatePlayer(gla::GameObject* parent, int entityIndex, glm::vec2 startPosition);
+    static void CreatePlayer(gla::GameObject* parent, int entityIndex, glm::vec2 startPosition, Type playerType);
     static void CreateEnemy(gla::GameObject* parent, int entityIndex, glm::vec2 startPosition, Type entityType);
-    static void DefineAnimationsPlayer(gla::Animation& animation);
+    static void DefineAnimationsPlayer(gla::Animation& animation, int rowIndex);
     static void DefineAnimationsEnemy(gla::Animation& animation, int rowIndex);
 };
 

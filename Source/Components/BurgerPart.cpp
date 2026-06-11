@@ -39,7 +39,7 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, s
                   hitbox = pOwner->AddComponent<gla::CollisionRect>(
                       gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4,
                       gla::Collider::Bits::Layer7 | gla::Collider::Bits::Layer4,
-                      [this, i](auto&, gla::Collider& otherCollider) -> void
+                      [this, i](auto&, gla::Collider const& otherCollider) -> void
                       {
                           // If the collision comes from a player
                           if (otherCollider.GetCollisionMasks() & gla::Collider::Bits::Layer3)
@@ -152,8 +152,8 @@ auto BurgerPart::GetPieces() -> Pieces&
 
 auto BurgerPart::GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect
 {
-    float const xIndex{ 14.f + static_cast<float>(index) };
-    float const yIndex{ 6.f + static_cast<float>(type) };
+    auto const xIndex{ 14 + static_cast<float>(index) };
+    auto const yIndex{ 8 + static_cast<float>(type) };
 
     return {
         .x = pieceSize * xIndex,

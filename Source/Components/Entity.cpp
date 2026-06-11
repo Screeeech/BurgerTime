@@ -60,17 +60,29 @@ void Entity::OnDeactivate()
     inputManager.UnbindAction("moveRight"_h, entityIndex);
 }
 
-void Entity::CreatePlayer(gla::GameObject* parent, int entityIndex, glm::vec2 startPosition)
+void Entity::CreatePlayer(gla::GameObject* parent, int entityIndex, glm::vec2 startPosition, Type playerType)
 {
     using namespace playerstates;
 
     auto* playerObject = parent->CreateChild(startPosition, std::format("Enemy {}", entityIndex));
 
-    auto* playerEntity = playerObject->AddComponent<Entity>(entityIndex, Type::Player);
+    auto* playerEntity = playerObject->AddComponent<Entity>(entityIndex, playerType);
     playerObject->AddComponent<gla::Timer>();
     auto* moveComponent(playerObject->AddComponent<MoveComponent>(0.85f, 0.65f));
     auto* animation(playerObject->AddComponent<gla::Animation>(layers::player));
-    DefineAnimationsPlayer(*animation);
+
+    if (playerType == Type::Pepper)
+    {
+        DefineAnimationsPlayer(*animation, 0);
+    }
+    else if (playerType == Type::Salt)
+    {
+        DefineAnimationsPlayer(*animation, 2);
+    }
+    else
+    {
+        assert(false and "Cannot create player out of an enemy type");
+    }
 
     auto* pepperObject{ parent->CreateChild(0, 0, std::format("Pepper{}", entityIndex)) };
     pepperObject->AddComponent<Pepper>(*playerEntity);
@@ -104,7 +116,8 @@ void Entity::CreateEnemy(gla::GameObject* parent, int entityIndex, glm::vec2 sta
 
     switch (entityType)
     {
-        case Type::Player:
+        case Type::Pepper:
+        case Type::Salt:
             assert(false and "Cannot create of Player type");
             break;
         case Type::HotDog:
@@ -168,7 +181,7 @@ void Entity::CreateEnemy(gla::GameObject* parent, int entityIndex, glm::vec2 sta
     });
 }
 
-void Entity::DefineAnimationsPlayer(gla::Animation& animation)
+void Entity::DefineAnimationsPlayer(gla::Animation& animation, int rowIndex)
 {
     auto const spriteSheetTexture = gla::Locator::Get<gla::ResourceManager>().LoadTexture("Textures/spritesheet.png");
 
@@ -181,79 +194,79 @@ void Entity::DefineAnimationsPlayer(gla::Animation& animation)
         "idle"_h,
         spriteSheet,
         {
-            { .colIdx = 1, .rowIdx = 0 },
+            { .colIdx = 1, .rowIdx = rowIndex },
         });
     animation.AddAnimation(
         "walkDown"_h,
         spriteSheet,
         {
-            { .colIdx = 0, .rowIdx = 0, .duration = 4.f / 60.f },
-            { .colIdx = 1, .rowIdx = 0, .duration = 4.f / 60.f },
-            { .colIdx = 2, .rowIdx = 0, .duration = 4.f / 60.f },
+            { .colIdx = 0, .rowIdx = rowIndex, .duration = 4.f / 60.f },
+            { .colIdx = 1, .rowIdx = rowIndex, .duration = 4.f / 60.f },
+            { .colIdx = 2, .rowIdx = rowIndex, .duration = 4.f / 60.f },
         });
     animation.AddAnimation(
         "walkUp"_h,
         spriteSheet,
         {
-            { .colIdx = 6, .rowIdx = 0, .duration = 4.f / 60.f },
-            { .colIdx = 7, .rowIdx = 0, .duration = 4.f / 60.f },
-            { .colIdx = 8, .rowIdx = 0, .duration = 4.f / 60.f },
+            { .colIdx = 6, .rowIdx = rowIndex, .duration = 4.f / 60.f },
+            { .colIdx = 7, .rowIdx = rowIndex, .duration = 4.f / 60.f },
+            { .colIdx = 8, .rowIdx = rowIndex, .duration = 4.f / 60.f },
         });
     animation.AddAnimation(
         "walkLeft"_h,
         spriteSheet,
         {
-            { .colIdx = 3, .rowIdx = 0, .duration = 4.f / 60.f },
-            { .colIdx = 4, .rowIdx = 0, .duration = 4.f / 60.f },
-            { .colIdx = 5, .rowIdx = 0, .duration = 4.f / 60.f },
+            { .colIdx = 3, .rowIdx = rowIndex, .duration = 4.f / 60.f },
+            { .colIdx = 4, .rowIdx = rowIndex, .duration = 4.f / 60.f },
+            { .colIdx = 5, .rowIdx = rowIndex, .duration = 4.f / 60.f },
         });
     animation.AddAnimation(
         "walkRight"_h,
         spriteSheet,
         {
-            { .colIdx = 3, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
-            { .colIdx = 4, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
-            { .colIdx = 5, .rowIdx = 0, .duration = 4.f / 60.f, .flipX = true },
+            { .colIdx = 3, .rowIdx = rowIndex, .duration = 4.f / 60.f, .flipX = true },
+            { .colIdx = 4, .rowIdx = rowIndex, .duration = 4.f / 60.f, .flipX = true },
+            { .colIdx = 5, .rowIdx = rowIndex, .duration = 4.f / 60.f, .flipX = true },
         });
     animation.AddAnimation(
         "pepperDown"_h,
         spriteSheet,
         {
-            { .colIdx = 0, .rowIdx = 1, .duration = 0.f },
+            { .colIdx = 0, .rowIdx = rowIndex + 1, .duration = 0.f },
         });
     animation.AddAnimation(
         "pepperLeft"_h,
         spriteSheet,
         {
-            { .colIdx = 1, .rowIdx = 1, .duration = 0.f },
+            { .colIdx = 1, .rowIdx = rowIndex + 1, .duration = 0.f },
         });
     animation.AddAnimation(
         "pepperRight"_h,
         spriteSheet,
         {
-            { .colIdx = 1, .rowIdx = 1, .duration = 0.f, .flipX = true },
+            { .colIdx = 1, .rowIdx = rowIndex + 1, .duration = 0.f, .flipX = true },
         });
     animation.AddAnimation(
         "pepperUp"_h,
         spriteSheet,
         {
-            { .colIdx = 2, .rowIdx = 1, .duration = 0.f },
+            { .colIdx = 2, .rowIdx = rowIndex + 1, .duration = 0.f },
         });
     animation.AddAnimation(
         "death"_h,
         spriteSheet,
         {
-            { .colIdx = 3, .rowIdx = 1, .duration = 0.5f },
-            { .colIdx = 4, .rowIdx = 1, .duration = 1.0f },
-            { .colIdx = 5, .rowIdx = 1, .duration = 0.15f },
-            { .colIdx = 6, .rowIdx = 1, .duration = 0.15f },
+            { .colIdx = 3, .rowIdx = rowIndex + 1, .duration = 0.5f },
+            { .colIdx = 4, .rowIdx = rowIndex + 1, .duration = 1.0f },
+            { .colIdx = 5, .rowIdx = rowIndex + 1, .duration = 0.15f },
+            { .colIdx = 6, .rowIdx = rowIndex + 1, .duration = 0.15f },
         });
     animation.AddAnimation(
         "dying"_h,
         spriteSheet,
         {
-            { .colIdx = 7, .rowIdx = 1, .duration = 0.15f },
-            { .colIdx = 8, .rowIdx = 1, .duration = 0.15f },
+            { .colIdx = 7, .rowIdx = rowIndex + 1, .duration = 0.15f },
+            { .colIdx = 8, .rowIdx = rowIndex + 1, .duration = 0.15f },
         });
 
     animation.SetAnimation("idle"_h, true);
