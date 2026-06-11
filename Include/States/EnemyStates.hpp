@@ -65,7 +65,7 @@ private:
 
 struct IdleStanding final : EnemyActiveState
 {
-    bool nextFrame{};
+    bool firstFrame{ true };
 
     void OnEnter() override;
     void Update() override;

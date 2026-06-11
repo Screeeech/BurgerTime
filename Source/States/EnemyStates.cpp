@@ -56,10 +56,11 @@ void IdleStanding::OnEnter()
 
 void IdleStanding::Update()
 {
-    if (nextFrame)
+    if (firstFrame)
+    {
+        firstFrame = false;
         ctx->moveComponent.LockOntoGround();
-    else
-        nextFrame = true;
+    }
 
 
     if ((ctx->moveComponent.GetDirection().y < 0 and ctx->moveComponent.CanClimbUp()) or
