@@ -138,11 +138,11 @@ void LoadCoopGameScene(gla::Scene const& scene)
     auto [firstPos, secondPos] = gameState->GetSpawnPositions();
 
     // Peter Pepper
-    auto* player1Object = entitiesContainer->CreateChild(firstPos, std::format("Enemy {}", *gameState->peterPepperPlayerIndex));
+    auto* player1Object = entitiesContainer->CreateChild(firstPos, std::format("Peter Pepper: {}", *gameState->peterPepperPlayerIndex));
     Entity::CreatePlayer(player1Object, *(gameState->peterPepperPlayerIndex), Entity::Type::Pepper);
 
     // Sally Salt
-    auto* player2Object = entitiesContainer->CreateChild(secondPos, std::format("Enemy {}", *gameState->sallySaltPlayerIndex));
+    auto* player2Object = entitiesContainer->CreateChild(secondPos, std::format("Sally Salt: {}", *gameState->sallySaltPlayerIndex));
     Entity::CreatePlayer(player2Object, *(gameState->sallySaltPlayerIndex), Entity::Type::Salt);
 
     entitiesContainer->AddComponent<EnemySpawner>(player1Object, player2Object, gameState->GetEnemyCounts());
@@ -159,12 +159,12 @@ void LoadVersusGameScene(gla::Scene const& scene)
     auto [firstPos, secondPos] = gameState->GetSpawnPositions();
 
     // Peter Pepper
-    auto* player1Object = entitiesContainer->CreateChild(firstPos, std::format("Enemy {}", *gameState->peterPepperPlayerIndex));
+    auto* player1Object = entitiesContainer->CreateChild(firstPos, std::format("Peter Pepper: {}", *gameState->peterPepperPlayerIndex));
     Entity::CreatePlayer(player1Object, *(gameState->peterPepperPlayerIndex), Entity::Type::Pepper);
 
     // Mr HotDog
-    auto* enemyObject = entitiesContainer->CreateChild(secondPos, std::format("Enemy {}", 11));
-    Entity::CreateEnemy(enemyObject, 2, Entity::Type::HotDog);
+    auto* enemyObject = entitiesContainer->CreateChild(secondPos, std::format("Mr HotDog: {}", *gameState->enemyPlayerIndex));
+    Entity::CreateEnemy(enemyObject, *gameState->enemyPlayerIndex, Entity::Type::HotDog);
 
     entitiesContainer->AddComponent<EnemySpawner>(player1Object, nullptr, gameState->GetEnemyCounts());
 }

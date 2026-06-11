@@ -6,6 +6,7 @@
 #include <print>
 
 #include "Commands/CallbackCommand.hpp"
+#include "Components/EnemySpawner.hpp"
 #include "Components/Stage.hpp"
 #include "Components/Timer.hpp"
 #include "Events.hpp"
@@ -41,7 +42,8 @@ namespace bt
 GameState::GameState(gla::GameObject* pOwner)
     : Component(pOwner)
     , m_pStageObject(gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot()->CreateChild(32, 32, "Persistent Stage Object"))
-    , m_pTimer(pOwner->AddComponent<gla::Timer>())
+    , m_pStartTimer(pOwner->AddComponent<gla::Timer>())
+    , m_pEndTimer(pOwner->AddComponent<gla::Timer>())
 {
 }
 
@@ -51,8 +53,7 @@ void GameState::StartGame()
     m_pStageObject->Deactivate();
     m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
 
-    m_pTimer->Start(loadingTime);
-    m_pTimer->SetCallback([this] { BeginRound(); });
+    m_pStartTimer->Start(loadingTime, [this] { BeginRound(); });
 }
 
 void GameState::BeginRound() const
@@ -130,10 +131,7 @@ void GameState::OnActivate()
 
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
     inputManager.RegisterInput(SDL_SCANCODE_F1, gla::Input::Type::released, "__skip_stage"_h, 0);
-    inputManager.BindAction<gla::CallbackCommand>("__skip_stage"_h, 0, [this]
-    {
-        NextStage();
-    });
+    inputManager.BindAction<gla::CallbackCommand>("__skip_stage"_h, 0, [this] { NextStage(); });
 }
 
 void GameState::OnDeactivate()
@@ -148,14 +146,14 @@ void GameState::OnDeactivate()
 
 void GameState::OnStageComplete(std::any const& /*eventArgs*/)
 {
-    m_pTimer->Start(stageChangeDelay);
-    m_pTimer->SetCallback([this] -> void { NextStage(); });
+    gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
+    m_pEndTimer->Start(stageChangeDelay, [this] -> void { NextStage(); });
 }
 
 void GameState::OnDeath(std::any const& /*eventArgs*/)
 {
-    m_pTimer->Start(stageChangeDelay);
-    m_pTimer->SetCallback([this] -> void { Respawn(); });
+    gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
+    m_pEndTimer->Start(stageChangeDelay, [this] -> void { Respawn(); });
 }
 
 void GameState::Respawn()
@@ -173,8 +171,13 @@ void GameState::Respawn()
 
     m_pStageObject->Deactivate();
 
-    m_pTimer->Start(loadingTime);
-    m_pTimer->SetCallback([this] { BeginRound(); });
+    // Delete all remaining entities but keep other objects
+    for (auto* child : m_pStageObject->GetChildren())
+        if (child->GetComponent<Entity>())
+            child->QueueDelete();
+
+    std::println("Respawning...");
+    m_pStartTimer->Start(loadingTime, [this] { BeginRound(); });
 
     sceneManager.ResetScene("Loading");
     sceneManager.LoadScene("Loading");
@@ -187,14 +190,14 @@ void GameState::NextStage()
 
     m_pStageObject->Deactivate();
     m_pStageObject->RemoveComponent<Stage>();
+    m_pStageObject->RemoveComponent<EnemySpawner>();
     for (auto* child : m_pStageObject->GetChildren())
         child->QueueDelete();
 
     m_stageIndex = ++m_stageIndex % maxStageCount;
     m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
 
-    m_pTimer->Start(loadingTime);
-    m_pTimer->SetCallback([this] { BeginRound(); });
+    m_pStartTimer->Start(loadingTime, [this] { BeginRound(); });
 
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
     sceneManager.ResetScene("Loading");
@@ -220,7 +223,7 @@ void GameState::OnPlayerConnect(std::any const& connectEvent)
     {
         inputManager.RegisterInput(SDL_SCANCODE_U, gla::Input::Type::released, "select"_h, args.entityIndex);
         inputManager.RegisterInput(SDL_SCANCODE_I, gla::Input::Type::released, "start"_h, args.entityIndex);
-        inputManager.RegisterInput(SDL_SCANCODE_SPACE, gla::Input::Type::held, "attack"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_J, gla::Input::Type::held, "attack"_h, args.entityIndex);
         inputManager.RegisterInput(SDL_SCANCODE_W, gla::Input::Type::held, "moveUp"_h, args.entityIndex);
         inputManager.RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, args.entityIndex);
         inputManager.RegisterInput(SDL_SCANCODE_S, gla::Input::Type::held, "moveDown"_h, args.entityIndex);
@@ -247,7 +250,7 @@ void GameState::OnPlayerDisconnect(std::any const& connectEvent)
     {
         inputManager.UnregisterInput(SDL_SCANCODE_U, "select"_h, args.entityIndex);
         inputManager.UnregisterInput(SDL_SCANCODE_I, "start"_h, args.entityIndex);
-        inputManager.UnregisterInput(SDL_SCANCODE_SPACE, "attack"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_SCANCODE_J, "attack"_h, args.entityIndex);
         inputManager.UnregisterInput(SDL_SCANCODE_W, "moveUp"_h, args.entityIndex);
         inputManager.UnregisterInput(SDL_SCANCODE_A, "moveLeft"_h, args.entityIndex);
         inputManager.UnregisterInput(SDL_SCANCODE_S, "moveDown"_h, args.entityIndex);

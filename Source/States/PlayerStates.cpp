@@ -297,7 +297,6 @@ void Climbing::ChangeAnimation() const
 void Dying::OnEnter() const
 {
     ctx->animation.SetAnimation("death"_h, true, false);
-    gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
     gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "PlayerDeath"_h });
 }
 

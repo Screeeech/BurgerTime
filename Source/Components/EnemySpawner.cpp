@@ -27,6 +27,9 @@ EnemySpawner::EnemySpawner(
 
 void EnemySpawner::Update()
 {
+    if (not m_spawnerActive)
+        return;
+
     if (m_pSpawnDelayTimer->IsFinished())
     {
         m_pSpawnDelayTimer->Start(spawnDelay);
@@ -38,8 +41,9 @@ void EnemySpawner::OnActivate()
 {
     m_aliveEnemies.clear();
     m_pSpawnDelayTimer->Start(spawnDelay);
-    gla::Locator::Get<gla::EventManager>().BindEvent("EnemyDeath"_h, this, &EnemySpawner::OnEnemyDeath);
-
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+    eventManager.BindEvent("EnemyDeath"_h, this, &EnemySpawner::OnEnemyDeath);
+    eventManager.BindEvent("DisableEntities"_h, this, &EnemySpawner::OnEnemyDisable);
 }
 
 void EnemySpawner::OnDeactivate()
@@ -101,6 +105,11 @@ void EnemySpawner::OnEnemyDeath(std::any const& enemyDeathEvent)
 
     m_usedEntityIndices.erase(args.entityIndex);
     m_aliveEnemies[args.enemyType]--;
+}
+
+void EnemySpawner::OnEnemyDisable(std::any const& /*eventArgs*/)
+{
+    m_spawnerActive = false;
 }
 
 

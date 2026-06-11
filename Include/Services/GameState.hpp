@@ -54,7 +54,7 @@ class GameState final : public gla::Component
     static constexpr int initialPepper{ 5 };
     static constexpr std::string highScoreFile{ "highscores.json" };
     static constexpr float stageChangeDelay{ 5.f };
-    static constexpr float loadingTime{ 0.5f };
+    static constexpr float loadingTime{ 1.f };
 
 public:
     explicit GameState(gla::GameObject* pOwner);
@@ -99,7 +99,8 @@ private:
     GameMode m_gameMode{};
     gla::GameObject* m_pStageObject;
     int m_stageIndex{};
-    gla::Timer* m_pTimer;
+    gla::Timer* m_pStartTimer;
+    gla::Timer* m_pEndTimer;
 };
 
 }  // namespace bt

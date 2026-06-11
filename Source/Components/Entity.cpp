@@ -103,8 +103,8 @@ void Entity::CreatePlayer(gla::GameObject* playerObject, int entityIndex, Type p
 
             gla::Locator::Get<gla::Sound>().PlayAudio("death"_h);
         },
-        glm::vec2{ 3.f, 0.f },
-        glm::vec2{ 10.f, 16.f });
+        glm::vec2{ 4.f, 4.f },
+        glm::vec2{ 8.f, 8.f });
 }
 
 void Entity::CreateEnemy(gla::GameObject* enemyObject, int entityIndex, Type entityType, glm::vec2 initialWalkingDirection)
@@ -139,15 +139,15 @@ void Entity::CreateEnemy(gla::GameObject* enemyObject, int entityIndex, Type ent
         gla::Collider::Bits::Layer1,
         gla::Collider::Bits::Layer2,
         gla::EntityEvent("OnPepper"_h, entityIndex),
-        glm::vec2{},
-        glm::vec2{ 16.f, 16.f });
+        glm::vec2{ 4.f, 4.f },
+        glm::vec2{ 8.f, 8.f });
 
     auto* pHeadHurtBox = enemyObject->AddComponent<gla::CollisionRect>(
         gla::Collider::Bits::Layer5,
         0,
         [=](auto&, auto&) -> void { enemyObject->GetComponent<EnemyStateMachine>()->TransitionTo<Dying>(); },
-        glm::vec2{},
-        glm::vec2{ 16.f, 4.f });
+        glm::vec2{ 4.f, 0.f },
+        glm::vec2{ 8.f, 4.f });
 
     auto* pFeetHurtBox = enemyObject->AddComponent<gla::CollisionRect>(
         gla::Collider::Bits::Layer6,
@@ -164,8 +164,8 @@ void Entity::CreateEnemy(gla::GameObject* enemyObject, int entityIndex, Type ent
 
             enemyObject->GetComponent<EnemyStateMachine>()->TransitionTo<Falling>();
         },
-        glm::vec2{ 0.f, 12.f },
-        glm::vec2{ 16.f, 4.f });
+        glm::vec2{ 4.f, 12.f },
+        glm::vec2{ 8.f, 4.f });
 
     enemyObject->AddComponent<EnemyStateMachine>(Context{
         .animation = *pAnimation,

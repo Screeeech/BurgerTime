@@ -46,6 +46,7 @@ struct Context final
     int entityIndex;
     Entity::Type type;
     glm::vec2 initialWalkingDirection;
+    bool disabled{};
 };
 
 using EnemyStateMachine =
@@ -102,16 +103,22 @@ private:
 
 struct StunnedStanding final : EnemyState
 {
-    void OnEnter() const;
+    void OnEnter();
     void Update() override;
     void OnExit() const;
+
+private:
+    void OnDisable(std::any const& eventArgs) const;
 };
 
 struct StunnedClimbing final : EnemyState
 {
-    void OnEnter() const;
+    void OnEnter();
     void Update() override;
     void OnExit() const;
+
+private:
+    void OnDisable(std::any const& eventArgs) const;
 };
 
 struct Falling final : EnemyState
@@ -122,6 +129,7 @@ struct Falling final : EnemyState
 private:
     void OnLanding(std::any const& playerEvent) const;
     void OnPlate(std::any const& playerEvent) const;
+    void OnDisable(std::any const& eventArgs) const;
 };
 
 struct Dying final : EnemyState
@@ -140,10 +148,13 @@ private:
     void OnEnable(std::any const& eventArgs) const;
 };
 
-struct Spawning final : EnemyState
+struct Spawning final : EnemyActiveState
 {
-    void OnEnter() const;
+    void OnEnter() override;
     void Update() override;
+
+private:
+    void OnPepper(std::any const& collisionEvent) override;
 };
 
 }  // namespace enemystates

@@ -82,6 +82,7 @@ void IdleStanding::OnPepper(std::any const& playerEvent)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
+    ctx->stunTimer.Start(stunTime);
     machine->TransitionTo<StunnedStanding>();
 }
 
@@ -125,6 +126,7 @@ void Walking::OnPepper(std::any const& playerEvent)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
+    ctx->stunTimer.Start(stunTime);
     machine->TransitionTo<StunnedStanding>();
 }
 
@@ -177,6 +179,7 @@ void Climbing::OnPepper(std::any const& playerEvent)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
+    ctx->stunTimer.Start(stunTime);
     machine->TransitionTo<StunnedClimbing>();
 }
 
@@ -201,15 +204,17 @@ void IdleClimbing::OnPepper(std::any const& playerEvent)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
+    ctx->stunTimer.Start(stunTime);
     machine->TransitionTo<StunnedClimbing>();
 }
 
 
 // ==================== STUNNED WALKING ====================
-void StunnedStanding::OnEnter() const
+void StunnedStanding::OnEnter()
 {
+    gla::Locator::Get<gla::EventManager>().BindEvent("DisableEntities"_h, this, &StunnedStanding::OnDisable);
+
     ctx->animation.SetAnimation("stunned"_h, true);
-    ctx->stunTimer.Start(stunTime);
     ctx->playerHitbox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
 }
 
@@ -221,38 +226,51 @@ void StunnedStanding::Update()
 
 void StunnedStanding::OnExit() const
 {
+    gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
     ctx->playerHitbox.EnableCollisionMasks(gla::Collider::Bits::Layer2);
+}
+
+void StunnedStanding::OnDisable(std::any const& /*eventArgs*/) const
+{
+    machine->TransitionTo<Disabled>();
 }
 
 
 // ==================== STUNNED CLIMBING ====================
-void StunnedClimbing::OnEnter() const
+void StunnedClimbing::OnEnter()
 {
+    gla::Locator::Get<gla::EventManager>().BindEvent("DisableEntities"_h, this, &StunnedClimbing::OnDisable);
+
     ctx->animation.SetAnimation("stunned"_h, true);
-    ctx->stunTimer.Start(stunTime);
     ctx->playerHitbox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
 }
 
 void StunnedClimbing::Update()
 {
-    // assert(ctx->stunTimer and "Timer cannot be null");
-
     if (ctx->stunTimer.IsFinished())
         machine->TransitionTo<IdleClimbing>();
 }
 
 void StunnedClimbing::OnExit() const
 {
-    // assert(ctx->hitBox and "HitBox cannot be null");
+    gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
     ctx->playerHitbox.EnableCollisionMasks(gla::Collider::Bits::Layer2);
+}
+
+void StunnedClimbing::OnDisable(std::any const& /*eventArgs*/) const
+{
+    machine->TransitionTo<Disabled>();
 }
 
 
 // ==================== FALLING ====================
 void Falling::OnEnter()
 {
-    gla::Locator::Get<gla::EventManager>().BindEvent("OnLanding"_h, this, &Falling::OnLanding);
-    gla::Locator::Get<gla::EventManager>().BindEvent("EnemyFellOnPlate"_h, this, &Falling::OnPlate);
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+    eventManager.BindEvent("OnLanding"_h, this, &Falling::OnLanding);
+    eventManager.BindEvent("EnemyFellOnPlate"_h, this, &Falling::OnPlate);
+    eventManager.BindEvent("DisableEntities"_h, this, &Falling::OnDisable);
+
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_fall"_h);
 
     ctx->playerHitbox.DisableCollisionMasks(gla::Collider::Bits::Layer2);
@@ -282,7 +300,10 @@ void Falling::OnLanding(std::any const& playerEvent) const
     // Re-enable feet hurtbox for next
     ctx->feetHurtBox.EnableCollisionLayers(gla::Collider::Bits::Layer6);
 
-    if (ctx->stunTimer.IsRunning())
+
+    if (ctx->disabled)
+        machine->TransitionTo<Disabled>();
+    else if (ctx->stunTimer.IsRunning())
         machine->TransitionTo<StunnedStanding>();
     else
         machine->TransitionTo<IdleStanding>();
@@ -294,6 +315,14 @@ void Falling::OnPlate(std::any const& playerEvent) const
         return;
 
     machine->TransitionTo<Dying>();
+}
+
+void Falling::OnDisable(std::any const& /*eventArgs*/) const
+{
+    // In the case that the enemy is falling I don't want to immediately put them in the disabled state.
+    // Because then some logic wouldn't play, like death and score
+    // So I set a flag to make sure I go to the disabled state when the enemy lands
+    ctx->disabled = true;
 }
 
 
@@ -341,8 +370,10 @@ void Disabled::OnEnable(std::any const& /*eventArgs*/) const
     machine->TransitionTo<IdleStanding>();
 }
 
-void Spawning::OnEnter() const
+void Spawning::OnEnter()
 {
+    EnemyActiveState::OnEnter();
+
     if (ctx->initialWalkingDirection.x > 0)
         ctx->animation.SetAnimation("walkRight"_h, true);
     else if (ctx->initialWalkingDirection.x < 0)
@@ -364,6 +395,8 @@ void Spawning::Update()
     ctx->moveComponent.SetDirection(ctx->initialWalkingDirection);
     ctx->moveComponent.Walk();
 }
+
+void Spawning::OnPepper(std::any const& /*collisionEvent*/) {}
 
 
 }  // namespace bt::enemystates

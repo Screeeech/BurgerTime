@@ -33,7 +33,9 @@ private:
     auto GetFreeEntityIndex() -> int;
 
     void OnEnemyDeath(std::any const& enemyDeathEvent);
+    void OnEnemyDisable(std::any const& eventArgs);
 
+    bool m_spawnerActive{ true };
     gla::GameObject* m_pPlayer1;
     gla::GameObject* m_pPlayer2;
     std::unordered_map<Entity::Type, int> m_totalEnemies;

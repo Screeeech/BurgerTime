@@ -48,7 +48,7 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, s
                           OnPieceStep(i);
                       },
                       glm::vec2{ xOffset, 0.f },
-                      glm::vec2(pieceSize));
+                      glm::vec2{ pieceSize, pieceSize });
                   sprite = pOwner->AddComponent<gla::Sprite>(spriteSheetTexture, layers::burgerParts);
                   auto const srcRect = GetBurgerPieceSourceRect(pieceType, i);
                   sprite->SetSourceRect(srcRect);
@@ -84,7 +84,7 @@ void BurgerPart::ReleaseEnemies()
     for (auto* enemy : m_fallingEnemies)
     {
         enemy->m_pOwner->QueueReparent(*m_pStage->m_pOwner);
-        eventManager.InvokeEvent(gla::EntityEvent{ "OnLanding"_h, enemy->entityIndex });
+        eventManager.QueueEvent(gla::EntityEvent{ "OnLanding"_h, enemy->entityIndex });
     }
 
     auto const enemyCount = std::min(static_cast<double>(score::enemyDropScoreCap), static_cast<double>(m_fallingEnemies.size()));

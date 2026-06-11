@@ -23,7 +23,6 @@ namespace bt
 void burgerpartstates::Idle::OnEnter() const
 {
     LockOntoGround(ctx->transform);
-    ctx->part.SetSteppedPieces(0);
     ctx->timer.Start(BurgerPart::resetTime);
 }
 
@@ -112,6 +111,7 @@ void burgerpartstates::Falling::OnExit() const
         // Reset sprite y offset
         sprite->m_offset.y = 0;
     }
+    ctx->part.SetSteppedPieces(0);
 
     if (ctx->part.m_finished)
     {

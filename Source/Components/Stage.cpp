@@ -154,8 +154,8 @@ void Stage::OnActivate()
     eventManager.BindEvent("PlateFinished"_h, this, &Stage::OnPlateFinished);
     eventManager.QueueEvent(gla::Event("DisableEntities"_h));
 
-    m_pTimer->Start(stageBeginDelay);
-    m_pTimer->SetCallback(
+    m_pTimer->Start(
+        stageBeginDelay,
         []
         {
             gla::Locator::Get<gla::EventManager>().QueueEvent(gla::Event("EnableEntities"_h));
@@ -175,7 +175,6 @@ void Stage::OnPlateFinished(std::any const& /*eventArgs*/)
     ++m_platesFinished;
     if (m_platesFinished >= m_totalPlateCount)
     {
-        gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event("DisableEntities"_h));
         gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event("StageCompleted"_h));
         gla::Locator::Get<gla::Sound>().PlayAudio("round_clear"_h);
     }
