@@ -300,7 +300,9 @@ void Falling::OnPlate(std::any const& playerEvent) const
 // ==================== DYING ====================
 void Dying::OnEnter() const
 {
-    gla::Locator::Get<gla::EventManager>().InvokeEvent(ScoreEvent("ScoreChange"_h, Entity::GetScoreForEnemyType(ctx->type)));
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+    eventManager.InvokeEvent(ScoreEvent("ScoreChange"_h, Entity::GetScoreForEnemyType(ctx->type)));
+    eventManager.InvokeEvent(EnemyDeathEvent("EnemyDeath"_h, ctx->entityIndex, ctx->type));
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_squashed"_h);
 
     ctx->animation.SetAnimation("dying"_h, true, false);

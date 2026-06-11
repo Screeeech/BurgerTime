@@ -14,8 +14,8 @@
     [0, 0, 0, 0, 0, 0, 0, 0, 0]
   ],
   "Enemies": {
-    "HotDog": 3,
-    "Pickle": 1,
+    "HotDog": 2,
+    "Pickle": 0,
     "Egg": 0
   },
   "Spawns": [

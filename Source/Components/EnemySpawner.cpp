@@ -61,7 +61,10 @@ void EnemySpawner::AttemptSpawn()
         {
             auto const t = static_cast<Entity::Type>((i + randomStartingType) % 3);
             if (m_aliveEnemies[t] < m_totalEnemies.at(t))
+            {
+                m_aliveEnemies[t]++;
                 return t;
+            }
         }
         return std::nullopt;
     }();
@@ -97,7 +100,7 @@ void EnemySpawner::OnEnemyDeath(std::any const& enemyDeathEvent)
         return;
 
     m_usedEntityIndices.erase(args.entityIndex);
-    m_totalEnemies[args.enemyType]--;
+    m_aliveEnemies[args.enemyType]--;
 }
 
 
