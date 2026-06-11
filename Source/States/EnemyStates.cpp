@@ -306,8 +306,7 @@ void Dying::OnEnter() const
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_squashed"_h);
 
     ctx->animation.SetAnimation("dying"_h, true, false);
-    ctx->stunTimer.Start(0.5f);
-    ctx->stunTimer.SetCallback([this] { ctx->moveComponent.m_pOwner->QueueDelete(); });
+    ctx->stunTimer.Start(0.5f, [this] { ctx->moveComponent.m_pOwner->QueueDelete(); });
 
     // Disable all collisions
     ctx->playerHitbox.SetCollisionLayers(0);
@@ -328,7 +327,7 @@ void Disabled::OnEnter()
     eventManager.BindEvent("EnableEntities"_h, this, &Disabled::OnEnable);
 
     ctx->animation.SetPlaying(false);
-    ctx->moveComponent.LockOntoGround();
+    //ctx->moveComponent.LockOntoGround();
 }
 void Disabled::Update() {}
 void Disabled::OnExit()

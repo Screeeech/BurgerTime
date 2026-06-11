@@ -56,6 +56,7 @@ public:
         : Component(pOwner)
         , m_context(context)
     {
+        InitNewState<std::tuple_element_t<0, std::tuple<States...>>>();
     }
     ~StateMachine() noexcept override = default;
 
@@ -94,7 +95,6 @@ protected:
     }
     void OnActivate() override
     {
-        InitNewState<std::tuple_element_t<0, std::tuple<States...>>>();
         CallOnEnter();
     }
     void OnDeactivate() override

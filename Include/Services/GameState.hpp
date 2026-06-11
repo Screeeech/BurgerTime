@@ -53,9 +53,7 @@ class GameState final : public gla::Component
     static constexpr int maxLives{ 5 };
     static constexpr int initialPepper{ 5 };
     static constexpr std::string highScoreFile{ "highscores.json" };
-
-    // TODO: Change back
-    static constexpr float stageChangeDelay{ 0.5f };
+    static constexpr float stageChangeDelay{ 5.f };
     static constexpr float loadingTime{ 0.5f };
 
 public:

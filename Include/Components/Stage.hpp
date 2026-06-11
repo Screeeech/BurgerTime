@@ -43,9 +43,7 @@ public:
     static constexpr float stageOffset{ 32.f };
     static constexpr float tileWidth{ 24.f };
     static constexpr float tileHeight{ 16.f };
-
-    // TODO: Change back
-    static constexpr float stageBeginDelay{ 0.5f };
+    static constexpr float stageBeginDelay{ 3.f };
 
 protected:
     void Render() override;

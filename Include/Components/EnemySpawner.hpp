@@ -17,7 +17,7 @@ namespace bt
 
 class EnemySpawner final : public gla::Component
 {
-    static constexpr float spawnDelay{ 2.f };
+    static constexpr float spawnDelay{ 4.f };
 
 public:
     explicit EnemySpawner(
