@@ -153,7 +153,7 @@ auto BurgerPart::GetPieces() -> Pieces&
 auto BurgerPart::GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect
 {
     auto const xIndex{ 14 + static_cast<float>(index) };
-    auto const yIndex{ 8 + static_cast<float>(type) };
+    auto const yIndex{ 10 + static_cast<float>(type) };
 
     return {
         .x = pieceSize * xIndex,
