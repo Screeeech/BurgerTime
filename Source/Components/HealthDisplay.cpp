@@ -47,7 +47,7 @@ void HealthDisplay::OnActivate()
 
 void HealthDisplay::OnDeactivate()
 {
-    Component::OnDeactivate();
+    gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
 }
 
 }  // namespace bt

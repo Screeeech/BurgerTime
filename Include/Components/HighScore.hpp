@@ -17,13 +17,13 @@ class HighScore final : public gla::Component
 {
 public:
     explicit HighScore(gla::GameObject* pOwner, std::shared_ptr<gla::Font> font, int startingHighScore = 0);
-    ~HighScore() override;
 
     void OnHighScoreSet(std::any const& scoreEvent);
     [[nodiscard]] auto GetHighScore() const -> int;
 
 protected:
     void OnActivate() override;
+    void OnDeactivate() override;
 
 private:
     int m_highScore;
