@@ -86,6 +86,7 @@ private:
 
     void OnPlayerConnect(std::any const& connectEvent);
     void OnPlayerDisconnect(std::any const& connectEvent);
+    void OnPepperAttack(std::any const& eventArgs);
 
     void LoadHighScoreData();
     void SaveHighScoreData();

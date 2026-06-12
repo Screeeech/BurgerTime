@@ -1,6 +1,7 @@
 #ifndef BURGERTIME_COLORS_HPP
 #define BURGERTIME_COLORS_HPP
 #include <SDL3/SDL_pixels.h>
+#include <glm/vec2.hpp>
 
 namespace bt
 {

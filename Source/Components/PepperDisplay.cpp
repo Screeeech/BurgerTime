@@ -41,20 +41,6 @@ void PepperDisplay::OnPepperAttack(std::any const& /*pepperEvent*/)
 {
     m_pepperCount--;
     m_pPepperText->SetText(std::to_string(m_pepperCount));
-
-    std::println("Pepper count: {}/{}", m_pepperCount, game::startingPepper / 2);
-    if (m_pepperCount <= game::startingPepper / 2 and not m_bonusAvailable)
-    {
-        std::println("Pepper threshhold reached");
-        m_bonusAvailable = true;
-        m_pBonusAppearTimer->Start(
-            game::bonusAppearTime,
-            [] -> void
-            {
-                gla::Locator::Get<gla::Sound>().PlayAudio("bonus_appear"_h);
-                gla::Locator::Get<gla::EventManager>().QueueEvent(gla::Event{ "BonusAppear"_h });
-            });
-    }
 }
 
 void PepperDisplay::OnBonusPickup(std::any const& /*eventArgs*/)
@@ -93,5 +79,20 @@ void PepperDisplay::OnActivate()
 void PepperDisplay::OnDeactivate()
 {
     gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
+}
+
+void PepperDisplay::Update()
+{
+    if (m_pepperCount <= game::startingPepper / 2 and not m_bonusAvailable)
+    {
+        m_bonusAvailable = true;
+        m_pBonusAppearTimer->Start(
+            game::bonusAppearTime,
+            [] -> void
+            {
+                gla::Locator::Get<gla::Sound>().PlayAudio("bonus_appear"_h);
+                gla::Locator::Get<gla::EventManager>().QueueEvent(gla::Event{ "BonusAppear"_h });
+            });
+    }
 }
 }  // namespace bt

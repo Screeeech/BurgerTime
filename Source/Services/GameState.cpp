@@ -138,6 +138,7 @@ void GameState::OnActivate()
     eventManager.BindEvent("OnPlayerDisconnect"_h, this, &GameState::OnPlayerDisconnect);
     eventManager.BindEvent("PlayerDeath"_h, this, &GameState::OnDeath);
     eventManager.BindEvent("StageCompleted"_h, this, &GameState::OnStageComplete);
+    eventManager.BindEvent("PepperAttack"_h, this, &GameState::OnPepperAttack);
 
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
     inputManager.RegisterInput(SDL_SCANCODE_F1, gla::Input::Type::released, "__skip_stage"_h, 0);
@@ -269,6 +270,11 @@ void GameState::OnPlayerDisconnect(std::any const& connectEvent)
         inputManager.UnregisterInput(SDL_SCANCODE_S, "moveDown"_h, args.entityIndex);
         inputManager.UnregisterInput(SDL_SCANCODE_D, "moveRight"_h, args.entityIndex);
     }
+}
+
+void GameState::OnPepperAttack(std::any const& /*eventArgs*/)
+{
+    --pepper;
 }
 
 void GameState::LoadHighScoreData()

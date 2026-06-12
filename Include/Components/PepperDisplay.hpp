@@ -23,6 +23,7 @@ public:
 protected:
     void OnActivate() override;
     void OnDeactivate() override;
+    void Update() override;
 
 private:
     void OnTryPepper(std::any const& pepperEvent) const;

@@ -2,11 +2,11 @@
 #include <filesystem>
 #include <print>
 
-#include "../Include/Services/GameState.hpp"
 #include "Constants.hpp"
 #include "Galena.hpp"
 #include "GameScenes.hpp"
 #include "Locator.hpp"
+#include "Services/GameState.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/SceneManager.hpp"
