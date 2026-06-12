@@ -62,8 +62,6 @@ void LeaderBoard::OnActivate()
     SetLeaderBoardText();
 }
 
-void LeaderBoard::OnDeactivate() {}
-
 void LeaderBoard::LoadHighScoreData()
 {
     std::ifstream file(game::highScoreFile);
@@ -78,16 +76,16 @@ void LeaderBoard::LoadHighScoreData()
 
     for (auto const& item : highScoreList)
     {
-        try
-        {
+        //try
+        //{
             auto const initial = item.at("initials").get<Initials>();
             auto const score = item.at("score").get<int>();
             m_highScores.insert({ score, initial });
-        }
-        catch (std::exception const&)
-        {
-            std::println("Warning!\t{} contains an invalid entry, skipping entry", game::highScoreFile);
-        }
+        //}
+        //catch (std::exception const&)
+        //{
+        //    std::println("Warning!\t{} contains an invalid entry, skipping entry", game::highScoreFile);
+        //}
     }
 }
 void LeaderBoard::SetLeaderBoardText()
@@ -118,13 +116,13 @@ void LeaderBoard::SetLeaderBoardText()
     }
 }
 
-void LeaderBoard::SaveHighScoreData()
+void LeaderBoard::SaveHighScoreData(Initials initials)
 {
     json jsonArray = json::array();
 
-    m_highScores.insert({ m_newScore, m_currentInitials });
+    m_highScores.insert({ m_newScore, initials });
 
-    for (auto const& [initials, score] : m_highScores)
+    for (auto const& [score, initials] : m_highScores)
         jsonArray.push_back({ { "initials", initials }, { "score", score } });
 
     std::ofstream file(game::highScoreFile);

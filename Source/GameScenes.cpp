@@ -6,6 +6,7 @@
 #include "Components/Entity.hpp"
 #include "Components/HealthDisplay.hpp"
 #include "Components/HighScore.hpp"
+#include "Components/InitialsInput.hpp"
 #include "Components/LeaderBoard.hpp"
 #include "Components/PepperDisplay.hpp"
 #include "Components/Score.hpp"
@@ -173,16 +174,33 @@ void LoadGameOverScene(gla::Scene const& scene)
 {
     auto const* persistentRoot = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot();
     auto const* gameState = persistentRoot->GetComponent<GameState>();
-
-    auto* gameOver = scene.GetRoot()->CreateChild(128, 80, "Game Over text");
-
     auto const font = gla::Locator::Get<gla::ResourceManager>().LoadFont("Fonts/nes.ttf", 8);
+
+    auto* gameOver = scene.GetRoot()->CreateChild(128, 40, "Game Over text");
     gameOver->AddComponent<gla::TextComponent>("GAME OVER", font, layers::text, gla::TextComponent::Align::Center, colors::Red);
 
-    auto* leaderBoard = scene.GetRoot()->CreateChild(150, 80, "Leaderboard object");
+    auto* leaderBoardObject = scene.GetRoot()->CreateChild(88, 65, "Leaderboard object");
+    auto const newHighScore = gameState->GetScore() >= gameState->highScore ? gameState->highScore : 0;
+    auto* leaderBoard = leaderBoardObject->AddComponent<LeaderBoard>(font, newHighScore);
 
-    int const newHighScore = gameState->GetScore() >= gameState->highScore ? gameState->highScore : 0;
-    leaderBoard->AddComponent<LeaderBoard>(font, newHighScore);
+    auto* newScore = scene.GetRoot()->CreateChild(128, 160, "New score");
+    newScore->AddComponent<gla::TextComponent>(
+        std::format("YOUR SCORE: {}", gameState->GetScore()),
+        font,
+        layers::text,
+        gla::TextComponent::Align::Center,
+        colors::Green);
+
+    auto* initialSelect = scene.GetRoot()->CreateChild(70, 190, "Initials select");
+
+    auto* firstInitial = initialSelect->CreateChild(50, 24, "First initial");
+    auto* lastInitial = firstInitial->CreateChild(8, 0, "Last initial");
+    auto* firstText = firstInitial->AddComponent<gla::TextComponent>("A", font, layers::text);
+    auto* lastText = lastInitial->AddComponent<gla::TextComponent>("B", font, layers::text);
+    auto* indicatorObject = firstInitial->CreateChild(0, -8, "Indicator");
+    indicatorObject->AddComponent<gla::TextComponent>("v", font, layers::text);
+
+    initialSelect->AddComponent<InitialsInput>(firstText, lastText, indicatorObject, leaderBoard);
 }
 
 }  // namespace bt

@@ -40,6 +40,7 @@ set(SOURCE_FILES
     "Source/Components/EnemyAI.cpp"
     "Source/Components/EnemySpawner.cpp"
     "Source/Components/LeaderBoard.cpp"
+    "Source/Components/InitialsInput.cpp"
     "Source/AchievementManager.cpp"
     "Source/States/BurgerPartStates.cpp"
     "Source/States/PlayerStates.cpp"

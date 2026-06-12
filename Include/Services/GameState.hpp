@@ -57,16 +57,17 @@ protected:
 
 private:
     void CreateStage() const;
-    void OnStageComplete(std::any const& eventArgs);
     void OnDeath(std::any const& eventArgs);
     void Respawn();
     void NextStage();
 
+    void OnStageComplete(std::any const& eventArgs);
     void OnPlayerConnect(std::any const& connectEvent);
     void OnPlayerDisconnect(std::any const& connectEvent);
     void OnPepperAttack(std::any const& eventArgs);
     void OnBonusPickup(std::any const& eventArgs);
     void OnScoreChange(std::any const& scoreEvent);
+    void OnRestart(std::any const& eventArgs);
 
     int m_health{ game::startingLives };
     int m_pepper{ game::startingPepper };

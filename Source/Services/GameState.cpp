@@ -134,6 +134,7 @@ void GameState::OnActivate()
     eventManager.BindEvent("PepperAttack"_h, this, &GameState::OnPepperAttack);
     eventManager.BindEvent("BonusPickup"_h, this, &GameState::OnBonusPickup);
     eventManager.BindEvent("ScoreChange"_h, this, &GameState::OnScoreChange);
+    eventManager.BindEvent("Restart"_h, this, &GameState::OnRestart);
 
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
     inputManager.RegisterInput(SDL_SCANCODE_F1, gla::Input::Type::released, "__skip_stage"_h, 0);
@@ -163,14 +164,6 @@ void GameState::CreateStage() const
     m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
 }
 
-void GameState::OnStageComplete(std::any const& /*eventArgs*/)
-{
-    std::println("OnStageComplete");
-    gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
-    gla::Locator::Get<gla::Sound>().StopTrack("background");
-    m_pEndTimer->Start(game::stageEndDelay, [this] -> void { NextStage(); });
-}
-
 void GameState::OnDeath(std::any const& /*eventArgs*/)
 {
     gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
@@ -183,6 +176,8 @@ void GameState::Respawn()
 {
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
 
+    m_pStageObject->Deactivate();
+
     m_health--;
     if (m_health <= 0)
     {
@@ -192,7 +187,6 @@ void GameState::Respawn()
         return;
     }
 
-    m_pStageObject->Deactivate();
 
     std::println("Respawning...");
     m_pStartTimer->Start(game::loadingTime, [this] -> void { BeginRound(); });
@@ -218,6 +212,14 @@ void GameState::NextStage()
     sceneManager.LoadScene("Loading");
 }
 
+void GameState::OnStageComplete(std::any const& /*eventArgs*/)
+{
+    std::println("OnStageComplete");
+    gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
+    gla::Locator::Get<gla::Sound>().StopTrack("background");
+    m_pEndTimer->Start(game::stageEndDelay, [this] -> void { NextStage(); });
+}
+
 void GameState::OnPlayerConnect(std::any const& connectEvent)
 {
     auto const args = std::any_cast<gla::PlayerConnectionEvent>(connectEvent);
@@ -232,6 +234,11 @@ void GameState::OnPlayerConnect(std::any const& connectEvent)
         inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, gla::Input::Type::held, "moveLeft"_h, args.entityIndex);
         inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, gla::Input::Type::held, "moveDown"_h, args.entityIndex);
         inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, gla::Input::Type::held, "moveRight"_h, args.entityIndex);
+
+        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, gla::Input::Type::released, "pressUp"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, gla::Input::Type::released, "pressLeft"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, gla::Input::Type::released, "pressDown"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, gla::Input::Type::released, "pressRight"_h, args.entityIndex);
     }
     else
     {
@@ -242,6 +249,11 @@ void GameState::OnPlayerConnect(std::any const& connectEvent)
         inputManager.RegisterInput(SDL_SCANCODE_A, gla::Input::Type::held, "moveLeft"_h, args.entityIndex);
         inputManager.RegisterInput(SDL_SCANCODE_S, gla::Input::Type::held, "moveDown"_h, args.entityIndex);
         inputManager.RegisterInput(SDL_SCANCODE_D, gla::Input::Type::held, "moveRight"_h, args.entityIndex);
+
+        inputManager.RegisterInput(SDL_SCANCODE_W, gla::Input::Type::released, "pressUp"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_A, gla::Input::Type::released, "pressLeft"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_S, gla::Input::Type::released, "pressDown"_h, args.entityIndex);
+        inputManager.RegisterInput(SDL_SCANCODE_D, gla::Input::Type::released, "pressRight"_h, args.entityIndex);
     }
 }
 
@@ -259,6 +271,11 @@ void GameState::OnPlayerDisconnect(std::any const& connectEvent)
         inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, "moveLeft"_h, args.entityIndex);
         inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, "moveDown"_h, args.entityIndex);
         inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, "moveRight"_h, args.entityIndex);
+
+        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_UP, "pressUp"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_LEFT, "pressLeft"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_DOWN, "pressDown"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, "pressRight"_h, args.entityIndex);
     }
     else
     {
@@ -269,6 +286,11 @@ void GameState::OnPlayerDisconnect(std::any const& connectEvent)
         inputManager.UnregisterInput(SDL_SCANCODE_A, "moveLeft"_h, args.entityIndex);
         inputManager.UnregisterInput(SDL_SCANCODE_S, "moveDown"_h, args.entityIndex);
         inputManager.UnregisterInput(SDL_SCANCODE_D, "moveRight"_h, args.entityIndex);
+
+        inputManager.UnregisterInput(SDL_SCANCODE_W, "pressUp"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_SCANCODE_A, "pressLeft"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_SCANCODE_S, "pressDown"_h, args.entityIndex);
+        inputManager.UnregisterInput(SDL_SCANCODE_D, "pressRight"_h, args.entityIndex);
     }
 }
 
@@ -291,6 +313,13 @@ void GameState::OnScoreChange(std::any const& scoreEvent)
         highScore = m_score;
         gla::Locator::Get<gla::EventManager>().InvokeEvent(ScoreEvent{ "HighScoreSet"_h, highScore });
     }
+}
+
+void GameState::OnRestart(std::any const& /*eventArgs*/)
+{
+    auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
+    sceneManager.ResetScene("Start");
+    sceneManager.LoadScene("Start");
 }
 
 }  // namespace bt
