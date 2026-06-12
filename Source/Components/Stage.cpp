@@ -160,6 +160,7 @@ void Stage::OnActivate()
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("PlateFinished"_h, this, &Stage::OnPlateFinished);
     eventManager.BindEvent("BonusAppear"_h, this, &Stage::OnBonusAppear);
+
     eventManager.QueueEvent(gla::Event("DisableEntities"_h));
 
     m_pTimer->Start(
@@ -167,7 +168,7 @@ void Stage::OnActivate()
         [] -> void
         {
             gla::Locator::Get<gla::EventManager>().QueueEvent(gla::Event("EnableEntities"_h));
-            gla::Locator::Get<gla::Sound>().PlayTrack("background");
+            gla::Locator::Get<gla::Sound>().PlayTrack("background", true);
         });
 }
 

@@ -14,6 +14,7 @@
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/SceneManager.hpp"
+#include "Services/Sound.hpp"
 #include "Utils.hpp"
 
 namespace vw = std::ranges::views;
@@ -171,12 +172,15 @@ void GameState::CreateStage() const
 void GameState::OnStageComplete(std::any const& /*eventArgs*/)
 {
     gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
+    gla::Locator::Get<gla::Sound>().StopTrack("background");
     m_pEndTimer->Start(game::stageEndDelay, [this] -> void { NextStage(); });
 }
 
 void GameState::OnDeath(std::any const& /*eventArgs*/)
 {
     gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
+    gla::Locator::Get<gla::Sound>().PlayAudio("death"_h);
+    gla::Locator::Get<gla::Sound>().StopTrack("background");
     m_pEndTimer->Start(game::stageEndDelay, [this] -> void { Respawn(); });
 }
 
@@ -207,6 +211,7 @@ void GameState::NextStage()
     if (not m_gameStarted)
         return;
 
+    gla::Locator::Get<gla::Sound>().StopTrack("background");
     m_stageIndex = ++m_stageIndex % game::stageCount;
 
     CreateStage();

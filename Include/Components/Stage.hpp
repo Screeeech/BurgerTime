@@ -61,7 +61,6 @@ protected:
 private:
     void OnBonusAppear(std::any const& eventArgs) const;
     void OnPlateFinished(std::any const& eventArgs);
-    [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> Tile;
 
     void LoadTiles(nlohmann::json const& tileList);
     void LoadSpawnPositions(nlohmann::json const& spawnList);
@@ -71,6 +70,7 @@ private:
     void LoadFood(nlohmann::json const& food);
 
 
+    [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> Tile;
     static void DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const& renderer);
     static void DrawLadder(glm::vec2 cursor, gla::Renderer const& renderer);
 

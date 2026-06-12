@@ -93,8 +93,6 @@ void Entity::CreatePlayer(gla::GameObject* playerObject, int entityIndex, Type p
         {
             playerObject->GetComponent<PlayerStateMachine>()->TransitionTo<Dying>();
             collider.Disable();
-
-            gla::Locator::Get<gla::Sound>().PlayAudio("death"_h);
         },
         glm::vec2{ 4.f, 4.f },
         glm::vec2{ 8.f, 8.f });
