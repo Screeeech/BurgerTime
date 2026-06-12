@@ -10,6 +10,7 @@
 #include "Components/Stage.hpp"
 #include "Components/Timer.hpp"
 #include "Events.hpp"
+#include "GameEvents.hpp"
 #include "Locator.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
@@ -140,6 +141,8 @@ void GameState::OnActivate()
     eventManager.BindEvent("PlayerDeath"_h, this, &GameState::OnDeath);
     eventManager.BindEvent("StageCompleted"_h, this, &GameState::OnStageComplete);
     eventManager.BindEvent("PepperAttack"_h, this, &GameState::OnPepperAttack);
+    eventManager.BindEvent("BonusPickup"_h, this, &GameState::OnBonusPickup);
+    eventManager.BindEvent("ScoreChange"_h, this, &GameState::OnScoreChange);
 
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
     inputManager.RegisterInput(SDL_SCANCODE_F1, gla::Input::Type::released, "__skip_stage"_h, 0);
@@ -283,6 +286,17 @@ void GameState::OnPepperAttack(std::any const& /*eventArgs*/)
     --pepper;
 }
 
+void GameState::OnBonusPickup(std::any const& /*eventArgs*/)
+{
+    ++pepper;
+}
+
+void GameState::OnScoreChange(std::any const& scoreEvent)
+{
+    auto const& args = std::any_cast<ScoreEvent const&>(scoreEvent);
+    score += args.score;
+}
+
 void GameState::LoadHighScoreData()
 {
     std::ifstream file(game::highScoreFile);
@@ -300,7 +314,7 @@ void GameState::LoadHighScoreData()
         try
         {
             auto const initial = item.at("initials").get<Initials>();
-            int const score = item.at("score").get<int>();
+            auto const score = item.at("score").get<int>();
             m_highScores[initial] = score;
         }
         catch (std::exception const&)

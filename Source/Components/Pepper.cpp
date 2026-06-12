@@ -73,7 +73,7 @@ Pepper::Pepper(gla::GameObject* pOwner, Entity& player)
 void Pepper::SpawnPepper(glm::vec2 position, glm::vec2 direction) const
 {
     gla::Locator::Get<gla::Sound>().PlayAudio("pepper_shake"_h);
-    gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{"PepperAttack"_h});
+    gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "PepperAttack"_h });
 
     m_pDurationTimer->Start(game::pepperAttackDuration);
     m_pHitbox->Enable();

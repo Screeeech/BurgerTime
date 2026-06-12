@@ -89,7 +89,7 @@ void LoadGameScene(gla::Scene const& scene, GameState const* gameState)
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
 
     auto* score = scene.GetRoot()->CreateChild(100, 15, "Score");
-    score->AddComponent<Score>(font, 0);
+    score->AddComponent<Score>(font, gameState->score);
 
     auto* highScore = scene.GetRoot()->CreateChild(110, 15, "HighScore");
     highScore->AddComponent<HighScore>(font, 20'000);
