@@ -141,7 +141,24 @@ void GameState::OnActivate()
 
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
     inputManager.RegisterInput(SDL_SCANCODE_F1, gla::Input::Type::released, "__skip_stage"_h, 0);
+    inputManager.RegisterInput(SDL_SCANCODE_F2, gla::Input::Type::released, "__mute_sound"_h, 0);
     inputManager.BindAction<gla::CallbackCommand>("__skip_stage"_h, 0, [this] -> void { NextStage(); });
+    inputManager.BindAction<gla::CallbackCommand>(
+        "__mute_sound"_h,
+        0,
+        [] -> void
+        {
+            if (auto& sound = gla::Locator::Get<gla::Sound>(); sound.GetGlobalVolume() > 0)
+            {
+                std::println("Muting sound");
+                sound.SetGlobalVolume(0);
+            }
+            else
+            {
+                std::println("Unmuting sound");
+                sound.SetGlobalVolume(gla::Sound::defaultVolume);
+            }
+        });
 }
 
 void GameState::OnDeactivate()
