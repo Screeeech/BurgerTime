@@ -33,6 +33,7 @@ void PlayerActiveState::OnEnter()
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("Pepper"_h, this, &PlayerActiveState::OnPepper);
     eventManager.BindEvent("DisableEntities"_h, this, &PlayerActiveState::OnDisable);
+    eventManager.BindEvent("StateCompleted"_h, this, &PlayerActiveState::OnStageComplete);
 }
 
 void PlayerActiveState::OnExit()
@@ -44,6 +45,11 @@ void PlayerActiveState::OnExit()
 void PlayerActiveState::OnDisable(std::any const& /*eventArgs*/)
 {
     machine->TransitionTo<Disabled>();
+}
+
+void PlayerActiveState::OnStageComplete(std::any const& /*eventArgs*/)
+{
+    machine->TransitionTo<Winning>();
 }
 
 // ==================== STANDING IDLE ====================
@@ -311,8 +317,8 @@ void Dying::Update()
         ctx->animation.SetAnimation("dying"_h, true);
 }
 
-// ==================== DISABLED ====================
 
+// ==================== DISABLED ====================
 void Disabled::OnEnter()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
@@ -332,5 +338,13 @@ void Disabled::OnEnable(std::any const& /*eventArgs*/) const
 {
     machine->TransitionTo<StandingIdle>();
 }
+
+
+// ==================== DISABLED ====================
+void Winning::OnEnter() const
+{
+    ctx->animation.SetAnimation("winning"_h, true);
+}
+void Winning::Update() {}
 
 }  // namespace bt::playerstates

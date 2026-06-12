@@ -268,6 +268,13 @@ void Entity::DefineAnimationsPlayer(gla::Animation& animation, int rowIndex)
             { .colIdx = 7, .rowIdx = rowIndex + 1, .duration = 0.15f },
             { .colIdx = 8, .rowIdx = rowIndex + 1, .duration = 0.15f },
         });
+    animation.AddAnimation(
+        "winning"_h,
+        spriteSheet,
+        {
+            { .colIdx = 1, .rowIdx = rowIndex, .duration = 0.15f },
+            { .colIdx = 3, .rowIdx = rowIndex + 1, .duration = 0.15f },
+        });
 
     animation.SetAnimation("idle"_h, true);
 }

@@ -162,7 +162,7 @@ void GameState::CreateStage() const
     m_pStageObject->RemoveComponent<Stage>();
     m_pStageObject->RemoveComponent<gla::Timer>();
 
-    // Get rid of all of the buger pieces
+    // Get rid of all of the burger pieces
     for (auto* child : m_pStageObject->GetChildren())
         child->QueueDelete();
 
@@ -171,6 +171,7 @@ void GameState::CreateStage() const
 
 void GameState::OnStageComplete(std::any const& /*eventArgs*/)
 {
+    std::println("OnStageComplete");
     gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
     gla::Locator::Get<gla::Sound>().StopTrack("background");
     m_pEndTimer->Start(game::stageEndDelay, [this] -> void { NextStage(); });

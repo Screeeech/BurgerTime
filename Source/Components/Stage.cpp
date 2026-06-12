@@ -193,6 +193,7 @@ void Stage::OnPlateFinished(std::any const& /*eventArgs*/)
     std::println("Plate {}/{} finished!", m_platesFinished, m_totalPlateCount);
     if (m_platesFinished >= m_totalPlateCount)
     {
+        std::println("Stage completed!");
         gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event("StageCompleted"_h));
         gla::Locator::Get<gla::Sound>().PlayAudio("round_clear"_h);
     }

@@ -27,6 +27,7 @@ struct Walking;
 struct ClimbingIdle;
 struct Climbing;
 struct Disabled;
+struct Winning;
 
 // Some data that we want to be passed to the states
 struct Context final
@@ -39,15 +40,18 @@ struct Context final
     glm::vec2 previousDirection{ 1, 1 };
 };
 
-using PlayerStateMachine = StateMachine<Context, Disabled, StandingIdle, Walking, ClimbingIdle, Climbing, Dying>;
+using PlayerStateMachine = StateMachine<Context, Disabled, StandingIdle, Walking, ClimbingIdle, Climbing, Dying, Winning>;
 using PlayerState = HelperState<Context, PlayerStateMachine>;
 
 struct PlayerActiveState : PlayerState
 {
     virtual void OnEnter();
     virtual void OnExit();
+
+private:
     virtual void OnPepper(std::any const& eventArgs) = 0;
     virtual void OnDisable(std::any const& eventArgs);
+    virtual void OnStageComplete(std::any const& eventArgs);
 };
 
 struct StandingIdle final : PlayerActiveState
@@ -106,6 +110,12 @@ struct Disabled final : PlayerState
 
 private:
     void OnEnable(std::any const& eventArgs) const;
+};
+
+struct Winning final : PlayerState
+{
+    void OnEnter() const;
+    void Update() override;
 };
 
 }  // namespace bt::playerstates

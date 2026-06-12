@@ -43,6 +43,7 @@ void EnemyActiveState::OnExit()
 
 void EnemyActiveState::OnDisable(std::any const& /*eventArgs*/)
 {
+    std::println("Enemies disabled...");
     machine->TransitionTo<Disabled>();
 }
 
@@ -350,7 +351,7 @@ void Dying::OnEnter() const
 void Dying::Update() {}
 
 
-// ==================== DYING ====================
+// ==================== DISABLED ====================
 void Disabled::OnEnter()
 {
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
@@ -368,6 +369,7 @@ void Disabled::OnExit()
 
 void Disabled::OnEnable(std::any const& /*eventArgs*/) const
 {
+    std::println("Enable entities");
     machine->TransitionTo<IdleStanding>();
 }
 
