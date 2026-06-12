@@ -57,7 +57,6 @@ void StandingIdle::OnEnter()
 {
     PlayerActiveState::OnEnter();
 
-    // std::println("Entered Standing Idle state");
     ctx->animation.SetAnimation("idle"_h, true);
     ctx->moveComponent.LockOntoGround();
     ctx->collider.EnableCollisionMasks(gla::Collider::Bits::Layer3);

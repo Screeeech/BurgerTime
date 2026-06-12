@@ -47,12 +47,12 @@ inline constexpr int enemyDropScoreCap{ 6 };
 
 namespace game
 {
-inline constexpr int startingLives{ 5 };
-inline constexpr int startingPepper{ 4 };
+inline constexpr int startingLives{ 3 };
+inline constexpr int startingPepper{ 5 };
 inline constexpr int stageCount{ 3 };
 inline constexpr auto highScoreFile{ "highscores.json" };
 
-inline constexpr float loadingTime{ 1.f };
+inline constexpr float loadingTime{ 2.f };
 inline constexpr float stageEndDelay{ 5.f };
 inline constexpr float stageBeginDelay{ 3.f };
 inline constexpr float enemySpawnDelay{ 4.f };

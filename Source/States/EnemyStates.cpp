@@ -37,7 +37,6 @@ void EnemyActiveState::OnExit()
 
 void EnemyActiveState::OnDisable(std::any const& /*eventArgs*/)
 {
-    std::println("Enemies disabled...");
     machine->TransitionTo<Disabled>();
 }
 
@@ -216,7 +215,7 @@ void StunnedStanding::OnEnter()
 
 void StunnedStanding::Update()
 {
-    if (ctx->stunTimer.IsFinished())
+    if (not ctx->stunTimer.IsRunning())
         machine->TransitionTo<IdleStanding>();
 }
 
@@ -243,7 +242,7 @@ void StunnedClimbing::OnEnter()
 
 void StunnedClimbing::Update()
 {
-    if (ctx->stunTimer.IsFinished())
+    if (not ctx->stunTimer.IsRunning())
         machine->TransitionTo<IdleClimbing>();
 }
 
@@ -363,7 +362,6 @@ void Disabled::OnExit()
 
 void Disabled::OnEnable(std::any const& /*eventArgs*/) const
 {
-    std::println("Enable entities");
     machine->TransitionTo<IdleStanding>();
 }
 

@@ -34,6 +34,10 @@ GameState::GameState(gla::GameObject* pOwner)
 
 void GameState::StartGame()
 {
+    m_score = 0;
+    m_health = game::startingPepper;
+    m_pepper = game::startingPepper;
+
     m_gameStarted = true;
     CreateStage();
     m_pStartTimer->Start(game::loadingTime, [this] -> void { BeginRound(); });
@@ -70,7 +74,6 @@ void GameState::EndGame()
 
     m_health = game::startingPepper;
     m_pepper = game::startingPepper;
-    m_score = 0;
 }
 
 void GameState::SetGameMode(GameMode mode)
@@ -188,7 +191,6 @@ void GameState::Respawn()
     }
 
 
-    std::println("Respawning...");
     m_pStartTimer->Start(game::loadingTime, [this] -> void { BeginRound(); });
 
     sceneManager.ResetScene("Loading");
@@ -214,7 +216,6 @@ void GameState::NextStage()
 
 void GameState::OnStageComplete(std::any const& /*eventArgs*/)
 {
-    std::println("OnStageComplete");
     gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
     gla::Locator::Get<gla::Sound>().StopTrack("background");
     m_pEndTimer->Start(game::stageEndDelay, [this] -> void { NextStage(); });

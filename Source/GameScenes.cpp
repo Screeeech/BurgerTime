@@ -180,11 +180,11 @@ void LoadGameOverScene(gla::Scene const& scene)
     gameOver->AddComponent<gla::TextComponent>("GAME OVER", font, layers::text, gla::TextComponent::Align::Center, colors::Red);
 
     auto* leaderBoardObject = scene.GetRoot()->CreateChild(88, 65, "Leaderboard object");
-    auto const newHighScore = gameState->GetScore() >= gameState->highScore ? gameState->highScore : 0;
-    auto* leaderBoard = leaderBoardObject->AddComponent<LeaderBoard>(font, newHighScore);
+    auto const newScore = std::min(gameState->GetScore(), gameState->highScore);
+    auto* leaderBoard = leaderBoardObject->AddComponent<LeaderBoard>(font, newScore);
 
-    auto* newScore = scene.GetRoot()->CreateChild(128, 160, "New score");
-    newScore->AddComponent<gla::TextComponent>(
+    auto* newScoreObject = scene.GetRoot()->CreateChild(128, 160, "New score");
+    newScoreObject->AddComponent<gla::TextComponent>(
         std::format("YOUR SCORE: {}", gameState->GetScore()),
         font,
         layers::text,
