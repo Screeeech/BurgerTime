@@ -308,10 +308,7 @@ void Dying::Update()
 
     wait += gla::Time::Get().FixedDeltaTime();
     if (wait >= animationWait)
-    {
-        gla::Locator::Get<gla::Sound>().PlayAudio("death"_h);
         ctx->animation.SetAnimation("dying"_h, true);
-    }
 }
 
 // ==================== DISABLED ====================
