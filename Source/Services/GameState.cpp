@@ -52,7 +52,7 @@ void GameState::StartGame()
 {
     m_gameStarted = true;
     CreateStage();
-    m_pStartTimer->Start(loadingTime, [this] -> void { BeginRound(); });
+    m_pStartTimer->Start(game::loadingTime, [this] -> void { BeginRound(); });
 }
 
 void GameState::BeginRound() const
@@ -85,8 +85,8 @@ void GameState::EndGame()
     m_gameStarted = false;
     SaveHighScoreData();
 
-    health = maxLives;
-    pepper = initialPepper;
+    health = game::startingPepper;
+    pepper = game::startingPepper;
     score = 0;
 }
 
@@ -159,20 +159,24 @@ void GameState::CreateStage() const
     m_pStageObject->Deactivate();
     m_pStageObject->RemoveComponent<Stage>();
     m_pStageObject->RemoveComponent<gla::Timer>();
+
+    // Get rid of all of the buger pieces
+    for (auto* child : m_pStageObject->GetChildren())
+        child->QueueDelete();
+
     m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
 }
 
 void GameState::OnStageComplete(std::any const& /*eventArgs*/)
 {
     gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
-    m_pEndTimer->Start(stageChangeDelay, [this] -> void { NextStage(); });
-    std::println("Stage complete!");
+    m_pEndTimer->Start(game::stageEndDelay, [this] -> void { NextStage(); });
 }
 
 void GameState::OnDeath(std::any const& /*eventArgs*/)
 {
     gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
-    m_pEndTimer->Start(stageChangeDelay, [this] -> void { Respawn(); });
+    m_pEndTimer->Start(game::stageEndDelay, [this] -> void { Respawn(); });
 }
 
 void GameState::Respawn()
@@ -191,7 +195,7 @@ void GameState::Respawn()
     m_pStageObject->Deactivate();
 
     std::println("Respawning...");
-    m_pStartTimer->Start(loadingTime, [this] -> void { BeginRound(); });
+    m_pStartTimer->Start(game::loadingTime, [this] -> void { BeginRound(); });
 
     sceneManager.ResetScene("Loading");
     sceneManager.LoadScene("Loading");
@@ -202,11 +206,11 @@ void GameState::NextStage()
     if (not m_gameStarted)
         return;
 
-    m_stageIndex = ++m_stageIndex % maxStageCount;
+    m_stageIndex = ++m_stageIndex % game::stageCount;
 
     CreateStage();
 
-    m_pStartTimer->Start(loadingTime, [this] -> void { BeginRound(); });
+    m_pStartTimer->Start(game::loadingTime, [this] -> void { BeginRound(); });
 
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
     sceneManager.ResetScene("Loading");
@@ -269,7 +273,7 @@ void GameState::OnPlayerDisconnect(std::any const& connectEvent)
 
 void GameState::LoadHighScoreData()
 {
-    std::ifstream file(highScoreFile);
+    std::ifstream file(game::highScoreFile);
 
     if (not file.is_open())
         return;
@@ -289,7 +293,7 @@ void GameState::LoadHighScoreData()
         }
         catch (std::exception const&)
         {
-            std::println("Warning!\t{} contains an invalid entry, skipping entry", highScoreFile);
+            std::println("Warning!\t{} contains an invalid entry, skipping entry", game::highScoreFile);
         }
     }
 
@@ -304,7 +308,7 @@ void GameState::SaveHighScoreData()
     for (auto const& [initials, score] : m_highScores)
         jsonArray.push_back({ { "initials", initials }, { "score", score } });
 
-    std::ofstream file(highScoreFile);
+    std::ofstream file(game::highScoreFile);
     file << jsonArray.dump(4);
 }
 

@@ -11,6 +11,7 @@
 
 #include "Component.hpp"
 #include "Components/Entity.hpp"
+#include "Constants.hpp"
 
 
 namespace gla
@@ -49,12 +50,6 @@ enum class GameMode : std::uint8_t
 
 class GameState final : public gla::Component
 {
-    static constexpr int maxStageCount{ 3 };
-    static constexpr int maxLives{ 5 };
-    static constexpr int initialPepper{ 15 };
-    static constexpr std::string highScoreFile{ "highscores.json" };
-    static constexpr float stageChangeDelay{ 5.f };
-    static constexpr float loadingTime{ 1.f };
 
 public:
     explicit GameState(gla::GameObject* pOwner);
@@ -72,8 +67,8 @@ public:
     std::optional<int> peterPepperPlayerIndex;
     std::optional<int> sallySaltPlayerIndex;
     std::optional<int> enemyPlayerIndex;
-    int pepper{ initialPepper };
-    int health{ maxLives };
+    int pepper{ game::startingPepper };
+    int health{ game::startingLives };
     int score{};
     int highScore{};
     Initials currentInitials{ .first = 'P', .last = '1' };

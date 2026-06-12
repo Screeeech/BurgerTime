@@ -44,6 +44,7 @@ auto MoveComponent::GetDirection() const -> glm::vec2
 
 auto MoveComponent::GetSpritePosition() const -> glm::vec2
 {
+    static constexpr glm::vec2 spriteFeetOffset{ 8.f, 15.f };
     return m_pOwner->GetLocalPosition() + spriteFeetOffset;
 }
 

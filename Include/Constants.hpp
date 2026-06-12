@@ -27,12 +27,12 @@ namespace layers
 inline constexpr int stage{ 0 };
 inline constexpr int burgerParts{ 1 };
 inline constexpr int enemies{ 2 };
-inline constexpr int player{ 3 };
-inline constexpr int pepper{ 4 };
+inline constexpr int bonus{ 3 };
+inline constexpr int player{ 4 };
+inline constexpr int pepper{ 5 };
 inline constexpr int text{ 10 };
-
-;
 }  // namespace layers
+
 
 namespace score
 {
@@ -42,8 +42,32 @@ inline constexpr int pickle{ 200 };
 inline constexpr int egg{ 300 };
 inline constexpr int enemyDropScoreMultiplier{ 500 };
 inline constexpr int enemyDropScoreCap{ 6 };
+}  // namespace score
 
-}
+namespace game
+{
+inline constexpr int startingLives{ 5 };
+inline constexpr int startingPepper{ 4 };
+inline constexpr int stageCount{ 3 };
+inline constexpr auto highScoreFile{ "highscores.json" };
+
+inline constexpr float loadingTime{ 1.f };
+inline constexpr float stageEndDelay{ 5.f };
+inline constexpr float stageBeginDelay{ 3.f };
+inline constexpr float enemySpawnDelay{ 4.f };
+
+inline constexpr float pepperAttackDuration{ 1.f };
+inline constexpr float pepperAttackCooldown{ 1.25f };
+inline constexpr float stunDuration{ 3.f };
+inline constexpr float bonusAppearTime{ 5.f };
+
+inline constexpr float burgerPartFallingSpeed{ 60.f };
+inline constexpr glm::vec2 playerVelocity{ 0.65f, 0.45f };
+inline constexpr glm::vec2 enemyVelocity{ 0.4f, 0.3f };
+
+
+
+}  // namespace game
 
 }  // namespace bt
 

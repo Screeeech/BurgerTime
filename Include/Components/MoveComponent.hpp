@@ -40,8 +40,6 @@ protected:
 
 private:
 
-    static constexpr glm::vec2 spriteFeetOffset{ 8.f, 15.f };
-
     glm::vec2 m_direction{};
     Stage* m_pStage;
     float m_walkModifier{};

@@ -39,10 +39,8 @@ public:
         Tomato,
         Lettuce,
     };
-    static constexpr float resetTime{ 0.5f };
     static constexpr float pieceSpriteStepOffset{ 2.f };
     static constexpr float pieceSize{ 8.f };
-    static constexpr float fallingSpeed{ 60.f };
     static constexpr int pieceCount{ 4 };
     using Pieces = std::array<std::pair<gla::CollisionRect*, gla::Sprite*>, pieceCount>;
 

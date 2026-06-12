@@ -13,6 +13,7 @@
 
 namespace gla
 {
+class CollisionRect;
 class Timer;
 }
 namespace bt
@@ -24,6 +25,7 @@ struct SpawnPoints final
     glm::vec2 player2;
     glm::vec2 enemy;
 };
+
 
 class Stage : public gla::Renderable
 {
@@ -50,7 +52,6 @@ public:
     static constexpr float stageOffset{ 32.f };
     static constexpr float tileWidth{ 24.f };
     static constexpr float tileHeight{ 16.f };
-    static constexpr float stageBeginDelay{ 3.f };
 
 protected:
     void Render() override;
@@ -58,13 +59,7 @@ protected:
     void OnDeactivate() override;
 
 private:
-    int m_platesFinished{};
-    int m_totalPlateCount{};
-    std::array<Tile, stageSize> m_tileArray;
-    gla::Timer* m_pTimer;
-    SpawnPoints m_spawnPoints{};
-    std::unordered_map<Entity::Type, int> m_enemyCounts;
-
+    void OnBonusAppear(std::any const& eventArgs) const;
     void OnPlateFinished(std::any const& eventArgs);
     [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> Tile;
 
@@ -73,9 +68,22 @@ private:
     void SpawnBurgerParts(nlohmann::json const& burgerPartList);
     void SpawnPlates(nlohmann::json const& plateList);
     void LoadEnemyCounts(nlohmann::json const& enemyCounts);
+    void LoadFood(nlohmann::json const& food);
+
 
     static void DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const& renderer);
     static void DrawLadder(glm::vec2 cursor, gla::Renderer const& renderer);
+
+    int m_platesFinished{};
+    int m_totalPlateCount{};
+    std::array<Tile, stageSize> m_tileArray;
+    gla::Timer* m_pTimer;
+    SpawnPoints m_spawnPoints{};
+    std::unordered_map<Entity::Type, int> m_enemyCounts;
+
+    // Food
+    gla::Sprite* m_pFoodSprite{};
+    gla::CollisionRect* m_pFoodHitBox{};
 };
 
 }  // namespace bt

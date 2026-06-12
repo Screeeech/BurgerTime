@@ -20,10 +20,12 @@
 namespace bt
 {
 
+constexpr float resetTime{ 0.5f };
+
 void burgerpartstates::Idle::OnEnter() const
 {
     LockOntoGround(ctx->transform);
-    ctx->timer.Start(BurgerPart::resetTime);
+    ctx->timer.Start(resetTime);
 }
 
 void burgerpartstates::Idle::Update()
@@ -88,7 +90,7 @@ void burgerpartstates::Falling::Update()
         hasResetCollider = true;
     }
 
-    ctx->transform.ChangeLocalPosition({ 0.f, BurgerPart::fallingSpeed * gla::Time::Get().FixedDeltaTime() });
+    ctx->transform.ChangeLocalPosition({ 0.f, game::burgerPartFallingSpeed * gla::Time::Get().FixedDeltaTime() });
     if (IsOnPlatform(ctx->transform, ctx->stage))
     {
         if (part.m_dropCount > 0)

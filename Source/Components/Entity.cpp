@@ -67,7 +67,7 @@ void Entity::CreatePlayer(gla::GameObject* playerObject, int entityIndex, Type p
 
     playerObject->AddComponent<gla::Timer>();
     auto* playerEntity = playerObject->AddComponent<Entity>(entityIndex, playerType);
-    auto* moveComponent(playerObject->AddComponent<MoveComponent>(playerVelocity.x, playerVelocity.y));
+    auto* moveComponent(playerObject->AddComponent<MoveComponent>(game::playerVelocity.x, game::playerVelocity.y));
     auto* animation(playerObject->AddComponent<gla::Animation>(layers::player));
 
     if (playerType == Type::Pepper)
@@ -88,7 +88,7 @@ void Entity::CreatePlayer(gla::GameObject* playerObject, int entityIndex, Type p
 
     auto* hitbox = playerObject->AddComponent<gla::CollisionRect>(
         gla::Collider::Bits::Layer2,
-        gla::Collider::Bits::Layer3,
+        gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer8,
         [=](auto& collider, auto&) -> void
         {
             playerObject->GetComponent<PlayerStateMachine>()->TransitionTo<Dying>();
@@ -132,7 +132,7 @@ void Entity::CreateEnemy(gla::GameObject* enemyObject, int entityIndex, Type ent
 
     auto* enemyEntity = enemyObject->AddComponent<Entity>(entityIndex, entityType);
 
-    auto* pMoveComponent = enemyObject->AddComponent<MoveComponent>(enemyWalkSpeed.x, enemyWalkSpeed.y);
+    auto* pMoveComponent = enemyObject->AddComponent<MoveComponent>(game::enemyVelocity.x, game::enemyVelocity.y);
     auto* pStunTimer = enemyObject->AddComponent<gla::Timer>();
     auto* pAIDelayTimer = enemyObject->AddComponent<gla::Timer>();
     auto* pAnimation = enemyObject->GetComponent<gla::Animation>();

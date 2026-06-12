@@ -5,6 +5,7 @@
 #include "Components/EnemyAI.hpp"
 #include "Components/Stage.hpp"
 #include "Components/Timer.hpp"
+#include "Constants.hpp"
 #include "GameEvents.hpp"
 #include "GameObject.hpp"
 #include "Locator.hpp"
@@ -50,7 +51,7 @@ void EnemySpawner::Update()
 
     if (m_pSpawnDelayTimer->IsFinished())
     {
-        m_pSpawnDelayTimer->Start(spawnDelay);
+        m_pSpawnDelayTimer->Start(game::enemySpawnDelay);
         AttemptSpawn();
     }
 }
@@ -58,7 +59,7 @@ void EnemySpawner::Update()
 void EnemySpawner::OnActivate()
 {
     m_aliveEnemies.clear();
-    m_pSpawnDelayTimer->Start(spawnDelay);
+    m_pSpawnDelayTimer->Start(game::enemySpawnDelay);
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("EnemyDeath"_h, this, &EnemySpawner::OnEnemyDeath);
     eventManager.BindEvent("DisableEntities"_h, this, &EnemySpawner::OnEnemyDisable);

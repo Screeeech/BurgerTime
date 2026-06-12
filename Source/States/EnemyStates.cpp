@@ -8,6 +8,7 @@
 #include "Components/MoveComponent.hpp"
 #include "Components/Stage.hpp"
 #include "Components/Timer.hpp"
+#include "Constants.hpp"
 #include "Events.hpp"
 #include "GameEvents.hpp"
 #include "Services/EventManager.hpp"
@@ -26,7 +27,6 @@ struct Dying;
 
 constexpr float aiDelay{ 0.5f };
 constexpr float spawnWalkingTime{ 1.5f };
-constexpr float stunTime{ 3.f };
 
 void EnemyActiveState::OnEnter()
 {
@@ -83,7 +83,7 @@ void IdleStanding::OnPepper(std::any const& playerEvent)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
-    ctx->stunTimer.Start(stunTime);
+    ctx->stunTimer.Start(game::stunDuration);
     machine->TransitionTo<StunnedStanding>();
 }
 
@@ -127,7 +127,7 @@ void Walking::OnPepper(std::any const& playerEvent)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
-    ctx->stunTimer.Start(stunTime);
+    ctx->stunTimer.Start(game::stunDuration);
     machine->TransitionTo<StunnedStanding>();
 }
 
@@ -180,7 +180,7 @@ void Climbing::OnPepper(std::any const& playerEvent)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
-    ctx->stunTimer.Start(stunTime);
+    ctx->stunTimer.Start(game::stunDuration);
     machine->TransitionTo<StunnedClimbing>();
 }
 
@@ -205,7 +205,7 @@ void IdleClimbing::OnPepper(std::any const& playerEvent)
         return;
 
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_sprayed"_h);
-    ctx->stunTimer.Start(stunTime);
+    ctx->stunTimer.Start(game::stunDuration);
     machine->TransitionTo<StunnedClimbing>();
 }
 
@@ -336,7 +336,7 @@ void Dying::OnEnter() const
     gla::Locator::Get<gla::Sound>().PlayAudio("enemy_squashed"_h);
 
     ctx->animation.SetAnimation("dying"_h, true, false);
-    ctx->stunTimer.Start(0.5f, [this] { ctx->moveComponent.m_pOwner->QueueDelete(); });
+    ctx->stunTimer.Start(0.5f, [this] -> void { ctx->moveComponent.m_pOwner->QueueDelete(); });
 
     // Disable all collisions
     ctx->playerHitbox.SetCollisionLayers(0);
@@ -357,7 +357,7 @@ void Disabled::OnEnter()
     eventManager.BindEvent("EnableEntities"_h, this, &Disabled::OnEnable);
 
     ctx->animation.SetPlaying(false);
-    //ctx->moveComponent.LockOntoGround();
+    // ctx->moveComponent.LockOntoGround();
 }
 void Disabled::Update() {}
 void Disabled::OnExit()
@@ -379,7 +379,7 @@ void Spawning::OnEnter()
         ctx->animation.SetAnimation("walkRight"_h, true);
     else if (ctx->initialWalkingDirection.x < 0)
         ctx->animation.SetAnimation("walkLeft"_h, true);
-    else // 0 initialWalkingDirection means it's a player controlled enemy
+    else  // 0 initialWalkingDirection means it's a player controlled enemy
         machine->TransitionTo<IdleStanding>();
 
     ctx->aiDelayTimer.Start(spawnWalkingTime);

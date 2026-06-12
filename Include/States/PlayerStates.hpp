@@ -93,7 +93,6 @@ private:
 struct Dying final : PlayerState
 {
     float wait{};
-    static constexpr float animationWait{ 1.8f };
 
     void OnEnter() const;
     void Update() override;

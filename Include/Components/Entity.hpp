@@ -18,9 +18,6 @@ class Stage;
 class Entity final : public gla::Component
 {
 public:
-    static constexpr glm::vec2 playerVelocity{ 0.65f, 0.45f };
-    static constexpr glm::vec2 enemyWalkSpeed{ 0.4f, 0.3f };
-
     enum class Type : std::uint8_t
     {
         HotDog,

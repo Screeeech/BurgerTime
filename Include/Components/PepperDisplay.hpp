@@ -6,9 +6,10 @@
 
 namespace gla
 {
+class Timer;
 class Sprite;
 class TextComponent;
-}
+}  // namespace gla
 namespace bt
 {
 
@@ -17,21 +18,23 @@ class PepperDisplay final : public gla::Component
 public:
     explicit PepperDisplay(gla::GameObject* pOwner, int startingPeppers);
 
-    void OnTryPepper(std::any const& pepperEvent);
-    void OnPepperAttack(std::any const& pepperEvent);
-
-    auto GetPepperCount() const -> int;
+    [[nodiscard]] auto GetPepperCount() const -> int;
 
 protected:
     void OnActivate() override;
     void OnDeactivate() override;
 
 private:
-    int const m_startingPepperCount;
-    int m_pepperCount;
-   gla::Sprite* m_pPepperSprite;
-    gla::TextComponent* m_pPepperText;
+    void OnTryPepper(std::any const& pepperEvent) const;
+    void OnPepperAttack(std::any const& pepperEvent);
+    void OnBonusPickup(std::any const& eventArgs);
+    void OnDisable(std::any const& eventArgs) const;
 
+    int m_pepperCount;
+    gla::Sprite* m_pPepperSprite;
+    gla::TextComponent* m_pPepperText;
+    gla::Timer* m_pBonusAppearTimer;
+    bool m_bonusAvailable{};
 };
 
 }  // namespace bt

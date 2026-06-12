@@ -8,7 +8,10 @@
 #include <ranges>
 
 #include "Components/BurgerPart.hpp"
+#include "Components/Collider.hpp"
+#include "Components/CollisionRect.hpp"
 #include "Components/Plate.hpp"
+#include "Components/Sprite.hpp"
 #include "Components/Timer.hpp"
 #include "Constants.hpp"
 #include "GameEvents.hpp"
@@ -26,7 +29,7 @@ namespace vw = std::ranges::views;
 namespace bt
 {
 
-Stage::Stage(gla::GameObject* pOwner,std::string const& stageDataPath)
+Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
     : Renderable{ pOwner, layers::stage }
     , m_tileArray{}
     , m_pTimer(pOwner->AddComponent<gla::Timer>())
@@ -56,6 +59,10 @@ Stage::Stage(gla::GameObject* pOwner,std::string const& stageDataPath)
     if (not stageData.contains("Enemies"))
         throw std::runtime_error{ R"(Invalid stage data file: No "Enemies" list found)" };
     LoadEnemyCounts(stageData.at("Enemies"));
+
+    if (not stageData.contains("Food"))
+        throw std::runtime_error{ R"(Invalid stage data file: No "Food" list found)" };
+    LoadFood(stageData.at("Food"));
 }
 
 void Stage::PrintTileType(glm::vec2 position) const
@@ -152,10 +159,11 @@ void Stage::OnActivate()
 
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
     eventManager.BindEvent("PlateFinished"_h, this, &Stage::OnPlateFinished);
+    eventManager.BindEvent("BonusAppear"_h, this, &Stage::OnBonusAppear);
     eventManager.QueueEvent(gla::Event("DisableEntities"_h));
 
     m_pTimer->Start(
-        stageBeginDelay,
+        game::stageBeginDelay,
         [] -> void
         {
             gla::Locator::Get<gla::EventManager>().QueueEvent(gla::Event("EnableEntities"_h));
@@ -166,8 +174,16 @@ void Stage::OnActivate()
 void Stage::OnDeactivate()
 {
     Renderable::OnDeactivate();
+    m_pFoodSprite->m_visible = false;
+    m_pFoodHitBox->Disable();
 
     gla::Locator::Get<gla::EventManager>().UnbindEvents(this);
+}
+
+void Stage::OnBonusAppear(std::any const& /*eventArgs*/) const
+{
+    m_pFoodSprite->m_visible = true;
+    m_pFoodHitBox->Enable();
 }
 
 void Stage::OnPlateFinished(std::any const& /*eventArgs*/)
@@ -274,10 +290,7 @@ void Stage::SpawnBurgerParts(json const& burgerPartList)
         auto const yPosition = static_cast<float>(yIndex) * tileHeight;
 
         auto* partObject = m_pOwner->CreateChild(xPosition, yPosition, std::format("BurgerPart: {}, {}", key, i));
-        partObject->AddComponent<BurgerPart>(
-            this,
-            type,
-            gla::Locator::Get<gla::ResourceManager>().LoadTexture("Textures/spritesheet.png"));
+        partObject->AddComponent<BurgerPart>(this, type, gla::Locator::Get<gla::ResourceManager>().LoadTexture("Textures/spritesheet.png"));
     }
 }
 
@@ -319,6 +332,43 @@ void Stage::LoadEnemyCounts(json const& enemyCounts)
     m_enemyCounts[Entity::Type::HotDog] = enemyCounts.at("HotDog").get<int>();
     m_enemyCounts[Entity::Type::Pickle] = enemyCounts.at("Pickle").get<int>();
     m_enemyCounts[Entity::Type::Egg] = enemyCounts.at("Egg").get<int>();
+}
+
+void Stage::LoadFood(json const& food)
+{
+    if (not food.is_object())
+        throw std::runtime_error("Invalid food entry: Food is not a valid json object");
+    if (not food.contains("Position"))
+        throw std::runtime_error(R"(Invalid food entry: Food does not have a "Position" entry)");
+    if (not food.contains("Type"))
+        throw std::runtime_error(R"(Invalid food entry: Food does not have a "Type" entry)");
+
+    auto const foodTypeIndex = food.at("Type").get<float>();
+    if (foodTypeIndex < 0.f or foodTypeIndex >= 3.f)
+        throw std::runtime_error(R"(Invalid food entry: Food does not have a valid "Type" entry)");
+
+    m_pFoodSprite =
+        m_pOwner->AddComponent<gla::Sprite>(gla::Locator::Get<gla::ResourceManager>().LoadTexture("Textures/spritesheet.png"), layers::bonus);
+    m_pFoodSprite->SetSourceRect({ .x = foodTypeIndex * 16.f, .y = 10 * 16.f, .w = 16.f, .h = 16.f });
+    m_pFoodSprite->m_visible = false;
+
+    auto const xIndex = food.at("Position").at("x").get<float>();
+    auto const yIndex = food.at("Position").at("y").get<float>();
+    auto const foodPos = glm::vec2{ xIndex * tileWidth, yIndex * tileHeight };
+
+    m_pFoodSprite->m_offset = foodPos;
+    m_pFoodHitBox = m_pOwner->AddComponent<gla::CollisionRect>(
+        gla::Collider::Bits::Layer8,
+        0,
+        [this](gla::Collider& collider, auto&)
+        {
+            gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "BonusPickup"_h });
+            collider.Disable();
+            m_pFoodSprite->m_visible = false;
+        },
+        foodPos,
+        glm::vec2{ 16.f },
+        false);
 }
 
 void Stage::DrawPlatform(glm::vec2 cursor, bool connectLeft, bool connectRight, gla::Renderer const& renderer)

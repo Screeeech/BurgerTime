@@ -75,7 +75,7 @@ void Pepper::SpawnPepper(glm::vec2 position, glm::vec2 direction) const
     gla::Locator::Get<gla::Sound>().PlayAudio("pepper_shake"_h);
     gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{"PepperAttack"_h});
 
-    m_pDurationTimer->Start(pepperDuration);
+    m_pDurationTimer->Start(game::pepperAttackDuration);
     m_pHitbox->Enable();
 
     if (direction == glm::vec2{ 0, -1 })  // Up
@@ -122,7 +122,7 @@ void Pepper::OnActivate()
             // TODO: Move the cooldown timer to a different place
             if (m_pCoolDownTimer->IsRunning())
                 return;
-            m_pCoolDownTimer->Start(pepperCooldown);
+            m_pCoolDownTimer->Start(game::pepperAttackCooldown);
 
             gla::Locator::Get<gla::EventManager>().InvokeEvent(
                 PepperEvent("TryPepper"_h, m_pPlayer->entityIndex, pMoveComponent->GetDirection(), pMoveComponent->GetSpritePosition(), this));

@@ -25,7 +25,6 @@ class Sound;
 }
 namespace bt::playerstates
 {
-static constexpr float pepperDuration{ 1.f };
 
 
 // ==================== ACTIVE BASE STATE ====================
@@ -88,7 +87,7 @@ void StandingIdle::OnPepper(std::any const& eventArgs)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { ctx->previousDirection.x, 0.f });
-    ctx->pepperTimer.Start(pepperDuration);
+    ctx->pepperTimer.Start(game::pepperAttackDuration);
 }
 
 void StandingIdle::ChangeAnimation() const
@@ -140,7 +139,7 @@ void Walking::OnPepper(std::any const& eventArgs)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { ctx->previousDirection.x, 0.f });
-    ctx->pepperTimer.Start(pepperDuration);
+    ctx->pepperTimer.Start(game::pepperAttackDuration);
 }
 
 void Walking::ChangeAnimation() const
@@ -190,7 +189,7 @@ void ClimbingIdle::OnPepper(std::any const& eventArgs)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, ctx->previousDirection.y });
-    ctx->pepperTimer.Start(pepperDuration);
+    ctx->pepperTimer.Start(game::pepperAttackDuration);
 }
 
 void ClimbingIdle::ChangeAnimation() const
@@ -272,7 +271,7 @@ void Climbing::OnPepper(std::any const& eventArgs)
         return;
 
     pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { 0.f, ctx->previousDirection.y });
-    ctx->pepperTimer.Start(pepperDuration);
+    ctx->pepperTimer.Start(game::pepperAttackDuration);
 }
 
 void Climbing::ChangeAnimation() const
@@ -305,6 +304,8 @@ void Dying::OnEnter() const
 
 void Dying::Update()
 {
+    static constexpr float animationWait{ 1.8f };
+
     wait += gla::Time::Get().FixedDeltaTime();
     if (wait >= animationWait)
     {
