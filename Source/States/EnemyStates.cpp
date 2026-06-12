@@ -19,12 +19,6 @@
 namespace bt::enemystates
 {
 
-struct Walking;
-struct Climbing;
-struct StunnedStanding;
-struct Dying;
-
-
 constexpr float aiDelay{ 0.5f };
 constexpr float spawnWalkingTime{ 1.5f };
 

@@ -20,26 +20,6 @@ class Timer;
 }
 namespace bt
 {
-struct Initials
-{
-    char first;
-    char last;
-
-    auto operator==(const Initials& other) const -> bool { return first == other.first && last == other.last; }
-};
-}  // namespace bt
-
-template<>
-struct std::hash<bt::Initials>
-{
-    auto operator()(bt::Initials const& init) const noexcept -> std::size_t
-    {
-        return (static_cast<std::size_t>(init.first) << 8) | static_cast<std::size_t>(init.last);
-    }
-};
-
-namespace bt
-{
 
 enum class GameMode : std::uint8_t
 {
@@ -71,7 +51,6 @@ public:
     int health{ game::startingLives };
     int score{};
     int highScore{};
-    Initials currentInitials{ .first = 'P', .last = '1' };
 
 protected:
     void OnActivate() override;
@@ -90,9 +69,6 @@ private:
     void OnBonusPickup(std::any const& eventArgs);
     void OnScoreChange(std::any const& scoreEvent);
 
-    void LoadHighScoreData();
-    void SaveHighScoreData();
-    std::unordered_map<Initials, int> m_highScores;
 
     bool m_gameStarted{ false };
     GameMode m_gameMode{};

@@ -20,24 +20,6 @@
 
 namespace vw = std::ranges::views;
 
-template<>
-struct nlohmann::adl_serializer<bt::Initials>
-{
-    static void to_json(json& j, bt::Initials const& init) { j = std::string{ init.first, init.last }; }
-
-    static void from_json(json const& j, bt::Initials& init)
-    {
-        auto const s = j.get<std::string>();
-        if (s.size() != 2)
-        {
-            throw std::runtime_error("Initials must be exactly 2 characters");
-        }
-        init.first = s.at(0);
-        init.last = s.at(1);
-    }
-};  // namespace nlohmann
-
-using namespace nlohmann;
 
 namespace bt
 {
@@ -85,7 +67,6 @@ void GameState::BeginRound() const
 void GameState::EndGame()
 {
     m_gameStarted = false;
-    SaveHighScoreData();
 
     health = game::startingPepper;
     pepper = game::startingPepper;
@@ -296,47 +277,5 @@ void GameState::OnScoreChange(std::any const& scoreEvent)
     auto const& args = std::any_cast<ScoreEvent const&>(scoreEvent);
     score += args.score;
 }
-
-void GameState::LoadHighScoreData()
-{
-    std::ifstream file(game::highScoreFile);
-
-    if (not file.is_open())
-        return;
-
-    json const highScoreList = json::parse(file);
-
-    if (not highScoreList.is_array())
-        return;
-
-    for (auto const& item : highScoreList)
-    {
-        try
-        {
-            auto const initial = item.at("initials").get<Initials>();
-            auto const score = item.at("score").get<int>();
-            m_highScores[initial] = score;
-        }
-        catch (std::exception const&)
-        {
-            std::println("Warning!\t{} contains an invalid entry, skipping entry", game::highScoreFile);
-        }
-    }
-
-    if (m_highScores.contains(currentInitials))
-        highScore = m_highScores.at(currentInitials);
-}
-
-void GameState::SaveHighScoreData()
-{
-    json jsonArray = json::array();
-
-    for (auto const& [initials, score] : m_highScores)
-        jsonArray.push_back({ { "initials", initials }, { "score", score } });
-
-    std::ofstream file(game::highScoreFile);
-    file << jsonArray.dump(4);
-}
-
 
 }  // namespace bt

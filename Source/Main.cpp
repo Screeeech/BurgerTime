@@ -62,6 +62,7 @@ void load()
     sceneManager.CreateScene("Singleplayer", bt::LoadSinglePlayerGameScene);
     sceneManager.CreateScene("Coop", bt::LoadCoopGameScene);
     sceneManager.CreateScene("Versus", bt::LoadVersusGameScene);
+    sceneManager.CreateScene("GameOver", bt::LoadGameOverScene);
 
     sceneManager.LoadScene(startScene);
 }

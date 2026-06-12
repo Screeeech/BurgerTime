@@ -6,6 +6,7 @@
 #include "Components/Entity.hpp"
 #include "Components/HealthDisplay.hpp"
 #include "Components/HighScore.hpp"
+#include "Components/LeaderBoard.hpp"
 #include "Components/PepperDisplay.hpp"
 #include "Components/Score.hpp"
 #include "Components/Sprite.hpp"
@@ -34,9 +35,12 @@ void LoadStartScene(gla::Scene const& scene)
     auto const spritesheetTexture = resourceManager.LoadTexture("Textures/spritesheet.png");
 
     auto* startMenu = scene.GetRoot()->CreateChild(0, 0, "Start menu");
-    startMenu->CreateChild((256.f - 152.f) / 2, 50, "Logo")->AddComponent<gla::Sprite>(logoTexture);
+    startMenu->CreateChild((256.f - 152.f) / 2, 20, "Logo")->AddComponent<gla::Sprite>(logoTexture);
 
-    auto* singlePlayerTextObject = startMenu->CreateChild(100, 140, "Singleplayer");
+    auto* leaderBoardObject = startMenu->CreateChild(70.f, 80.f, "Leaderboard");
+    leaderBoardObject->AddComponent<LeaderBoard>(font, 0);
+
+    auto* singlePlayerTextObject = startMenu->CreateChild(100, 170, "Singleplayer");
     singlePlayerTextObject->AddComponent<gla::TextComponent>("1 PLAYER", font);
 
     auto* coopTextObject = singlePlayerTextObject->CreateChild(0, 16, "Co-op");
@@ -159,6 +163,19 @@ void LoadVersusGameScene(gla::Scene const& scene)
     Entity::CreateEnemy(enemyObject, *gameState->enemyPlayerIndex, Entity::Type::HotDog);
 
     entitiesContainer->AddComponent<EnemySpawner>(player1Object, *gameState->enemyPlayerIndex, gameState->GetEnemyCounts());
+}
+
+void LoadGameOverScene(gla::Scene const& scene)
+{
+    //auto const* persistentRoot = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot();
+    //auto const* gameState = persistentRoot->GetComponent<GameState>();
+
+    auto* loading = scene.GetRoot()->CreateChild(128, 110, "Loading text");
+
+    auto const font = gla::Locator::Get<gla::ResourceManager>().LoadFont("Fonts/nes.ttf", 8);
+    loading->AddComponent<gla::TextComponent>("GAME OVER", font, layers::text, gla::TextComponent::Align::Center, colors::LoadingTextColor);
+
+
 }
 
 }  // namespace bt
