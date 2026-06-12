@@ -29,8 +29,8 @@ struct nlohmann::adl_serializer<bt::Initials>
         {
             throw std::runtime_error("Initials must be exactly 2 characters");
         }
-        init.first = s[0];
-        init.last = s[1];
+        init.first = s.at(0);
+        init.last = s.at(1);
     }
 };  // namespace nlohmann
 
@@ -53,7 +53,7 @@ void GameState::StartGame()
     m_pStageObject->Deactivate();
     m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
 
-    m_pStartTimer->Start(loadingTime, [this] { BeginRound(); });
+    m_pStartTimer->Start(loadingTime, [this] -> void { BeginRound(); });
 }
 
 void GameState::BeginRound() const
@@ -109,7 +109,18 @@ auto GameState::GetHealth() const -> int
 
 auto GameState::GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>
 {
-    return m_pStageObject->GetComponent<Stage>()->GetSpawnPositions();
+    auto const [player1, player2, enemy] = m_pStageObject->GetComponent<Stage>()->GetSpawnPositions();
+    switch (m_gameMode)
+    {
+        case GameMode::Singleplayer:
+            return { player1, {} };
+        case GameMode::Coop:
+            return { player1, player2 };
+        case GameMode::Versus:
+            return { player1, enemy };
+        default:
+            return {};
+    }
 }
 
 auto GameState::GetEnemyCounts() const -> std::unordered_map<Entity::Type, int> const&
@@ -131,7 +142,7 @@ void GameState::OnActivate()
 
     auto& inputManager = gla::Locator::Get<gla::InputManager>();
     inputManager.RegisterInput(SDL_SCANCODE_F1, gla::Input::Type::released, "__skip_stage"_h, 0);
-    inputManager.BindAction<gla::CallbackCommand>("__skip_stage"_h, 0, [this] { NextStage(); });
+    inputManager.BindAction<gla::CallbackCommand>("__skip_stage"_h, 0, [this] -> void { NextStage(); });
 }
 
 void GameState::OnDeactivate()
@@ -148,6 +159,7 @@ void GameState::OnStageComplete(std::any const& /*eventArgs*/)
 {
     gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
     m_pEndTimer->Start(stageChangeDelay, [this] -> void { NextStage(); });
+    std::println("Stage complete!");
 }
 
 void GameState::OnDeath(std::any const& /*eventArgs*/)
@@ -177,7 +189,7 @@ void GameState::Respawn()
             child->QueueDelete();
 
     std::println("Respawning...");
-    m_pStartTimer->Start(loadingTime, [this] { BeginRound(); });
+    m_pStartTimer->Start(loadingTime, [this] -> void { BeginRound(); });
 
     sceneManager.ResetScene("Loading");
     sceneManager.LoadScene("Loading");
@@ -188,16 +200,17 @@ void GameState::NextStage()
     if (not m_gameStarted)
         return;
 
+    std::println("Next Stage");
     m_pStageObject->Deactivate();
     m_pStageObject->RemoveComponent<Stage>();
-    m_pStageObject->RemoveComponent<EnemySpawner>();
+    m_pStageObject->RemoveComponent<gla::Timer>();
     for (auto* child : m_pStageObject->GetChildren())
         child->QueueDelete();
 
     m_stageIndex = ++m_stageIndex % maxStageCount;
     m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
 
-    m_pStartTimer->Start(loadingTime, [this] { BeginRound(); });
+    m_pStartTimer->Start(loadingTime, [this] -> void { BeginRound(); });
 
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
     sceneManager.ResetScene("Loading");
@@ -265,7 +278,7 @@ void GameState::LoadHighScoreData()
     if (not file.is_open())
         return;
 
-    json highScoreList = json::parse(file);
+    json const highScoreList = json::parse(file);
 
     if (not highScoreList.is_array())
         return;
@@ -274,8 +287,8 @@ void GameState::LoadHighScoreData()
     {
         try
         {
-            auto initial = item.at("initials").get<Initials>();
-            int score = item.at("score").get<int>();
+            auto const initial = item.at("initials").get<Initials>();
+            int const score = item.at("score").get<int>();
             m_highScores[initial] = score;
         }
         catch (std::exception const&)

@@ -77,7 +77,7 @@ void EnemySpawner::AttemptSpawn()
 
     static std::uniform_int_distribution sideRandom(0, 1);
     bool const left = sideRandom(gen);
-    glm::vec2 const spawnPosition = { left ? -15 : (Stage::stageWidth * Stage::tileWidth) + 15, -2 };
+    glm::vec2 const spawnPosition = { left ? -32 : (Stage::stageWidth * Stage::tileWidth) + 16, -2 };
 
     auto const entityIndex = GetFreeEntityIndex();
 

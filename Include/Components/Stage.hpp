@@ -18,10 +18,17 @@ class Timer;
 namespace bt
 {
 
+struct SpawnPoints final
+{
+    glm::vec2 player1;
+    glm::vec2 player2;
+    glm::vec2 enemy;
+};
+
 class Stage : public gla::Renderable
 {
 public:
-    enum class TileType : std::uint8_t
+    enum class Tile : std::uint8_t
     {
         Null = 0,
         Platform = 1,
@@ -33,8 +40,8 @@ public:
 
     void PrintTileType(glm::vec2 position) const;
 
-    [[nodiscard]] auto GetTileAtPosition(glm::vec2 stageLocalPosition) const -> TileType;
-    [[nodiscard]] auto GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>;
+    [[nodiscard]] auto GetTileAtPosition(glm::vec2 stageLocalPosition) const -> Tile;
+    [[nodiscard]] auto GetSpawnPositions() const -> SpawnPoints;
     [[nodiscard]] auto GetEnemyCounts() -> std::unordered_map<Entity::Type, int>&;
 
     static constexpr uint32_t stageWidth{ 9 };
@@ -53,13 +60,13 @@ protected:
 private:
     int m_platesFinished{};
     int m_totalPlateCount{};
-    std::array<TileType, stageSize> m_tileArray;
+    std::array<Tile, stageSize> m_tileArray;
     gla::Timer* m_pTimer;
-    std::pair<glm::vec2, glm::vec2> m_spawnPositions{};
+    SpawnPoints m_spawnPoints{};
     std::unordered_map<Entity::Type, int> m_enemyCounts;
 
     void OnPlateFinished(std::any const& eventArgs);
-    [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType;
+    [[nodiscard]] auto GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> Tile;
 
     void LoadTiles(nlohmann::json const& tileList);
     void LoadSpawnPositions(nlohmann::json const& spawnList);

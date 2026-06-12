@@ -134,7 +134,7 @@ auto burgerpartstates::Falling::IsOnPlatform(gla::Transform const& transform, St
     {
         auto const tileType = stage.GetTileAtPosition(
             glm::vec2{ worldPos.x, bottomYPos } + glm::vec2{ BurgerPart::pieceSize * (BurgerPart::pieceCount / 2.f), 1.f });
-        if (tileType == Stage::TileType::Platform or tileType == Stage::TileType::LadderPlatform)
+        if (tileType == Stage::Tile::Platform or tileType == Stage::Tile::LadderPlatform)
             return true;
     }
 

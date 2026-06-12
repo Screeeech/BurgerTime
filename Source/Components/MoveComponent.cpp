@@ -75,8 +75,8 @@ auto MoveComponent::CanWalk() const -> bool
     else if (m_direction.x < 0)
         xSideOffset.x = -halfPlayerSprite;
 
-    Stage::TileType const tile = m_pStage->GetTileAtPosition(GetSpritePosition() + xSideOffset);
-    return tile == Stage::TileType::Platform or tile == Stage::TileType::LadderPlatform;
+    Stage::Tile const tile = m_pStage->GetTileAtPosition(GetSpritePosition() + xSideOffset);
+    return tile == Stage::Tile::Platform or tile == Stage::Tile::LadderPlatform;
 }
 
 auto MoveComponent::CanWalkLeft() const -> bool
@@ -84,8 +84,8 @@ auto MoveComponent::CanWalkLeft() const -> bool
     float constexpr halfPlayerSprite{ 8.f };
     glm::vec2 constexpr xSideOffset{ -halfPlayerSprite * 3, 0 };
 
-    Stage::TileType const tile = m_pStage->GetTileAtPosition(GetSpritePosition() + xSideOffset);
-    return tile == Stage::TileType::Platform or tile == Stage::TileType::LadderPlatform;
+    Stage::Tile const tile = m_pStage->GetTileAtPosition(GetSpritePosition() + xSideOffset);
+    return tile == Stage::Tile::Platform or tile == Stage::Tile::LadderPlatform;
 }
 
 auto MoveComponent::CanWalkRight() const -> bool
@@ -93,8 +93,8 @@ auto MoveComponent::CanWalkRight() const -> bool
     float constexpr halfPlayerSprite{ 8.f };
     glm::vec2 constexpr xSideOffset{ halfPlayerSprite * 3, 0 };
 
-    Stage::TileType const tile = m_pStage->GetTileAtPosition(GetSpritePosition() + xSideOffset);
-    return tile == Stage::TileType::Platform or tile == Stage::TileType::LadderPlatform;
+    Stage::Tile const tile = m_pStage->GetTileAtPosition(GetSpritePosition() + xSideOffset);
+    return tile == Stage::Tile::Platform or tile == Stage::Tile::LadderPlatform;
 }
 
 auto MoveComponent::CanClimbDown() const -> bool
@@ -107,9 +107,9 @@ auto MoveComponent::CanClimbDown() const -> bool
 
     switch (m_pStage->GetTileAtPosition(GetSpritePosition() - glm::vec2(0.f, -4.f)))
     {
-        case Stage::TileType::Ladder:
+        case Stage::Tile::Ladder:
             return true;
-        case Stage::TileType::LadderPlatform:
+        case Stage::Tile::LadderPlatform:
             return true;
         default:
             return false;
@@ -126,9 +126,9 @@ auto MoveComponent::CanClimbUp() const -> bool
 
     switch (m_pStage->GetTileAtPosition(GetSpritePosition()))
     {
-        case Stage::TileType::Ladder:
+        case Stage::Tile::Ladder:
             return true;
-        case Stage::TileType::LadderPlatform:
+        case Stage::Tile::LadderPlatform:
             return true;
         default:
             return false;
@@ -144,9 +144,9 @@ auto MoveComponent::IsOnGround() const -> bool
     // Check for tile below player
     switch (m_pStage->GetTileAtPosition(GetSpritePosition() - glm::vec2(0.f, 1.f)))
     {
-        case Stage::TileType::Platform:
+        case Stage::Tile::Platform:
             return true;
-        case Stage::TileType::LadderPlatform:
+        case Stage::Tile::LadderPlatform:
             return true;
         default:
             return false;

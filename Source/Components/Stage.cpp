@@ -62,25 +62,25 @@ void Stage::PrintTileType(glm::vec2 position) const
 {
     switch (GetTileAtPosition(position))
     {
-        case TileType::Null:
+        case Tile::Null:
             std::println("Tile: Null");
             break;
-        case TileType::Platform:
+        case Tile::Platform:
             std::println("Tile: Platform");
             break;
-        case TileType::Ladder:
+        case Tile::Ladder:
             std::println("Tile: Ladder");
             break;
-        case TileType::LadderPlatform:
+        case Tile::LadderPlatform:
             std::println("Tile: LadderPlatform");
             break;
     }
 }
 
-auto Stage::GetTileAtPosition(glm::vec2 stageLocalPosition) const -> TileType
+auto Stage::GetTileAtPosition(glm::vec2 stageLocalPosition) const -> Tile
 {
     if (stageLocalPosition.x < 0.f or stageLocalPosition.y < 0.f)
-        return TileType::Null;
+        return Tile::Null;
 
     auto const xIdx{ static_cast<uint32_t>(stageLocalPosition.x / tileWidth) };
     auto const yIdx{ static_cast<uint32_t>(stageLocalPosition.y / tileHeight) };
@@ -88,9 +88,9 @@ auto Stage::GetTileAtPosition(glm::vec2 stageLocalPosition) const -> TileType
     return GetTileAtIndex(xIdx, yIdx);
 }
 
-auto Stage::GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>
+auto Stage::GetSpawnPositions() const -> SpawnPoints
 {
-    return m_spawnPositions;
+    return m_spawnPoints;
 }
 
 auto Stage::GetEnemyCounts() -> std::unordered_map<Entity::Type, int>&
@@ -110,21 +110,21 @@ void Stage::Render()
 
         bool connectLeft{};
         bool connectRight{};
-        TileType const leftTile{ GetTileAtIndex(xIdx - 1, yIdx) };
-        TileType const rightTile{ GetTileAtIndex(xIdx + 1, yIdx) };
-        if (leftTile == TileType::Platform or leftTile == TileType::LadderPlatform)
+        Tile const leftTile{ GetTileAtIndex(xIdx - 1, yIdx) };
+        Tile const rightTile{ GetTileAtIndex(xIdx + 1, yIdx) };
+        if (leftTile == Tile::Platform or leftTile == Tile::LadderPlatform)
             connectLeft = true;
-        if (rightTile == TileType::Platform or rightTile == TileType::LadderPlatform)
+        if (rightTile == Tile::Platform or rightTile == Tile::LadderPlatform)
             connectRight = true;
 
-        if (tile == TileType::Platform)
+        if (tile == Tile::Platform)
         {
             // renderer->SetColor(colors::Red);
             // renderer->DrawRect({cursor.x, cursor.y, tileWidth, tileHeight});
 
             DrawPlatform(cursor, connectLeft, connectRight, renderer);
         }
-        else if (tile == TileType::LadderPlatform)
+        else if (tile == Tile::LadderPlatform)
         {
             // renderer->SetColor(colors::Green);
             // renderer->DrawRect({cursor.x, cursor.y, tileWidth, tileHeight});
@@ -133,7 +133,7 @@ void Stage::Render()
             renderer.SetColor(xIdx % 2 != 0 ? colors::GreenLadderColor : colors::BlueLadderColor);
             DrawLadder(cursor, renderer);
         }
-        else if (tile == TileType::Ladder)
+        else if (tile == Tile::Ladder)
         {
             // renderer->SetColor(colors::Blue);
             // renderer->DrawRect({cursor.x, cursor.y, tileWidth, tileHeight});
@@ -156,7 +156,7 @@ void Stage::OnActivate()
 
     m_pTimer->Start(
         stageBeginDelay,
-        []
+        [] -> void
         {
             gla::Locator::Get<gla::EventManager>().QueueEvent(gla::Event("EnableEntities"_h));
             gla::Locator::Get<gla::Sound>().PlayTrack("background");
@@ -173,6 +173,7 @@ void Stage::OnDeactivate()
 void Stage::OnPlateFinished(std::any const& /*eventArgs*/)
 {
     ++m_platesFinished;
+    std::println("Plate {}/{} finished!", m_platesFinished, m_totalPlateCount);
     if (m_platesFinished >= m_totalPlateCount)
     {
         gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event("StageCompleted"_h));
@@ -180,14 +181,14 @@ void Stage::OnPlateFinished(std::any const& /*eventArgs*/)
     }
 }
 
-auto Stage::GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> TileType
+auto Stage::GetTileAtIndex(uint32_t xIdx, uint32_t yIdx) const -> Tile
 {
     if (xIdx >= stageWidth or yIdx >= stageHeight)
-        return TileType::Null;
+        return Tile::Null;
 
     auto const idx = (yIdx * stageWidth) + xIdx;
     if (idx >= m_tileArray.size())
-        return TileType::Null;
+        return Tile::Null;
 
     return m_tileArray.at(idx);
 }
@@ -203,7 +204,7 @@ void Stage::LoadTiles(json const& tileList)
 
 void Stage::LoadSpawnPositions(json const& spawnList)
 {
-    if (not spawnList.is_array() or spawnList.size() != 2)
+    if (not spawnList.is_array() or spawnList.size() != 3)
         throw std::runtime_error{ "Spawn list incorrectly formatted" };
 
     auto getPos = [&](int idx) -> glm::vec2
@@ -213,8 +214,9 @@ void Stage::LoadSpawnPositions(json const& spawnList)
         return { xIndex * tileWidth, yIndex * tileHeight };
     };
 
-    m_spawnPositions.first = getPos(0);
-    m_spawnPositions.second = getPos(1);
+    m_spawnPoints.player1 = getPos(0);
+    m_spawnPoints.player2 = getPos(1);
+    m_spawnPoints.enemy = getPos(2);
 }
 
 void Stage::SpawnBurgerParts(json const& burgerPartList)
