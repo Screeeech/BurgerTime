@@ -79,6 +79,12 @@ void EnemySpawner::AttemptSpawn()
 
     auto const type = [&] -> std::optional<Entity::Type>
     {
+        if (m_shouldRespawnEnemyPlayer)
+        {
+            m_aliveEnemies[Entity::Type::HotDog]++;
+            return Entity::Type::HotDog;
+        }
+
         for (int i{}; i <= 2; i++)
         {
             auto const t = static_cast<Entity::Type>((i + randomStartingType) % 3);
@@ -98,6 +104,7 @@ void EnemySpawner::AttemptSpawn()
     glm::vec2 const spawnPosition = { left ? -32 : (Stage::stageWidth * Stage::tileWidth) + 16, -2 };
 
     auto const entityIndex = m_shouldRespawnEnemyPlayer ? m_enemyPlayerIndex.value() : GetFreeEntityIndex();
+    std::println("Entity index: {}", entityIndex);
 
     auto* enemyObject = m_pOwner->CreateChild(spawnPosition, std::format("Enemy {}", entityIndex));
     Entity::CreateEnemy(enemyObject, entityIndex, *type, { left ? 1 : -1, 0 });
@@ -123,9 +130,10 @@ auto EnemySpawner::GetFreeEntityIndex() -> int
 void EnemySpawner::OnEnemyDeath(std::any const& enemyDeathEvent)
 {
     auto const& args = std::any_cast<EnemyDeathEvent const&>(enemyDeathEvent);
-    if (not m_usedEntityIndices.contains(args.entityIndex))
+    if (not m_usedEntityIndices.contains(args.entityIndex) and args.entityIndex >= gla::InputManager::maxPlayers)
         return;
 
+    std::println("Enemy index {} has died", args.entityIndex);
     if (args.entityIndex < gla::InputManager::maxPlayers)
         m_shouldRespawnEnemyPlayer = true;
 

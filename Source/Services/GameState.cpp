@@ -122,9 +122,9 @@ auto GameState::GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>
     }
 }
 
-auto GameState::GetEnemyCounts() const -> std::unordered_map<Entity::Type, int> const&
+auto GameState::GetEnemyCounts() const -> std::unordered_map<Entity::Type, int>
 {
-    auto& enemyCounts = m_pStageObject->GetComponent<Stage>()->GetEnemyCounts();
+    auto enemyCounts = m_pStageObject->GetComponent<Stage>()->GetEnemyCounts();
     if (m_gameMode == GameMode::Versus)
         enemyCounts[Entity::Type::HotDog]--;
 
@@ -189,11 +189,6 @@ void GameState::Respawn()
     }
 
     m_pStageObject->Deactivate();
-
-    // Delete all remaining entities but keep other objects
-    for (auto* child : m_pStageObject->GetChildren())
-        if (child->GetComponent<Entity>())
-            child->QueueDelete();
 
     std::println("Respawning...");
     m_pStartTimer->Start(loadingTime, [this] -> void { BeginRound(); });

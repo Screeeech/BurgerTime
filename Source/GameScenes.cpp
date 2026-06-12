@@ -116,15 +116,7 @@ void LoadSinglePlayerGameScene(gla::Scene const& scene)
     auto* playerObject = entitiesContainer->CreateChild(firstPos, std::format("Enemy {}", *gameState->peterPepperPlayerIndex));
     Entity::CreatePlayer(playerObject, *gameState->peterPepperPlayerIndex, Entity::Type::Pepper);
 
-    entitiesContainer->AddComponent<EnemySpawner>(playerObject, nullptr, gameState->GetEnemyCounts());
-
-    // NPCs
-    // Entity::CreateEnemy(entitiesContainer, 11, { 75, -2 }, Entity::Type::HotDog);
-    // NPCs
-
-    //auto* enemyObject = entitiesContainer->CreateChild({ 40, -2 }, std::format("Enemy {}", 11));
-    //Entity::CreateEnemy(enemyObject, 11, Entity::Type::Egg);
-    //enemyObject->AddComponent<EnemyAI>(11, playerObject, nullptr);
+    entitiesContainer->AddComponent<EnemySpawner>(playerObject, gameState->GetEnemyCounts());
 }
 
 void LoadCoopGameScene(gla::Scene const& scene)
@@ -166,7 +158,7 @@ void LoadVersusGameScene(gla::Scene const& scene)
     auto* enemyObject = entitiesContainer->CreateChild(secondPos, std::format("Mr HotDog: {}", *gameState->enemyPlayerIndex));
     Entity::CreateEnemy(enemyObject, *gameState->enemyPlayerIndex, Entity::Type::HotDog);
 
-    entitiesContainer->AddComponent<EnemySpawner>(player1Object, nullptr, gameState->GetEnemyCounts());
+    entitiesContainer->AddComponent<EnemySpawner>(player1Object, *gameState->enemyPlayerIndex, gameState->GetEnemyCounts());
 }
 
 }  // namespace bt

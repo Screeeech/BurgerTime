@@ -25,7 +25,7 @@ struct Dying;
 
 
 constexpr float aiDelay{ 0.5f };
-constexpr float spawnWalkingTime{ 1.f };
+constexpr float spawnWalkingTime{ 1.5f };
 constexpr float stunTime{ 3.f };
 
 void EnemyActiveState::OnEnter()
@@ -387,7 +387,7 @@ void Spawning::OnEnter()
 
 void Spawning::Update()
 {
-    if (ctx->aiDelayTimer.IsFinished())
+    if (not ctx->aiDelayTimer.IsRunning())
     {
         machine->TransitionTo<IdleStanding>();
         gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::EntityEvent("FindNewDirection"_h, ctx->entityIndex));

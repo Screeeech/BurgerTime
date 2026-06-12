@@ -67,7 +67,7 @@ public:
     auto GetGameMode() const -> GameMode;
     auto GetHealth() const -> int;
     auto GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>;
-    auto GetEnemyCounts() const -> std::unordered_map<Entity::Type, int> const&;
+    auto GetEnemyCounts() const -> std::unordered_map<Entity::Type, int>;
 
     std::optional<int> peterPepperPlayerIndex;
     std::optional<int> sallySaltPlayerIndex;
