@@ -24,7 +24,6 @@ namespace bt
 
 BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, std::shared_ptr<gla::Texture2D> const& spriteSheetTexture)
     : Component(pOwner)
-    //: Renderable(pOwner, 20)
     , m_pResetTimer(pOwner->AddComponent<gla::Timer>())
     , m_pieces(
           [&] -> Pieces
@@ -81,9 +80,9 @@ void BurgerPart::ReleaseEnemies()
     auto& eventManager = gla::Locator::Get<gla::EventManager>();
 
     // Reparent to stage
-    for (auto* enemy : m_fallingEnemies)
+    for (auto const* enemy : m_fallingEnemies)
     {
-        enemy->m_pOwner->QueueReparent(*m_pStage->m_pOwner);
+        enemy->m_pOwner->QueueReparent(*GetEntitiesParentObject());
         eventManager.QueueEvent(gla::EntityEvent{ "OnLanding"_h, enemy->entityIndex });
     }
 
@@ -150,6 +149,11 @@ auto BurgerPart::GetPieces() -> Pieces&
 //     renderer.DrawRect({ worldPos.x, worldPos.y, 1.f, 1.f });
 // }
 
+void BurgerPart::OnActivate()
+{
+    m_pEntitiesParent = nullptr;
+}
+
 auto BurgerPart::GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect
 {
     auto const xIndex{ 14 + static_cast<float>(index) };
@@ -172,6 +176,15 @@ void BurgerPart::OnPieceStep(long index)
 
     sprite->m_offset.y = pieceSpriteStepOffset;
     ++m_steppedPieces;
+}
+
+auto BurgerPart::GetEntitiesParentObject() -> gla::GameObject*
+{
+    if (not m_pEntitiesParent)
+        m_pEntitiesParent = gla::Locator::Get<gla::SceneManager>().GetActiveScene()->GetRoot()->GetFirstChild("Entities");
+
+    return m_pEntitiesParent;
+
 }
 
 

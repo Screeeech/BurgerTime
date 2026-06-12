@@ -51,9 +51,9 @@ public:
     void AcquireEnemy(gla::GameObject& enemyObject, Entity& enemy);
     void ReleaseEnemies();
     void KillEnemies();
-    auto GetEnemyCount() const -> int;
+    [[nodiscard]] auto GetEnemyCount() const -> int;
 
-    auto GetSteppedPieces() const -> int;
+    [[nodiscard]] auto GetSteppedPieces() const -> int;
     void SetSteppedPieces(int steppedPieces);
 
     void SettleOntoPlate(int partCount, glm::vec2 platePosition);
@@ -63,14 +63,20 @@ public:
     int m_dropCount{};
     bool m_firstFall{};
     bool m_finished{};
+
+protected:
+    void OnActivate() override;
+
 private:
     static auto GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect;
     void OnPieceStep(long index);
+    auto GetEntitiesParentObject() -> gla::GameObject*;
 
     gla::Timer* m_pResetTimer{};
     Pieces m_pieces{};
     int m_steppedPieces{};
     Stage* m_pStage;
+    gla::GameObject* m_pEntitiesParent{};
     std::vector<Entity*> m_fallingEnemies;
     burgerpartstates::BurgerStateMachine* m_pStateMachine;
 };

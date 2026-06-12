@@ -16,6 +16,7 @@
 #include "Services/SceneManager.hpp"
 #include "Utils.hpp"
 
+namespace vw = std::ranges::views;
 
 template<>
 struct nlohmann::adl_serializer<bt::Initials>
@@ -50,9 +51,7 @@ GameState::GameState(gla::GameObject* pOwner)
 void GameState::StartGame()
 {
     m_gameStarted = true;
-    m_pStageObject->Deactivate();
-    m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
-
+    CreateStage();
     m_pStartTimer->Start(loadingTime, [this] -> void { BeginRound(); });
 }
 
@@ -60,8 +59,6 @@ void GameState::BeginRound() const
 {
     if (not m_gameStarted)
         return;
-
-    m_pStageObject->Activate();
 
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
     switch (m_gameMode)
@@ -79,6 +76,8 @@ void GameState::BeginRound() const
             sceneManager.LoadScene("Versus");
             break;
     }
+
+    m_pStageObject->Activate();
 }
 
 void GameState::EndGame()
@@ -155,6 +154,14 @@ void GameState::OnDeactivate()
     inputManager.UnbindAction("__skip_stage"_h, 0);
 }
 
+void GameState::CreateStage() const
+{
+    m_pStageObject->Deactivate();
+    m_pStageObject->RemoveComponent<Stage>();
+    m_pStageObject->RemoveComponent<gla::Timer>();
+    m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
+}
+
 void GameState::OnStageComplete(std::any const& /*eventArgs*/)
 {
     gla::Locator::Get<gla::EventManager>().InvokeEvent(gla::Event{ "DisableEntities"_h });
@@ -200,15 +207,9 @@ void GameState::NextStage()
     if (not m_gameStarted)
         return;
 
-    std::println("Next Stage");
-    m_pStageObject->Deactivate();
-    m_pStageObject->RemoveComponent<Stage>();
-    m_pStageObject->RemoveComponent<gla::Timer>();
-    for (auto* child : m_pStageObject->GetChildren())
-        child->QueueDelete();
-
     m_stageIndex = ++m_stageIndex % maxStageCount;
-    m_pStageObject->AddComponent<Stage>(std::format("Stages/stage{}.json", m_stageIndex + 1));
+
+    CreateStage();
 
     m_pStartTimer->Start(loadingTime, [this] -> void { BeginRound(); });
 

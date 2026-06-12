@@ -51,7 +51,7 @@ class GameState final : public gla::Component
 {
     static constexpr int maxStageCount{ 3 };
     static constexpr int maxLives{ 5 };
-    static constexpr int initialPepper{ 5 };
+    static constexpr int initialPepper{ 15 };
     static constexpr std::string highScoreFile{ "highscores.json" };
     static constexpr float stageChangeDelay{ 5.f };
     static constexpr float loadingTime{ 1.f };
@@ -83,6 +83,7 @@ protected:
     void OnDeactivate() override;
 
 private:
+    void CreateStage() const;
     void OnStageComplete(std::any const& eventArgs);
     void OnDeath(std::any const& eventArgs);
     void Respawn();

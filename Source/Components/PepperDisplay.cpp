@@ -28,13 +28,16 @@ void PepperDisplay::OnTryPepper(std::any const& pepperEvent)
     if (m_pepperCount <= 0)
         return;
 
-    m_pepperCount--;
-    m_pPepperText->SetText(std::to_string(m_pepperCount));
-
     auto args = std::any_cast<PepperEvent>(pepperEvent);
     args.eventID = "Pepper"_h;
 
     gla::Locator::Get<gla::EventManager>().InvokeEvent(args);
+}
+
+void PepperDisplay::OnPepperAttack(std::any const& /*pepperEvent*/)
+{
+    m_pepperCount--;
+    m_pPepperText->SetText(std::to_string(m_pepperCount));
 }
 
 auto PepperDisplay::GetPepperCount() const -> int
@@ -44,7 +47,9 @@ auto PepperDisplay::GetPepperCount() const -> int
 
 void PepperDisplay::OnActivate()
 {
-    gla::Locator::Get<gla::EventManager>().BindEvent("TryPepper"_h, this, &PepperDisplay::OnTryPepper);
+    auto& eventManager = gla::Locator::Get<gla::EventManager>();
+    eventManager.BindEvent("TryPepper"_h, this, &PepperDisplay::OnTryPepper);
+    eventManager.BindEvent("PepperAttack"_h, this, &PepperDisplay::OnPepperAttack);
     m_pepperCount = m_startingPepperCount;
 
     m_pPepperSprite->SetTexture(gla::Locator::Get<gla::ResourceManager>().LoadTexture("Textures/spritesheet.png"));

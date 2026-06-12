@@ -122,7 +122,7 @@ void Walking::Update()
     if ((ctx->moveComponent.GetDirection().y < 0.f and ctx->moveComponent.CanClimbUp()) or
         (ctx->moveComponent.GetDirection().y > 0.f and ctx->moveComponent.CanClimbDown()))
     {
-        machine->TransitionTo<Climbing>();
+        machine->TransitionTo<ClimbingIdle>();
         return;
     }
 
@@ -139,7 +139,7 @@ void Walking::OnPepper(std::any const& eventArgs)
     if (pepperArgs.entityIndex != ctx->playerIndex)
         return;
 
-    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, pepperArgs.inputDirection);
+    pepperArgs.pPepper->SpawnPepper(pepperArgs.position, { ctx->previousDirection.x, 0.f });
     ctx->pepperTimer.Start(pepperDuration);
 }
 

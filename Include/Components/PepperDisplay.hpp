@@ -18,6 +18,7 @@ public:
     explicit PepperDisplay(gla::GameObject* pOwner, int startingPeppers);
 
     void OnTryPepper(std::any const& pepperEvent);
+    void OnPepperAttack(std::any const& pepperEvent);
 
     auto GetPepperCount() const -> int;
 

@@ -15,12 +15,30 @@
 namespace bt
 {
 
+EnemySpawner::EnemySpawner(gla::GameObject* pOwner, gla::GameObject* player1, std::unordered_map<Entity::Type, int> enemyCounts)
+    : Component(pOwner)
+    , m_pPlayer1(player1)
+    , m_totalEnemies(std::move(enemyCounts))
+    , m_pSpawnDelayTimer(pOwner->AddComponent<gla::Timer>())
+{
+}
+
 EnemySpawner::EnemySpawner(
     gla::GameObject* pOwner, gla::GameObject* player1, gla::GameObject* player2, std::unordered_map<Entity::Type, int> enemyCounts)
     : Component(pOwner)
     , m_pPlayer1(player1)
     , m_pPlayer2(player2)
     , m_totalEnemies(std::move(enemyCounts))
+    , m_pSpawnDelayTimer(pOwner->AddComponent<gla::Timer>())
+{
+}
+
+EnemySpawner::EnemySpawner(
+    gla::GameObject* pOwner, gla::GameObject* player1, int enemyPlayerIndex, std::unordered_map<Entity::Type, int> enemyCounts)
+    : Component(pOwner)
+    , m_pPlayer1(player1)
+    , m_totalEnemies(std::move(enemyCounts))
+    , m_enemyPlayerIndex(enemyPlayerIndex)
     , m_pSpawnDelayTimer(pOwner->AddComponent<gla::Timer>())
 {
 }
@@ -79,11 +97,16 @@ void EnemySpawner::AttemptSpawn()
     bool const left = sideRandom(gen);
     glm::vec2 const spawnPosition = { left ? -32 : (Stage::stageWidth * Stage::tileWidth) + 16, -2 };
 
-    auto const entityIndex = GetFreeEntityIndex();
+    auto const entityIndex = m_shouldRespawnEnemyPlayer ? m_enemyPlayerIndex.value() : GetFreeEntityIndex();
 
     auto* enemyObject = m_pOwner->CreateChild(spawnPosition, std::format("Enemy {}", entityIndex));
     Entity::CreateEnemy(enemyObject, entityIndex, *type, { left ? 1 : -1, 0 });
-    enemyObject->AddComponent<EnemyAI>(entityIndex, m_pPlayer1, m_pPlayer2);
+
+    if (not m_shouldRespawnEnemyPlayer)
+        enemyObject->AddComponent<EnemyAI>(entityIndex, m_pPlayer1, m_pPlayer2);
+    else
+        m_shouldRespawnEnemyPlayer = false;
+
     enemyObject->Activate();
 }
 
@@ -102,6 +125,9 @@ void EnemySpawner::OnEnemyDeath(std::any const& enemyDeathEvent)
     auto const& args = std::any_cast<EnemyDeathEvent const&>(enemyDeathEvent);
     if (not m_usedEntityIndices.contains(args.entityIndex))
         return;
+
+    if (args.entityIndex < gla::InputManager::maxPlayers)
+        m_shouldRespawnEnemyPlayer = true;
 
     m_usedEntityIndices.erase(args.entityIndex);
     m_aliveEnemies[args.enemyType]--;

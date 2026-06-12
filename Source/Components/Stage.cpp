@@ -26,7 +26,7 @@ namespace vw = std::ranges::views;
 namespace bt
 {
 
-Stage::Stage(gla::GameObject* pOwner, std::string const& stageDataPath)
+Stage::Stage(gla::GameObject* pOwner,std::string const& stageDataPath)
     : Renderable{ pOwner, layers::stage }
     , m_tileArray{}
     , m_pTimer(pOwner->AddComponent<gla::Timer>())
@@ -274,7 +274,10 @@ void Stage::SpawnBurgerParts(json const& burgerPartList)
         auto const yPosition = static_cast<float>(yIndex) * tileHeight;
 
         auto* partObject = m_pOwner->CreateChild(xPosition, yPosition, std::format("BurgerPart: {}, {}", key, i));
-        partObject->AddComponent<BurgerPart>(this, type, gla::Locator::Get<gla::ResourceManager>().LoadTexture("Textures/spritesheet.png"));
+        partObject->AddComponent<BurgerPart>(
+            this,
+            type,
+            gla::Locator::Get<gla::ResourceManager>().LoadTexture("Textures/spritesheet.png"));
     }
 }
 
