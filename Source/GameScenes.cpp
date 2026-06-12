@@ -30,6 +30,9 @@ void LoadStartScene(gla::Scene const& scene)
 {
     auto& resourceManager{ gla::Locator::Get<gla::ResourceManager>() };
 
+    auto const* persistentRoot = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot();
+    auto* gameState = persistentRoot->GetComponent<GameState>();
+
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
     auto const logoTexture = resourceManager.LoadTexture("Textures/logo.png");
     auto const spritesheetTexture = resourceManager.LoadTexture("Textures/spritesheet.png");
@@ -38,7 +41,8 @@ void LoadStartScene(gla::Scene const& scene)
     startMenu->CreateChild((256.f - 152.f) / 2, 20, "Logo")->AddComponent<gla::Sprite>(logoTexture);
 
     auto* leaderBoardObject = startMenu->CreateChild(70.f, 80.f, "Leaderboard");
-    leaderBoardObject->AddComponent<LeaderBoard>(font, 0);
+    auto const highScore = leaderBoardObject->AddComponent<LeaderBoard>(font, 0)->GetHighScore();
+    gameState->highScore = highScore;
 
     auto* singlePlayerTextObject = startMenu->CreateChild(100, 170, "Singleplayer");
     singlePlayerTextObject->AddComponent<gla::TextComponent>("1 PLAYER", font);
@@ -93,16 +97,16 @@ void LoadGameScene(gla::Scene const& scene, GameState const* gameState)
     auto const font = resourceManager.LoadFont("Fonts/nes.ttf", 8);
 
     auto* score = scene.GetRoot()->CreateChild(100, 15, "Score");
-    score->AddComponent<Score>(font, gameState->score);
+    score->AddComponent<Score>(font, gameState->GetScore());
 
     auto* highScore = scene.GetRoot()->CreateChild(110, 15, "HighScore");
-    highScore->AddComponent<HighScore>(font, 20'000);
+    highScore->AddComponent<HighScore>(font, gameState->highScore);
 
     auto* pepperDisplay = scene.GetRoot()->CreateChild(208, 15, "PepperDisplay");
-    pepperDisplay->AddComponent<PepperDisplay>(gameState->pepper);
+    pepperDisplay->AddComponent<PepperDisplay>(gameState->GetPepper());
 
     auto* healthDisplay = scene.GetRoot()->CreateChild(240, 15, "Health");
-    healthDisplay->AddComponent<HealthDisplay>(gameState->health);
+    healthDisplay->AddComponent<HealthDisplay>(gameState->GetHealth());
 }
 
 void LoadSinglePlayerGameScene(gla::Scene const& scene)
@@ -167,15 +171,18 @@ void LoadVersusGameScene(gla::Scene const& scene)
 
 void LoadGameOverScene(gla::Scene const& scene)
 {
-    //auto const* persistentRoot = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot();
-    //auto const* gameState = persistentRoot->GetComponent<GameState>();
+    auto const* persistentRoot = gla::Locator::Get<gla::SceneManager>().GetPersistentScene().GetRoot();
+    auto const* gameState = persistentRoot->GetComponent<GameState>();
 
-    auto* loading = scene.GetRoot()->CreateChild(128, 110, "Loading text");
+    auto* gameOver = scene.GetRoot()->CreateChild(128, 80, "Game Over text");
 
     auto const font = gla::Locator::Get<gla::ResourceManager>().LoadFont("Fonts/nes.ttf", 8);
-    loading->AddComponent<gla::TextComponent>("GAME OVER", font, layers::text, gla::TextComponent::Align::Center, colors::LoadingTextColor);
+    gameOver->AddComponent<gla::TextComponent>("GAME OVER", font, layers::text, gla::TextComponent::Align::Center, colors::Red);
 
+    auto* leaderBoard = scene.GetRoot()->CreateChild(150, 80, "Leaderboard object");
 
+    int const newHighScore = gameState->GetScore() >= gameState->highScore ? gameState->highScore : 0;
+    leaderBoard->AddComponent<LeaderBoard>(font, newHighScore);
 }
 
 }  // namespace bt

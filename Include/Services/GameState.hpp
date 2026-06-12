@@ -39,19 +39,18 @@ public:
     void EndGame();
 
     void SetGameMode(GameMode mode);
-    auto GetGameMode() const -> GameMode;
-    auto GetHealth() const -> int;
-    auto GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>;
-    auto GetEnemyCounts() const -> std::unordered_map<Entity::Type, int>;
+    [[nodiscard]] auto GetGameMode() const -> GameMode;
+    [[nodiscard]] auto GetHealth() const -> int;
+    [[nodiscard]] auto GetPepper() const -> int;
+    [[nodiscard]] auto GetScore() const -> int;
+    [[nodiscard]] auto GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>;
+    [[nodiscard]] auto GetEnemyCounts() const -> std::unordered_map<Entity::Type, int>;
 
     std::optional<int> peterPepperPlayerIndex;
     std::optional<int> sallySaltPlayerIndex;
     std::optional<int> enemyPlayerIndex;
-    int pepper{ game::startingPepper };
-    int health{ game::startingLives };
-    int score{};
-    int highScore{};
 
+    int highScore{};
 protected:
     void OnActivate() override;
     void OnDeactivate() override;
@@ -69,6 +68,9 @@ private:
     void OnBonusPickup(std::any const& eventArgs);
     void OnScoreChange(std::any const& scoreEvent);
 
+    int m_health{ game::startingLives };
+    int m_pepper{ game::startingPepper };
+    int m_score{};
 
     bool m_gameStarted{ false };
     GameMode m_gameMode{};

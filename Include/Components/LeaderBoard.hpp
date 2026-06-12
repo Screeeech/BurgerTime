@@ -42,6 +42,7 @@ class LeaderBoard final : public gla::Component
 public:
     explicit LeaderBoard(gla::GameObject* pOwner, std::shared_ptr<gla::Font> const& font, int newScoreEntry);
 
+    [[nodiscard]] auto GetHighScore() const -> int;
     void SaveHighScoreData();
 
 protected:
@@ -53,8 +54,8 @@ private:
     void SetLeaderBoardText();
 
     int m_newScore;
-    std::multimap<int, Initials> m_highScores;
     Initials m_currentInitials{ .first = 'P', .last = '1' };
+    std::multimap<int, Initials> m_highScores;
 
     gla::TextComponent* m_pHeader;
     gla::TextComponent* m_pRank1Text;

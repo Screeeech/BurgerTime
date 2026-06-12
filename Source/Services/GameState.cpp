@@ -68,9 +68,9 @@ void GameState::EndGame()
 {
     m_gameStarted = false;
 
-    health = game::startingPepper;
-    pepper = game::startingPepper;
-    score = 0;
+    m_health = game::startingPepper;
+    m_pepper = game::startingPepper;
+    m_score = 0;
 }
 
 void GameState::SetGameMode(GameMode mode)
@@ -86,7 +86,17 @@ auto GameState::GetGameMode() const -> GameMode
 
 auto GameState::GetHealth() const -> int
 {
-    return health;
+    return m_health;
+}
+
+auto GameState::GetPepper() const -> int
+{
+    return m_pepper;
+}
+
+auto GameState::GetScore() const -> int
+{
+    return m_score;
 }
 
 auto GameState::GetSpawnPositions() const -> std::pair<glm::vec2, glm::vec2>
@@ -173,8 +183,8 @@ void GameState::Respawn()
 {
     auto& sceneManager = gla::Locator::Get<gla::SceneManager>();
 
-    health--;
-    if (health <= 0)
+    m_health--;
+    if (m_health <= 0)
     {
         sceneManager.ResetScene("GameOver");
         sceneManager.LoadScene("GameOver");
@@ -264,18 +274,23 @@ void GameState::OnPlayerDisconnect(std::any const& connectEvent)
 
 void GameState::OnPepperAttack(std::any const& /*eventArgs*/)
 {
-    --pepper;
+    --m_pepper;
 }
 
 void GameState::OnBonusPickup(std::any const& /*eventArgs*/)
 {
-    ++pepper;
+    ++m_pepper;
 }
 
 void GameState::OnScoreChange(std::any const& scoreEvent)
 {
     auto const& args = std::any_cast<ScoreEvent const&>(scoreEvent);
-    score += args.score;
+    m_score += args.score;
+    if (m_score >= highScore)
+    {
+        highScore = m_score;
+        gla::Locator::Get<gla::EventManager>().InvokeEvent(ScoreEvent{ "HighScoreSet"_h, highScore });
+    }
 }
 
 }  // namespace bt

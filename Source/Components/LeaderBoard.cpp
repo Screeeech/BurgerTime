@@ -44,6 +44,15 @@ LeaderBoard::LeaderBoard(gla::GameObject* pOwner, std::shared_ptr<gla::Font> con
     LoadHighScoreData();
 }
 
+auto LeaderBoard::GetHighScore() const -> int
+{
+    if (m_highScores.empty())
+        return 0;
+
+    auto const it = m_highScores.rbegin();
+    return it->first;
+}
+
 void LeaderBoard::OnActivate()
 {
     m_pRank1Text->SetYOffset(20.f);
@@ -112,6 +121,8 @@ void LeaderBoard::SetLeaderBoardText()
 void LeaderBoard::SaveHighScoreData()
 {
     json jsonArray = json::array();
+
+    m_highScores.insert({ m_newScore, m_currentInitials });
 
     for (auto const& [initials, score] : m_highScores)
         jsonArray.push_back({ { "initials", initials }, { "score", score } });
