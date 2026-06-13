@@ -116,11 +116,11 @@ void LeaderBoard::SetLeaderBoardText()
     }
 }
 
-void LeaderBoard::SaveHighScoreData(Initials initials)
+void LeaderBoard::SaveHighScoreData(Initials newInitials)
 {
     json jsonArray = json::array();
 
-    m_highScores.insert({ m_newScore, initials });
+    m_highScores.insert({ m_newScore, newInitials });
 
     for (auto const& [score, initials] : m_highScores)
         jsonArray.push_back({ { "initials", initials }, { "score", score } });

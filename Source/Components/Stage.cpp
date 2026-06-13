@@ -300,6 +300,8 @@ void Stage::SpawnPlates(json const& plateList)
 {
     for (auto const& [i, plate] : plateList | vw::enumerate)
     {
+        auto const idx = static_cast<int>(i);
+
         if (not plate.is_object())
             throw std::runtime_error("Invalid plates list: Plate is not a valid json object");
         if (not plate.contains("StackSize"))
@@ -316,7 +318,7 @@ void Stage::SpawnPlates(json const& plateList)
         int const stackSize = plate.at("StackSize").get<int>();
 
         auto* plateObject = m_pOwner->CreateChild(xPosition, yPosition, std::format("Plate: {}", i));
-        plateObject->AddComponent<Plate>(stackSize, i);
+        plateObject->AddComponent<Plate>(stackSize, idx);
         ++m_totalPlateCount;
     }
 }

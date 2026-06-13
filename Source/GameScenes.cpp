@@ -82,6 +82,8 @@ void LoadLoadingScene(gla::Scene const& scene)
                 return "CO-OP";
             case GameMode::Versus:
                 return "VERSUS";
+            default:
+                return "";
         }
     }();
 

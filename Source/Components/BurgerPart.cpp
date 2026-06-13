@@ -31,6 +31,7 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, s
               Pieces pieces{};
               for (auto const& [i, pair] : pieces | vw::enumerate)
               {
+                  auto const idx = static_cast<int>(i);
                   auto& [hitbox, sprite] = pair;
 
                   float const xOffset{ static_cast<float>(i) * pieceSize };
@@ -38,18 +39,18 @@ BurgerPart::BurgerPart(gla::GameObject* pOwner, Stage* pStage, Type pieceType, s
                   hitbox = pOwner->AddComponent<gla::CollisionRect>(
                       gla::Collider::Bits::Layer3 | gla::Collider::Bits::Layer4,
                       gla::Collider::Bits::Layer7 | gla::Collider::Bits::Layer4,
-                      [this, i](auto&, gla::Collider const& otherCollider) -> void
+                      [idx, this](auto&, gla::Collider const& otherCollider) -> void
                       {
                           // If the collision comes from a player
                           if (otherCollider.GetCollisionMasks() & gla::Collider::Bits::Layer3)
                               gla::Locator::Get<gla::Sound>().PlayAudio("burger_step"_h);
 
-                          OnPieceStep(i);
+                          OnPieceStep(idx);
                       },
                       glm::vec2{ xOffset, 0.f },
                       glm::vec2{ pieceSize, pieceSize });
                   sprite = pOwner->AddComponent<gla::Sprite>(spriteSheetTexture, layers::burgerParts);
-                  auto const srcRect = GetBurgerPieceSourceRect(pieceType, i);
+                  auto const srcRect = GetBurgerPieceSourceRect(pieceType, static_cast<int>(i));
                   sprite->SetSourceRect(srcRect);
                   sprite->m_offset.x = xOffset;
               }
@@ -154,7 +155,7 @@ void BurgerPart::OnActivate()
     m_pEntitiesParent = nullptr;
 }
 
-auto BurgerPart::GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect
+auto BurgerPart::GetBurgerPieceSourceRect(Type type, int index) -> SDL_FRect
 {
     auto const xIndex{ 14 + static_cast<float>(index) };
     auto const yIndex{ 10 + static_cast<float>(type) };

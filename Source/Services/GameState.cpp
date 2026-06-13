@@ -35,7 +35,7 @@ GameState::GameState(gla::GameObject* pOwner)
 void GameState::StartGame()
 {
     m_score = 0;
-    m_health = game::startingPepper;
+    m_health = game::startingLives;
     m_pepper = game::startingPepper;
 
     m_gameStarted = true;

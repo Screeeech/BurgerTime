@@ -66,7 +66,7 @@ protected:
     void OnActivate() override;
 
 private:
-    static auto GetBurgerPieceSourceRect(Type type, long index) -> SDL_FRect;
+    static auto GetBurgerPieceSourceRect(Type type, int index) -> SDL_FRect;
     void OnPieceStep(long index);
     auto GetEntitiesParentObject() -> gla::GameObject*;
 
